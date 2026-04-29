@@ -1,0 +1,271 @@
+<style>
+  /* Preamble uses the same var(--z-*) wireframe tokens as everything else.
+     No custom palette, no fancy fonts - just grayscale wireframe style. */
+
+  .pdr-preamble .story { max-width:1200px; margin:0 auto; padding:2.5rem 0; display:grid; grid-template-columns:220px 1fr; gap:2.5rem; }
+  .pdr-preamble .story-label { font-family:var(--z-font-mono); font-size:var(--z-text-sm); color:var(--z-text-helper); letter-spacing:0.15em; text-transform:uppercase; padding-top:0.35rem; }
+  .pdr-preamble .story-body { max-width:640px; }
+  .pdr-preamble .story-body p { font-size:var(--z-text-lg); line-height:1.8; color:var(--z-text-secondary); margin-bottom:1rem; font-weight:400; }
+  .pdr-preamble .story-body p:first-child { font-size:var(--z-text-lg); color:var(--z-text-primary); font-weight:500; }
+
+  .pdr-preamble .principles { padding:0 0 2.5rem; }
+  .pdr-preamble .principles-heading { font-family:var(--z-font-sans); font-size:var(--z-text-2xl); font-weight:600; margin-bottom:0.4rem; }
+  .pdr-preamble .principles-desc { font-size:var(--z-text-base); color:var(--z-text-secondary); margin-bottom:1.5rem; font-weight:400; max-width:640px; }
+  .pdr-preamble .principles-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+  .pdr-preamble .principle-card { background:var(--z-bg); border:1px solid var(--z-border-subtle); border-radius:var(--z-radius-md); padding:1.3rem; position:relative; }
+  .pdr-preamble .principle-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:4px 4px 0 0; background:var(--z-border-strong); }
+  .pdr-preamble .principle-num { font-family:var(--z-font-mono); font-size:var(--z-text-sm); color:var(--z-text-helper); letter-spacing:0.1em; margin-bottom:0.5rem; }
+  .pdr-preamble .principle-title { font-family:var(--z-font-sans); font-size:var(--z-text-lg); font-weight:600; color:var(--z-text-primary); margin-bottom:0.5rem; line-height:1.3; }
+  .pdr-preamble .principle-body { font-size:var(--z-text-base); color:var(--z-text-secondary); line-height:1.6; font-weight:400; }
+
+  .pdr-preamble .key-numbers { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--z-border-subtle); border:1px solid var(--z-border-subtle); border-radius:var(--z-radius-lg); overflow:hidden; margin-bottom:2.5rem; }
+  .pdr-preamble .key-number { background:var(--z-bg); padding:1.2rem; text-align:center; }
+  .pdr-preamble .key-number .num { font-family:var(--z-font-sans); font-size:2rem; color:var(--z-text-primary); line-height:1.1; font-weight:600; }
+  .pdr-preamble .key-number .label { font-family:var(--z-font-mono); font-size:var(--z-text-sm); color:var(--z-text-helper); letter-spacing:0.12em; text-transform:uppercase; margin-top:0.4rem; }
+
+  .pdr-preamble .legend-bar { display:flex; gap:2rem; align-items:center; margin-bottom:1rem; }
+  .pdr-preamble .legend-item { display:flex; align-items:center; gap:0.5rem; font-family:var(--z-font-mono); font-size:var(--z-text-sm); color:var(--z-text-helper); letter-spacing:0.08em; text-transform:uppercase; }
+  .pdr-preamble .legend-dot { width:8px; height:8px; border-radius:50%; }
+  /* Grayscale differentiation: light, medium, dark */
+  .pdr-preamble .legend-dot.interactive { background:var(--z-text-placeholder); }
+  .pdr-preamble .legend-dot.execution { background:var(--z-text-secondary); }
+  .pdr-preamble .legend-dot.gate { background:var(--z-text-primary); }
+
+  .pdr-preamble .timeline-container { overflow-x:auto; padding-bottom:2rem; }
+  .pdr-preamble .timeline { display:flex; align-items:flex-start; min-width:max-content; padding:1.5rem 0; position:relative; }
+  .pdr-preamble .timeline::before { content:''; position:absolute; top:22px; left:24px; right:24px; height:2px; background:var(--z-border-subtle); z-index:0; }
+  .pdr-preamble .tl-node { position:relative; display:flex; flex-direction:column; align-items:center; min-width:90px; flex:1; z-index:1; }
+  .pdr-preamble .tl-dot { width:12px; height:12px; border-radius:50%; border:2px solid var(--z-border-subtle); background:var(--z-bg); }
+  .pdr-preamble .tl-node.interactive .tl-dot { border-color:var(--z-text-placeholder); background:var(--z-layer-01); }
+  .pdr-preamble .tl-node.execution .tl-dot { border-color:var(--z-text-secondary); background:var(--z-layer-02); }
+  .pdr-preamble .tl-node.gate .tl-dot { border-color:var(--z-text-primary); background:var(--z-layer-02); }
+  .pdr-preamble .tl-num { font-family:var(--z-font-mono); font-size:var(--z-text-xs); color:var(--z-text-helper); margin-top:0.6rem; }
+  .pdr-preamble .tl-name { font-family:var(--z-font-sans); font-size:var(--z-text-sm); font-weight:500; color:var(--z-text-secondary); margin-top:0.2rem; text-align:center; max-width:90px; line-height:1.3; }
+  .pdr-preamble .tl-time { font-family:var(--z-font-mono); font-size:var(--z-text-xs); color:var(--z-text-helper); margin-top:0.2rem; }
+
+  @media (max-width:768px) {
+    .pdr-preamble .story { grid-template-columns:1fr; gap:1rem; }
+    .pdr-preamble .principles-grid { grid-template-columns:1fr; }
+    .pdr-preamble .key-numbers { grid-template-columns:repeat(2,1fr); }
+    .pdr-preamble .rollback-options { grid-template-columns:1fr; }
+  }
+
+  /* Execution flow */
+  .pdr-preamble .flow-section { padding:0 0 2.5rem; }
+  .pdr-preamble .flow-section h2 { font-family:var(--z-font-sans); font-size:var(--z-text-2xl); font-weight:600; margin-bottom:0.4rem; }
+  .pdr-preamble .flow-section .section-desc { font-size:var(--z-text-base); color:var(--z-text-secondary); margin-bottom:1.5rem; font-weight:400; max-width:640px; }
+  .pdr-preamble .flow-phases { display:flex; flex-direction:column; gap:0; max-width:100%; overflow:hidden; }
+  .pdr-preamble .flow-phase-label { font-family:var(--z-font-mono); font-size:var(--z-text-sm); letter-spacing:0.12em; text-transform:uppercase; color:var(--z-text-helper); padding:0.75rem 0 0.25rem; }
+  .pdr-preamble .flow-phase-label.phase-1 { color:var(--z-text-placeholder); }
+  .pdr-preamble .flow-phase-label.phase-2 { color:var(--z-text-secondary); }
+  .pdr-preamble .flow-row { display:flex; align-items:center; gap:0; flex-wrap:nowrap; padding:0.6rem 0; }
+  .pdr-preamble .flow-box { flex:1 1 0; min-width:0; background:var(--z-bg); border:1px solid var(--z-border-subtle); border-radius:var(--z-radius-md); padding:0.65rem 0.4rem; text-align:center; overflow:hidden; }
+  .pdr-preamble .flow-box .flow-title { font-family:var(--z-font-sans); font-size:var(--z-text-sm); font-weight:500; color:var(--z-text-primary); margin-bottom:0.1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pdr-preamble .flow-box .flow-sub { font-family:var(--z-font-mono); font-size:var(--z-text-2xs); color:var(--z-text-helper); letter-spacing:0.04em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pdr-preamble .flow-arrow { flex-shrink:0; width:20px; text-align:center; color:var(--z-text-helper); font-size:0.85rem; line-height:1; }
+  .pdr-preamble .flow-gate-divider { display:flex; align-items:center; gap:0.75rem; padding:0.5rem 0; }
+  .pdr-preamble .flow-gate-divider .flow-gate-line { flex:1; height:1px; background:var(--z-border-strong); }
+  .pdr-preamble .flow-gate-divider .flow-gate-badge { flex-shrink:0; background:var(--z-layer-01); border:1px solid var(--z-border-strong); border-radius:var(--z-radius-md); padding:0.3rem 0.8rem; font-family:var(--z-font-mono); font-size:var(--z-text-sm); font-weight:600; color:var(--z-text-primary); letter-spacing:0.08em; text-transform:uppercase; }
+  .pdr-preamble .flow-gate-divider .flow-gate-sub { font-family:var(--z-font-mono); font-size:var(--z-text-xs); color:var(--z-text-helper); letter-spacing:0.04em; flex-shrink:0; }
+
+  /* State machine */
+  .pdr-preamble .state-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:1px; background:var(--z-border-subtle); border:1px solid var(--z-border-subtle); border-radius:var(--z-radius-md); overflow:hidden; margin-top:1rem; }
+  .pdr-preamble .state-cell { background:var(--z-bg); padding:0.8rem; text-align:center; }
+  .pdr-preamble .state-name { font-family:var(--z-font-mono); font-size:var(--z-text-sm); font-weight:500; color:var(--z-text-primary); margin-bottom:0.2rem; }
+  .pdr-preamble .state-desc { font-size:var(--z-text-sm); color:var(--z-text-helper); line-height:1.4; }
+  .pdr-preamble .state-cell.active-state { background:var(--z-layer-01); }
+
+  /* Rollback / Recovery */
+  .pdr-preamble .rollback-options { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:1.2rem; }
+  .pdr-preamble .rollback-card { background:var(--z-bg); border:1px solid var(--z-border-subtle); border-radius:var(--z-radius-md); padding:1.1rem; }
+  .pdr-preamble .rollback-card h4 { font-family:var(--z-font-sans); font-size:var(--z-text-base); font-weight:600; color:var(--z-text-primary); margin-bottom:0.4rem; }
+  .pdr-preamble .rollback-card p { font-size:var(--z-text-base); color:var(--z-text-secondary); line-height:1.55; font-weight:400; }
+  .pdr-preamble .tag-recommended { display:inline-block; font-family:var(--z-font-mono); font-size:var(--z-text-xs); letter-spacing:0.08em; text-transform:uppercase; color:var(--z-text-secondary); background:var(--z-layer-01); border:1px solid var(--z-border-subtle); border-radius:var(--z-radius-sm); padding:0.1rem 0.4rem; margin-bottom:0.4rem; }
+</style>
+
+<div class="pdr-preamble">
+
+<!-- The Job -->
+<section id="pt-the-job" class="story">
+  <div class="story-label">The Problem</div>
+  <div class="story-body">
+    <p>When a terraform apply fails on production, the platform engineer opens HCP Terraform UI, the AWS console, Datadog, and Slack - four tools, three browser tabs. They manually correlate run logs with drift detection results and audit trail entries. Pattern matching that a senior engineer does in 8 minutes takes a junior engineer 25 minutes.</p>
+    <p>38 minutes average MTTR for P1/P2 run failures. 30 of those minutes are information gathering.</p>
+  </div>
+</section>
+
+<!-- Observe-Correlate-Act -->
+<section id="pt-approach" class="story">
+  <div class="story-label">Observe-Correlate-Act</div>
+  <div class="story-body">
+    <p>An AI agent ingests HCP Terraform audit log events, run logs, drift detection results, and notification webhooks. Correlates in seconds. Presents ranked root causes with evidence. Suggests remediation runbooks. Engineer approves, agent executes via terraform CLI. Target: under 5 minutes for triage, 50% MTTR reduction.</p>
+  </div>
+</section>
+
+<!-- Product Principles -->
+<section id="pt-principles" class="principles">
+  <h2 class="principles-heading">Product Principles</h2>
+  <p class="principles-desc">Three design decisions that shape every stage of this journey.</p>
+  <div class="principles-grid">
+    <div class="principle-card">
+      <div class="principle-num">01</div>
+      <div class="principle-title">Human Gate on Every Mutation</div>
+      <div class="principle-body">No terraform apply executes without explicit approval and a mandatory reason field.</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-num">02</div>
+      <div class="principle-title">Evidence Before Conclusion</div>
+      <div class="principle-body">Every AI root cause links to the raw run logs, state diffs, and audit trail entries that support it. The engineer can drill from summary to source in one click.</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-num">03</div>
+      <div class="principle-title">Every Failure Has a Recovery</div>
+      <div class="principle-body">Apply failure triggers rollback via state versioning. Verification failure returns to root cause analysis. Approval timeout escalates.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Jobs to Be Done -->
+<section id="pt-jtbd" class="flow-section">
+  <h2>Jobs to Be Done</h2>
+  <p class="section-desc">Three jobs that drive the incident response journey. Each maps to a product principle.</p>
+  <div class="rollback-options">
+    <div class="rollback-card">
+      <div class="tag-recommended">Principle 01</div>
+      <h4>Correlated signals in one view</h4>
+      <p><strong>When</strong> an incident fires, <strong>I want</strong> correlated signals in one view <strong>so that</strong> I don't spend 20 minutes switching between HCP Terraform UI, AWS console, and Datadog.</p>
+      <p style="margin-top:0.6rem; font-size:0.8rem; color:var(--z-text-helper);">Today: the engineer opens four tools across three browser tabs and manually correlates timestamps. Run logs are structured, notification webhooks are not. Cross-referencing takes 8-25 minutes depending on experience.</p>
+    </div>
+    <div class="rollback-card">
+      <div class="tag-recommended">Principle 02</div>
+      <h4>Verifiable evidence for every root cause</h4>
+      <p><strong>When</strong> the AI suggests a root cause, <strong>I want</strong> to see the raw run logs and state diffs <strong>so that</strong> I can verify the analysis before approving any remediation.</p>
+      <p style="margin-top:0.6rem; font-size:0.8rem; color:var(--z-text-helper);">Trust requires transparency. Each ranked cause links to the specific run logs, drift detection results, and audit trail entries that support it. The engineer validates before acting.</p>
+    </div>
+    <div class="rollback-card">
+      <div class="tag-recommended">Principle 03</div>
+      <h4>Clear recovery when remediation fails</h4>
+      <p><strong>When</strong> a remediation step fails, <strong>I want</strong> clear recovery options <strong>so that</strong> I'm not stuck with an unknown system state.</p>
+      <p style="margin-top:0.6rem; font-size:0.8rem; color:var(--z-text-helper);">Three recovery paths: retry the failed step, roll back all completed steps in reverse order, or escalate to the next tier with full context preserved. No dead ends.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Key Numbers -->
+<div id="pt-key-numbers" class="key-numbers">
+  <div class="key-number"><div class="num">10</div><div class="label">Stages</div></div>
+  <div class="key-number"><div class="num">3</div><div class="label">Personas</div></div>
+  <div class="key-number"><div class="num">4-8m</div><div class="label">Happy Path</div></div>
+  <div class="key-number"><div class="num" style="font-size:1.4rem;">38m &rarr; &lt;19m</div><div class="label">MTTR Reduction</div></div>
+</div>
+
+<!-- Legend -->
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-dot interactive"></div> Interactive</div>
+  <div class="legend-item"><div class="legend-dot execution"></div> Execution</div>
+  <div class="legend-item"><div class="legend-dot gate"></div> Gate</div>
+</div>
+
+<!-- Timeline -->
+<div class="timeline-container">
+  <div class="timeline">
+    <div class="tl-node interactive"><div class="tl-dot"></div><div class="tl-num">01</div><div class="tl-name">Alert</div><div class="tl-time">0-5s</div></div>
+    <div class="tl-node interactive"><div class="tl-dot"></div><div class="tl-num">02</div><div class="tl-name">Correlate</div><div class="tl-time">5-15s</div></div>
+    <div class="tl-node interactive"><div class="tl-dot"></div><div class="tl-num">03</div><div class="tl-name">Triage</div><div class="tl-time">2-10s</div></div>
+    <div class="tl-node interactive"><div class="tl-dot"></div><div class="tl-num">04</div><div class="tl-name">Analysis</div><div class="tl-time">5-20s</div></div>
+    <div class="tl-node interactive"><div class="tl-dot"></div><div class="tl-num">05</div><div class="tl-name">Remediation</div><div class="tl-time">3-10s</div></div>
+    <div class="tl-node gate"><div class="tl-dot"></div><div class="tl-num">06</div><div class="tl-name">Approval</div><div class="tl-time">30s-15m</div></div>
+    <div class="tl-node execution"><div class="tl-dot"></div><div class="tl-num">07</div><div class="tl-name">Execute</div><div class="tl-time">15-60s</div></div>
+    <div class="tl-node execution"><div class="tl-dot"></div><div class="tl-num">08</div><div class="tl-name">Monitor</div><div class="tl-time">concurrent</div></div>
+    <div class="tl-node execution"><div class="tl-dot"></div><div class="tl-num">09</div><div class="tl-name">Verify</div><div class="tl-time">30-120s</div></div>
+    <div class="tl-node execution"><div class="tl-dot"></div><div class="tl-num">10</div><div class="tl-name">Close</div><div class="tl-time">5-10s</div></div>
+  </div>
+</div>
+
+<!-- Execution Flow -->
+<section id="pt-execution-flow" class="flow-section">
+  <h2>Execution Flow</h2>
+  <p class="section-desc">The agent observes and correlates autonomously. A human gate separates analysis from action. No remediation runs without explicit operator approval.</p>
+  <div class="flow-phases">
+    <div class="flow-phase-label phase-1">Observe &amp; Correlate</div>
+    <div class="flow-row">
+      <div class="flow-box"><div class="flow-title">Ingest Signals</div><div class="flow-sub">Run logs, audit, drift</div></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><div class="flow-title">Correlate</div><div class="flow-sub">timestamp + txn ID</div></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><div class="flow-title">Triage</div><div class="flow-sub">severity + scope</div></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><div class="flow-title">Rank Causes</div><div class="flow-sub">evidence-linked</div></div>
+    </div>
+    <div class="flow-gate-divider">
+      <div class="flow-gate-line"></div>
+      <div class="flow-gate-badge">Human Gate</div>
+      <div class="flow-gate-sub">approval required</div>
+      <div class="flow-gate-line"></div>
+    </div>
+    <div class="flow-phase-label phase-2">Execute &amp; Verify</div>
+    <div class="flow-row">
+      <div class="flow-box"><div class="flow-title">Execute Runbook</div><div class="flow-sub">terraform CLI</div></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><div class="flow-title">Monitor Steps</div><div class="flow-sub">real-time status</div></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><div class="flow-title">Verify Health</div><div class="flow-sub">post-remediation</div></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><div class="flow-title">Close Incident</div><div class="flow-sub">audit trail</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- State Machine -->
+<section id="pt-state-machine" class="flow-section">
+  <h2>Incident State Machine</h2>
+  <p class="section-desc">The incident moves through discrete states. Transitions are deterministic. Any failure forks to recovery or escalation - never a dead end.</p>
+  <div class="state-grid">
+    <div class="state-cell"><div class="state-name">detected</div><div class="state-desc">Alert received</div></div>
+    <div class="state-cell"><div class="state-name">correlating</div><div class="state-desc">Ingesting signals</div></div>
+    <div class="state-cell"><div class="state-name">triaging</div><div class="state-desc">Severity assessed</div></div>
+    <div class="state-cell"><div class="state-name">analyzing</div><div class="state-desc">Root cause ranking</div></div>
+    <div class="state-cell"><div class="state-name">remediation_suggested</div><div class="state-desc">Runbook selected</div></div>
+    <div class="state-cell active-state"><div class="state-name">pending_approval</div><div class="state-desc">Awaiting engineer</div></div>
+    <div class="state-cell"><div class="state-name">approved</div><div class="state-desc">Engineer confirmed</div></div>
+    <div class="state-cell"><div class="state-name">executing</div><div class="state-desc">Runbook running</div></div>
+    <div class="state-cell"><div class="state-name">verifying</div><div class="state-desc">Health checks</div></div>
+    <div class="state-cell"><div class="state-name">resolved</div><div class="state-desc">Incident closed</div></div>
+    <div class="state-cell"><div class="state-name">escalated</div><div class="state-desc">Manual intervention</div></div>
+    <div class="state-cell"><div class="state-name">failed</div><div class="state-desc">Recovery required</div></div>
+  </div>
+</section>
+
+<!-- Recovery Options -->
+<section id="pt-recovery" class="flow-section">
+  <h2>Recovery Options</h2>
+  <p class="section-desc">When a remediation step fails, the engineer chooses one of three paths. Incident state is preserved across all recovery modes.</p>
+  <div class="rollback-options">
+    <div class="rollback-card">
+      <div class="tag-recommended">Recommended</div>
+      <h4>Retry Step</h4>
+      <p>Single step failed. Fix the issue and retry just that step. Preceding steps are preserved. The runbook resumes from the failure point.</p>
+    </div>
+    <div class="rollback-card">
+      <h4>Full Rollback</h4>
+      <p>Execute rollback commands for all completed steps in reverse order. Return to remediation suggestion for a revised plan. System returns to pre-remediation state.</p>
+    </div>
+    <div class="rollback-card">
+      <h4>Escalate</h4>
+      <p>Route to Infrastructure Architect for manual intervention. Incident state preserved. Full context attached - correlation data, root cause analysis, and partial execution log.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Bridging Data Contract -->
+<section id="pt-bridging-data" class="flow-section">
+  <h2>Bridging Data Contract</h2>
+  <p class="section-desc">Three identifiers thread through the entire incident lifecycle. The Incident ID is the durable key. The Correlation Key links signals across sources. The Approval Token authorizes remediation execution and expires after 15 minutes.</p>
+  <div class="key-numbers" style="grid-template-columns:repeat(3,1fr); margin-top:1.2rem;">
+    <div class="key-number"><div class="num" style="font-size:1.2rem; font-family:var(--z-font-mono);">Incident ID</div><div class="label">INC-2026-*</div></div>
+    <div class="key-number"><div class="num" style="font-size:1.2rem; font-family:var(--z-font-mono);">Correlation Key</div><div class="label">CK-*</div></div>
+    <div class="key-number"><div class="num" style="font-size:1.2rem; font-family:var(--z-font-mono);">Approval Token</div><div class="label">Signed, 15min TTL</div></div>
+  </div>
+</section>
+
+</div>

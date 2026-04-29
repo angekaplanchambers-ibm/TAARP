@@ -1,0 +1,45 @@
+<div class="ann-block">
+<h3>What the user is doing</h3>
+<p>Operator selects an incident from the queue, reviews the triage
+summary, and accepts auto-assignment. The agent has already classified
+severity, identified affected subsystems, and recommended an escalation
+path based on historical pattern match.</p>
+</div>
+
+<div class="ann-block">
+<h3>Screen breakdown</h3>
+<ul>
+  <li><strong>Incident table (30-70% depending on mode):</strong> Queue of
+    open incidents. Columns show ID, severity, subsystem, age, and
+    assignee. Table compresses to 30% when a detail panel is open.</li>
+  <li><strong>Detail panel with severity/signals/subsystems (40% center):</strong>
+    Triage summary for the selected incident. Shows correlated signal
+    count, severity justification, affected subsystems, and escalation
+    recommendation.</li>
+  <li><strong>Agent chat (30% right):</strong> Agent explains the triage
+    rationale - why this severity, which historical incidents matched,
+    and the recommended next step.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Key interactions</h3>
+<ul>
+  <li>Click an incident row to open the detail panel; table compresses
+    to make room.</li>
+  <li>Review the escalation recommendation and severity classification.</li>
+  <li>Click Analyze to accept triage and proceed to root cause analysis.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Design decisions</h3>
+<ul>
+  <li>Table-to-detail transition collapses the table rather than replacing
+    it, so the operator keeps queue context while triaging.</li>
+  <li>Escalation recommendation is based on historical pattern match -
+    the agent cites similar past incidents, not abstract rules.</li>
+  <li>Single Analyze action moves forward. No ambiguous multi-button
+    toolbar at the triage stage.</li>
+</ul>
+</div>

@@ -1,0 +1,50 @@
+<div class="ann-block">
+<h3>What the user is doing</h3>
+<p>Agent runs verification checks automatically after execution completes.
+The operator reviews check results, confirms resolution, and closes
+the incident. A 120-second quiet window confirms no new correlated
+alerts before closure is permitted.</p>
+</div>
+
+<div class="ann-block">
+<h3>Screen breakdown</h3>
+<ul>
+  <li><strong>Incident summary / Closure metadata (30% left):</strong>
+    Final incident card showing severity, duration, root cause, and
+    remediation steps executed. Closure fields include resolver,
+    timestamp, and IC sign-off status for severity-1/2 incidents.</li>
+  <li><strong>Verification checklist / Incident timeline (40% center):</strong>
+    Top section lists automated verification checks with pass/fail
+    glyphs. Bottom section shows the full incident timeline from
+    first alert through closure.</li>
+  <li><strong>Agent chat (30% right):</strong> Agent reports verification
+    results, confirms the quiet window passed, and prompts the
+    operator to close.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Key interactions</h3>
+<ul>
+  <li>Review verification check results - each shows what was tested
+    and the outcome.</li>
+  <li>Click Close Incident to finalize (requires IC sign-off for
+    severity-1/2).</li>
+  <li>Review the full incident timeline from correlation through
+    resolution.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Design decisions</h3>
+<ul>
+  <li>Verification is automatic. The agent runs checks without operator
+    prompting - the operator reviews results, not procedures.</li>
+  <li>120-second quiet window confirms no new correlated alerts before
+    closure is permitted. Recurrence restarts the window.</li>
+  <li>Severity-1/2 incidents require IC sign-off to close. Lower
+    severities close with operator confirmation alone.</li>
+  <li>Full timeline is written to the Splunk audit trail on closure -
+    every action, approval, and verification captured.</li>
+</ul>
+</div>

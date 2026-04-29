@@ -1,0 +1,48 @@
+<div class="ann-block">
+<h3>What the user is doing</h3>
+<p>Agent executes playbook steps sequentially via terraform CLI. The operator
+monitors real-time progress as each step runs, validates, and advances.
+Failure halts execution immediately - the operator chooses whether to
+retry, rollback, or escalate.</p>
+</div>
+
+<div class="ann-block">
+<h3>Screen breakdown</h3>
+<ul>
+  <li><strong>Execution summary with progress bar (30% left):</strong>
+    Shows incident ID, total steps, completed count, and a segmented
+    progress bar. Current step highlighted. Elapsed time and estimated
+    remaining time displayed below.</li>
+  <li><strong>Step list with status glyphs and output (40% center):</strong>
+    Each step shows a status glyph (pending, running, passed, failed),
+    the command being executed, and expandable monospace output. The
+    running step auto-expands to show live output.</li>
+  <li><strong>Agent chat (30% right):</strong> Agent narrates each step
+    as it executes - what it ran, what the output means, and whether
+    validation passed.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Key interactions</h3>
+<ul>
+  <li>Watch steps complete in real time as glyphs update from pending
+    to running to passed.</li>
+  <li>Expand any completed step to review its output.</li>
+  <li>On failure, choose a recovery path: retry the step, rollback all
+    completed steps, or escalate to Infrastructure Architect.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Design decisions</h3>
+<ul>
+  <li>Sequential execution with validation between steps. Each step
+    must pass before the next begins.</li>
+  <li>Failure halts immediately. No partial execution of remaining steps.</li>
+  <li>Rollback executes in reverse order of completed steps, using the
+    rollback commands defined in the playbook.</li>
+  <li>Event stream provides monospace output so the operator can verify
+    exactly what ran and what it returned.</li>
+</ul>
+</div>

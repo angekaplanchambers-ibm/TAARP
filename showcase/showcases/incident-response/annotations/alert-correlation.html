@@ -1,0 +1,45 @@
+<div class="ann-block">
+<h3>What the user is doing</h3>
+<p>Operator sees incoming alerts. The agent ingests run logs and audit events and
+drift detection results, groups correlated signals across workspaces. Correlation
+happens automatically - the agent groups related signals within
+10 seconds of ingestion, surfacing a single incident from what would
+otherwise be a wall of disconnected alerts.</p>
+</div>
+
+<div class="ann-block">
+<h3>Screen breakdown</h3>
+<ul>
+  <li><strong>Alert list (25% left):</strong> Chronological feed of raw
+    alerts. Each row shows timestamp, source subsystem, and severity
+    badge. Correlated alerts collapse under a group header.</li>
+  <li><strong>Signal detail with correlation table (45% center):</strong>
+    Expanded view of the selected alert group. Correlation table maps
+    each signal to its source, timestamp delta, and match reason.</li>
+  <li><strong>Agent chat (30% right):</strong> Agent narrates correlation
+    logic - which signals matched, why they grouped, and what subsystems
+    are involved.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Key interactions</h3>
+<ul>
+  <li>Click an alert row to expand the correlation group in the center panel.</li>
+  <li>Review the correlation table to verify grouping logic.</li>
+  <li>Confirm grouping to promote the cluster to an incident, or ungroup
+    a mismatched signal back to the raw queue.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Design decisions</h3>
+<ul>
+  <li>Three-panel layout keeps the alert queue visible while the operator
+    investigates a specific group - no context switching.</li>
+  <li>Correlation is automatic. The agent groups within 10 seconds;
+    the operator confirms rather than constructs.</li>
+  <li>Ungroup action is always available so the operator retains final
+    authority over what constitutes a single incident.</li>
+</ul>
+</div>

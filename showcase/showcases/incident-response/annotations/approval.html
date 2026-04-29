@@ -1,0 +1,50 @@
+<div class="ann-block">
+<h3>What the user is doing</h3>
+<p>Incident Commander reviews and approves the remediation plan. A
+15-minute approval window prevents the request from blocking
+indefinitely. The IC reads the plan, confirms high-risk steps, and
+either approves with a reason or rejects to send the operator back
+to remediation.</p>
+</div>
+
+<div class="ann-block">
+<h3>Screen breakdown</h3>
+<ul>
+  <li><strong>Approval metadata with countdown (30% left):</strong> Shows
+    requester, incident severity, submission time, and a countdown
+    timer for the 15-minute approval window. Escalation target
+    displayed below the timer.</li>
+  <li><strong>Plan review read-only (40% center):</strong> The remediation
+    playbook rendered in read-only mode. High-risk steps highlighted
+    with triangle glyphs. Each step shows the command, target
+    subsystem, and rollback path.</li>
+  <li><strong>Agent chat (30% right):</strong> Agent summarizes the plan
+    rationale, flags which steps carry risk, and notes any conditions
+    that must hold for the plan to succeed.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Key interactions</h3>
+<ul>
+  <li>Review each high-risk step and its rollback command.</li>
+  <li>Enter a reason in the text field (required for audit trail).</li>
+  <li>Check the confirmation checkbox and click Approve, or click Reject
+    to return to remediation.</li>
+  <li>View pre-conditions that must hold before execution begins.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Design decisions</h3>
+<ul>
+  <li>Approval checkbox is deliberate friction - the IC must explicitly
+    confirm, preventing accidental approval.</li>
+  <li>15-minute timer prevents approval from blocking indefinitely.
+    Timeout triggers automatic escalation to Infrastructure Architect.</li>
+  <li>Rejection returns to the remediation step, not the beginning of
+    the workflow. Progress is preserved.</li>
+  <li>Read-only plan view prevents the IC from editing steps inline -
+    changes require a new remediation cycle.</li>
+</ul>
+</div>

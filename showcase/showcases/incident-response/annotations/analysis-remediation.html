@@ -1,0 +1,46 @@
+<div class="ann-block">
+<h3>What the user is doing</h3>
+<p>Agent presents ranked root causes with confidence scores. The operator
+reviews evidence chains, confirms the most likely cause, and reviews
+the remediation playbook. Every mutating step in the playbook has a
+rollback command defined before the operator can request approval.</p>
+</div>
+
+<div class="ann-block">
+<h3>Screen breakdown</h3>
+<ul>
+  <li><strong>Incident context (25% left):</strong> Summary card showing
+    incident ID, severity, affected subsystems, and timeline of
+    correlated signals for quick reference.</li>
+  <li><strong>Root cause ranking / Remediation plan (45% center):</strong>
+    Top section lists ranked causes with confidence bars and expandable
+    evidence chains. Bottom section shows the remediation playbook with
+    sequential steps, parameters, and risk markers.</li>
+  <li><strong>Agent chat (30% right):</strong> Agent walks through its
+    reasoning - which log entries, metrics, and patterns led to each
+    confidence score.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Key interactions</h3>
+<ul>
+  <li>Review confidence bars for each candidate root cause.</li>
+  <li>Expand evidence chains to see the supporting log entries and metrics.</li>
+  <li>Click a cause to select it and load the corresponding playbook.</li>
+  <li>Review playbook steps, edit parameters if needed.</li>
+  <li>Click Request Approval to send the plan to the Incident Commander.</li>
+</ul>
+</div>
+
+<div class="ann-block">
+<h3>Design decisions</h3>
+<ul>
+  <li>Confidence bars use filled/empty blocks in grayscale, not color -
+    accessible and readable on any display.</li>
+  <li>High-risk steps are marked with a triangle glyph and require
+    Incident Commander approval before execution.</li>
+  <li>Every mutating step must have a rollback command defined. The
+    playbook is incomplete without reversal paths.</li>
+</ul>
+</div>
