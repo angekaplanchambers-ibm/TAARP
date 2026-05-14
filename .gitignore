@@ -1,0 +1,5 @@
+.DS_Store
+node_modules/
+storybook/node_modules/
+storybook/storybook-static/
+showcase/dist/

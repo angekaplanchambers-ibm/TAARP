@@ -1,0 +1,55 @@
+flowchart LR
+    Start([Start: Existing Azure infrastructure is already managed in HCP Terraform])
+
+    subgraph A["Scenario A - Connect Existing Workspaces"]
+        A1["1. Enter Terraform in Azure Portal"]
+        A2["2. Understand the operating model\nHCP Terraform executes\nAzure adds discovery, governance, and management"]
+        A3["3. Connect HCP Terraform organization\nOAuth or SSO, then select org"]
+        A4{"4. Choose onboarding mode"}
+        A5["5. Discover eligible Terraform workspaces\nAzureRM provider, subscription hints, run health"]
+        A6["6. Map workspaces to Azure scope\nSubscription or management group, environment, owner"]
+        A7["7. Validate state and resource ownership\nNon-destructive trust check"]
+        A8{"8. Enable Azure governance overlays?"}
+        A9["9. Register connected stack resources in Azure"]
+        A10(["Outcome: Existing Terraform infrastructure is connected in Azure\nNo Terraform apply is triggered automatically"])
+
+        A1 --> A2
+        A2 --> A3
+        A3 --> A4
+        A4 -->|Connect existing workspaces| A5
+        A4 -->|Import unmanaged resources| A4F["Future path - out of current scope"]
+        A5 --> A6
+        A6 --> A7
+        A7 --> A8
+        A8 -->|Enable optional controls| A9
+        A8 -->|Skip for now| A9
+        A9 --> A10
+    end
+
+    subgraph B["Scenario B - Operate Connected Stacks"]
+        B1["View Terraform-managed infrastructure by subscription in Azure"]
+        B2["Review policy status, run status, and ownership metadata"]
+        B3["Approve or block future applies from Azure governance workflows"]
+        B4["Route issues to Microsoft support with connected stack context"]
+        B5["Continue authoring modules, planning, applying, and deep debugging in HCP Terraform"]
+        B6(["Outcome: Azure provides visibility and governance\nHCP Terraform remains the execution and authoring surface"])
+
+        B1 --> B2
+        B2 --> B3
+        B3 --> B4
+        B4 --> B5
+        B5 --> B6
+    end
+
+    Start --> A1
+    A10 --> B1
+
+    classDef stage fill:#e9f3ff,stroke:#2b5c85,stroke-width:1px,color:#153047;
+    classDef decision fill:#fff2cc,stroke:#9c6a00,stroke-width:1px,color:#4f3400;
+    classDef outcome fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px,color:#123a15;
+    classDef future fill:#f5f5f5,stroke:#6b7280,stroke-width:1px,color:#374151,stroke-dasharray: 4 3;
+
+    class A1,A2,A3,A5,A6,A7,A9,B1,B2,B3,B4,B5 stage;
+    class A4,A8 decision;
+    class A10,B6 outcome;
+    class A4F future;

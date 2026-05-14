@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Azure Terraform RP Tabbed Form - Draft 01</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-subtle: #f3f6f8;
+      --ink: #172026;
+      --ink-soft: #5f6b76;
+      --line: #d8dee4;
+      --line-strong: #aeb8c2;
+      --azure: #0078d4;
+      --azure-dark: #005a9e;
+      --azure-soft: #e5f3ff;
+      --hcp: #6246ea;
+      --success: #177245;
+      --success-soft: #e4f5ec;
+      --warning: #9a5b00;
+      --warning-soft: #fff4dc;
+      --danger: #a4262c;
+      --danger-soft: #fde8ea;
+      --shadow: 0 18px 50px rgba(23, 32, 38, 0.08);
+      --radius: 8px;
+      --font-sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      --font-mono: "SFMono-Regular", "Consolas", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: linear-gradient(180deg, #fbfcfd 0%, var(--bg) 100%);
+      font-family: var(--font-sans);
+    }
+
+    button,
+    input,
+    select,
+    textarea { font: inherit; }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius);
+      display: inline-grid;
+      place-items: center;
+      color: #fff;
+      background: var(--azure);
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 650;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      color: var(--ink-soft);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: end;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink-soft);
+      padding: 7px 10px;
+      font-size: 12px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--success);
+    }
+
+    .layout {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 26px 28px 34px;
+      display: block;
+    }
+
+    .form-panel,
+    .review-panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .form-title h2,
+    .review-panel h3 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .form-title p,
+    .review-panel p,
+    .helper,
+    .field-note,
+    .check-row span,
+    .summary-item span {
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .form-title p,
+    .review-panel p { margin: 0; }
+
+    .progress-block {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .progress-track {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--surface-subtle);
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 10%;
+      background: linear-gradient(90deg, var(--azure), var(--hcp));
+      transition: width 180ms ease;
+    }
+
+    .field label,
+    .group-label,
+    .table-head,
+    .kicker {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+    }
+
+    .workspace {
+      display: grid;
+      gap: 12px;
+    }
+
+    .tabs-wrap {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .tablist {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(96px, 1fr));
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+      background: var(--surface-subtle);
+    }
+
+    .tab {
+      min-height: 70px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink-soft);
+      text-align: left;
+      padding: 11px 12px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .tab:last-child { border-right: 0; }
+
+    .tab:hover,
+    .tab:focus-visible {
+      outline: 2px solid var(--azure);
+      outline-offset: -2px;
+      background: #fff;
+    }
+
+    .tab[aria-selected="true"] {
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: inset 0 -3px 0 var(--azure);
+    }
+
+    .tab-code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--azure-dark);
+    }
+
+    .tab-name {
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 600;
+    }
+
+    .form-panel {
+      padding: 22px;
+      box-shadow: none;
+      border: 0;
+      border-radius: 0;
+    }
+
+    .form-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: start;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 20px;
+    }
+
+    .form-title {
+      display: grid;
+      gap: 8px;
+      max-width: 760px;
+    }
+
+    .status-pill {
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 12px;
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid rgba(23, 114, 69, 0.22);
+      white-space: nowrap;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .fieldsets {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      display: grid;
+      gap: 14px;
+    }
+
+    .section + .section {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+    }
+
+    .section h3 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.3;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .field-grid.single { grid-template-columns: 1fr; }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 11px;
+      min-height: 40px;
+    }
+
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 3px solid var(--azure-soft);
+      border-color: var(--azure);
+    }
+
+    .choice-grid,
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .choice,
+    .check-row,
+    .review-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-subtle);
+    }
+
+    .choice {
+      display: grid;
+      gap: 9px;
+      padding: 13px;
+    }
+
+    .choice input,
+    .check-row input {
+      width: auto;
+      min-height: auto;
+    }
+
+    .choice-line,
+    .check-row {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+    }
+
+    .choice strong,
+    .check-row strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    .choice.selected {
+      border-color: rgba(0, 120, 212, 0.5);
+      background: var(--azure-soft);
+    }
+
+    .check-row {
+      padding: 12px;
+      background: #fff;
+    }
+
+    .review-panel {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+      position: sticky;
+      top: 88px;
+    }
+
+    .review-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .review-item {
+      border-left: 3px solid var(--azure);
+      padding-left: 10px;
+      display: grid;
+      gap: 2px;
+    }
+
+    .review-item strong {
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .review-item span {
+      color: var(--ink-soft);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .callout {
+      border: 1px solid rgba(154, 91, 0, 0.28);
+      background: var(--warning-soft);
+      color: var(--warning);
+      border-radius: var(--radius);
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .table {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .table-row,
+    .table-head {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 0.8fr;
+      gap: 12px;
+      padding: 11px 12px;
+      align-items: center;
+    }
+
+    .table-head {
+      background: var(--surface-subtle);
+      margin: 0;
+    }
+
+    .table-row + .table-row { border-top: 1px solid var(--line); }
+
+    .table-row span {
+      color: var(--ink-soft);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+      margin-top: 20px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid var(--azure);
+      background: var(--azure);
+      color: #fff;
+      border-radius: var(--radius);
+      min-height: 40px;
+      padding: 9px 14px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      background: #fff;
+      color: var(--ink);
+      border-color: var(--line-strong);
+    }
+
+    .btn:disabled {
+      opacity: 0.46;
+      cursor: not-allowed;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1180px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .review-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar,
+      .layout { padding-left: 16px; padding-right: 16px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .topbar-actions { justify-content: start; }
+      .field-grid,
+      .field-grid.three,
+      .choice-grid,
+      .check-grid { grid-template-columns: 1fr; }
+      .form-head { grid-template-columns: 1fr; }
+      .tablist { grid-template-columns: repeat(10, minmax(120px, 1fr)); }
+      .table-row,
+      .table-head { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">A</span>
+        <div>
+          <h1>Azure Terraform RP onboarding form</h1>
+          <p>Tabbed sections from the approved Scenario A and Scenario B journey.</p>
+        </div>
+      </div>
+      <div class="topbar-actions" aria-label="Form status">
+        <span class="badge">10 sections</span>
+        <span class="badge">No apply triggered</span>
+        <span class="badge">HCP execution retained</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <div class="workspace">
+        <section class="tabs-wrap" aria-label="Tabbed onboarding form">
+          <div class="tablist" role="tablist" aria-label="Journey steps" id="tabList"></div>
+          <div class="form-panel" id="tabPanel" role="tabpanel" tabindex="0"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const steps = [
+      {
+        code: 'A1',
+        scenario: 'Scenario A',
+        title: 'Initial Setup in Azure Portal',
+        status: 'Ready for input',
+        summary: 'Set expectations before the operator connects anything. The section clarifies Azure visibility and governance while HCP Terraform remains the control plane.',
+        primaryAction: 'Save setup expectations',
+        fields: `
+          <div class="section">
+            <h3>Entry point</h3>
+            <div class="field-grid">
+              <div class="field"><label for="portal-search">Portal search term</label><input id="portal-search" value="Terraform" /></div>
+              <div class="field"><label for="resource-filter">Resource filter</label><select id="resource-filter"><option>Resources tag</option><option>Services</option><option>Marketplace</option></select></div>
+              <div class="field"><label for="intro-state">Intro state</label><select id="intro-state"><option>Splash intro visible</option><option>Returning user summary</option></select></div>
+              <div class="field"><label for="setup-tenant">Azure tenant</label><input id="setup-tenant" value="Azure Commercial tenant" /></div>
+            </div>
+          </div>
+          <div class="section">
+            <h3>Expectation copy</h3>
+            <div class="check-grid">
+              <label class="check-row"><input type="checkbox" checked /><span><strong>HCP Terraform runs execution</strong>TF runs remain in Hashi-managed control plane.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Azure adds governance</strong>Discovery, governance, management, and support context are Azure-side additions.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>No Terraform CLI install</strong>The operator does not need to install or run Terraform CLI to connect.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Existing infra path</strong>The page clearly says existing Terraform-managed infrastructure is supported.</span></label>
+            </div>
+          </div>
+        `,
+        notes: [
+          ['User question', 'Is this greenfield only, or can I connect what I already have?'],
+          ['Required signal', 'Show "existing Terraform" before the primary action.'],
+          ['Next tab', 'Establish trust with HCP Terraform connection.']
+        ]
+      },
+      {
+        code: 'A2',
+        scenario: 'Scenario A',
+        title: 'Connect to HCP Terraform',
+        status: 'Requires identity',
+        summary: 'Capture how the operator creates or connects an HCP Terraform organization and verify permission before workspace discovery.',
+        primaryAction: 'Verify HCP organization',
+        fields: `
+          <div class="section">
+            <h3>Connection choice</h3>
+            <div class="choice-grid">
+              <label class="choice"><span class="choice-line"><input type="radio" name="hcp-choice" /><span><strong>Create a new HCP Terraform organization</strong><span class="helper">Use when the operator has no existing HCP Terraform org.</span></span></span></label>
+              <label class="choice selected"><span class="choice-line"><input type="radio" name="hcp-choice" checked /><span><strong>Connect an existing HCP Terraform organization</strong><span class="helper">Use for infrastructure already managed by Terraform.</span></span></span></label>
+            </div>
+          </div>
+          <div class="section">
+            <h3>Organization verification</h3>
+            <div class="field-grid">
+              <div class="field"><label for="oauth-state">OAuth / SSO state</label><select id="oauth-state"><option>Azure-initiated OAuth verified</option><option>Waiting for SSO</option><option>Expired authorization</option></select></div>
+              <div class="field"><label for="hcp-org">Selected HCP org</label><input id="hcp-org" value="platform-prod" /></div>
+              <div class="field"><label for="org-role">Operator permission</label><select id="org-role"><option>Org admin</option><option>Onboarding permission</option><option>Insufficient permission</option></select></div>
+              <div class="field"><label for="workspace-count">Detected workspaces</label><input id="workspace-count" value="42" /></div>
+            </div>
+          </div>
+        `,
+        notes: [
+          ['Permission gate', 'Do not let discovery start until org admin or onboarding permission is verified.'],
+          ['Recovery', 'If permission fails, explain which HCP role is needed.'],
+          ['Trust cue', 'Show the selected org name immediately after OAuth returns.']
+        ]
+      },
+      {
+        code: 'A3',
+        scenario: 'Scenario A',
+        title: 'Choose Onboarding Mode',
+        status: 'Decision required',
+        summary: 'Make the existing-workspace path the selected and honest path. Import remains visible as future or limited scope.',
+        primaryAction: 'Continue with existing workspaces',
+        fields: `
+          <div class="section">
+            <h3>Onboarding mode</h3>
+            <div class="choice-grid">
+              <label class="choice selected"><span class="choice-line"><input type="radio" name="onboarding-mode" checked /><span><strong>Connect existing workspaces</strong><span class="helper">My infrastructure is already managed by Terraform.</span></span></span></label>
+              <label class="choice"><span class="choice-line"><input type="radio" name="onboarding-mode" /><span><strong>Import unmanaged Azure resources</strong><span class="helper">Future or limited scope. Not the primary flow here.</span></span></span></label>
+            </div>
+          </div>
+          <div class="section">
+            <h3>Scope confirmation</h3>
+            <div class="field-grid single">
+              <div class="field"><label for="mode-rationale">Operator rationale</label><textarea id="mode-rationale">Infrastructure is already managed by Terraform in HCP Terraform. Azure should discover existing workspaces, validate ownership, and register connected stack resources.</textarea></div>
+            </div>
+          </div>
+        `,
+        notes: [
+          ['Design pattern', 'Use radio selection because this is a path decision.'],
+          ['Avoid', 'Do not make import look equivalent to the existing workspace path.'],
+          ['Copy requirement', 'Use "existing workspaces" directly.']
+        ]
+      },
+      {
+        code: 'A4',
+        scenario: 'Scenario A',
+        title: 'Discover Existing Terraform Workspaces',
+        status: 'Selection in progress',
+        summary: 'Query HCP Terraform for AzureRM workspaces, subscription hints, execution mode, and run health. The form lets the operator select eligible workspaces.',
+        primaryAction: 'Add selected workspaces',
+        fields: `
+          <div class="section">
+            <h3>Discovery filters</h3>
+            <div class="field-grid three">
+              <div class="field"><label for="provider-filter">Provider</label><select id="provider-filter"><option>AzureRM provider</option><option>Any provider</option></select></div>
+              <div class="field"><label for="execution-filter">Execution mode</label><select id="execution-filter"><option>Remote preferred</option><option>Remote and local</option></select></div>
+              <div class="field"><label for="health-filter">Run health</label><select id="health-filter"><option>Healthy and review</option><option>Healthy only</option><option>All workspaces</option></select></div>
+            </div>
+          </div>
+          <div class="section">
+            <h3>Workspace candidates</h3>
+            <div class="table" aria-label="Workspace selection table">
+              <div class="table-head"><div>Workspace</div><div>Repo</div><div>Subscription</div><div>Select</div></div>
+              <div class="table-row"><div><strong>network-prod-core</strong><br><span>Remote execution, healthy run</span></div><div>infra/network-core</div><div>Prod Networking</div><div><input type="checkbox" checked aria-label="Select network-prod-core" /></div></div>
+              <div class="table-row"><div><strong>identity-shared</strong><br><span>Remote execution, review status</span></div><div>infra/identity</div><div>Shared Services</div><div><input type="checkbox" checked aria-label="Select identity-shared" /></div></div>
+              <div class="table-row"><div><strong>partner-sandbox-east</strong><br><span>Local execution, low confidence</span></div><div>partner/sandbox</div><div>Unknown</div><div><input type="checkbox" aria-label="Select partner-sandbox-east" /></div></div>
+            </div>
+          </div>
+        `,
+        notes: [
+          ['Evidence needed', 'Provider, subscription hint, execution mode, and run health must be visible.'],
+          ['Selection rule', 'Low-confidence local execution should be skippable without blocking the flow.'],
+          ['Next tab', 'Map selected workspaces to Azure scope.']
+        ]
+      },
+      {
+        code: 'A5',
+        scenario: 'Scenario A',
+        title: 'Map Workspaces to Azure Scope',
+        status: 'Mapping required',
+        summary: 'Collect subscription, management group, environment, and owner metadata for each selected workspace before Azure configures identity and trust.',
+        primaryAction: 'Validate mappings',
+        fields: `
+          <div class="section">
+            <h3>network-prod-core</h3>
+            <div class="field-grid">
+              <div class="field"><label for="network-sub">Subscription or management group</label><input id="network-sub" value="Prod Networking Subscription" /></div>
+              <div class="field"><label for="network-env">Environment</label><select id="network-env"><option>Production</option><option>Test</option><option>Development</option></select></div>
+              <div class="field"><label for="network-owner">Owner</label><input id="network-owner" value="Network Platform Team" /></div>
+              <div class="field"><label for="network-identity">Managed identity</label><input id="network-identity" value="azure-tf-rp-network-prod" /></div>
+            </div>
+          </div>
+          <div class="section">
+            <h3>identity-shared</h3>
+            <div class="field-grid">
+              <div class="field"><label for="identity-sub">Subscription or management group</label><input id="identity-sub" value="Shared Services Subscription" /></div>
+              <div class="field"><label for="identity-env">Environment</label><select id="identity-env"><option>Shared infrastructure</option><option>Production</option><option>Test</option></select></div>
+              <div class="field"><label for="identity-owner">Owner</label><input id="identity-owner" value="Identity Services Team" /></div>
+              <div class="field"><label for="oidc-state">OIDC trust</label><select id="oidc-state"><option>Ready to configure</option><option>Configured</option><option>Needs review</option></select></div>
+            </div>
+          </div>
+        `,
+        notes: [
+          ['Validation', 'Block continuation if a target subscription is not allowed.'],
+          ['Identity outcome', 'Managed identity and OIDC trust are configured behind the scenes after validation.'],
+          ['Secret handling', 'Service principals and secrets should be eliminated from the target flow.']
+        ]
+      },
+      {
+        code: 'A6',
+        scenario: 'Scenario A',
+        title: 'Verify State and Resource Ownership',
+        status: 'Non-destructive validation',
+        summary: 'Confirm Terraform state health, Azure resource IDs, and subscription alignment without applying changes or migrating state.',
+        primaryAction: 'Accept validation results',
+        fields: `
+          <div class="section">
+            <h3>Validation checks</h3>
+            <div class="check-grid">
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Terraform state exists</strong>State backend and lineage are readable.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>State is healthy</strong>Latest state snapshot is usable for resource attribution.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Azure resource IDs match</strong>Resources in state map to selected Azure scopes.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>No apply triggered</strong>Validation is read-only and non-destructive.</span></label>
+            </div>
+          </div>
+          <div class="section">
+            <h3>Ownership summary</h3>
+            <div class="field-grid three">
+              <div class="field"><label for="resource-count">Governed resources</label><input id="resource-count" value="34" /></div>
+              <div class="field"><label for="mismatch-count">Mismatches</label><input id="mismatch-count" value="1 tag mismatch" /></div>
+              <div class="field"><label for="state-migration">State migration</label><input id="state-migration" value="Not required" /></div>
+            </div>
+          </div>
+        `,
+        notes: [
+          ['Trust copy', 'Say "No changes applied" in the main section.'],
+          ['Mismatch handling', 'Treat minor mismatches as review items, not catastrophic failure.'],
+          ['Gate', 'The operator must understand what Azure verified before governance is enabled.']
+        ]
+      },
+      {
+        code: 'A7',
+        scenario: 'Scenario A',
+        title: 'Enable Azure Governance',
+        status: 'Optional controls',
+        summary: 'Let the operator opt into Azure-side controls that wrap existing Terraform workflows without replacing Sentinel or HCP Terraform policy.',
+        primaryAction: 'Save governance selection',
+        fields: `
+          <div class="section">
+            <h3>Governance controls</h3>
+            <div class="check-grid">
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Azure Policy evaluation before runs</strong>Evaluate high-risk changes before production applies proceed.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Approval requirements</strong>Require Azure-side approval for production applies.</span></label>
+              <label class="check-row"><input type="checkbox" /><span><strong>Region and SKU limits</strong>Block disallowed regions or unsupported service tiers.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Cost signals</strong>Show cost warnings before unexpected expansion completes.</span></label>
+            </div>
+          </div>
+          <div class="section">
+            <h3>Control boundaries</h3>
+            <div class="field-grid single">
+              <div class="field"><label for="governance-boundary">Boundary note</label><textarea id="governance-boundary">Azure governance wraps connected Terraform workspaces. Existing Sentinel and HCP Terraform policies remain intact.</textarea></div>
+            </div>
+          </div>
+        `,
+        notes: [
+          ['Value moment', 'This is the first tangible Azure-only value in the flow.'],
+          ['Optionality', 'Recommended controls can be emphasized but should not feel forced.'],
+          ['Boundary', 'Azure wraps, HCP Terraform executes.']
+        ]
+      },
+      {
+        code: 'A8',
+        scenario: 'Scenario A',
+        title: 'Register Terraform Workspaces as Azure Resources',
+        status: 'Registration output',
+        summary: 'Create Azure RP resources that represent Terraform stacks and environments, linking each record to HCP Terraform and Azure subscription context.',
+        primaryAction: 'Register connected resources',
+        fields: `
+          <div class="section">
+            <h3>Resource registration</h3>
+            <div class="field-grid">
+              <div class="field"><label for="stack-resource">Stack resource type</label><input id="stack-resource" value="Microsoft.Terraform/stacks" /></div>
+              <div class="field"><label for="env-resource">Environment resource type</label><input id="env-resource" value="Microsoft.Terraform/environments" /></div>
+              <div class="field"><label for="repo-metadata">Repo metadata</label><select id="repo-metadata"><option>Attach repo metadata</option><option>Do not attach repo metadata</option></select></div>
+              <div class="field"><label for="deep-links">HCP deep links</label><select id="deep-links"><option>Create deep links</option><option>Skip deep links</option></select></div>
+            </div>
+          </div>
+          <div class="section">
+            <h3>Registration preview</h3>
+            <div class="table" aria-label="Registration preview table">
+              <div class="table-head"><div>Azure resource</div><div>HCP workspace</div><div>Subscription</div><div>Status</div></div>
+              <div class="table-row"><div>Microsoft.Terraform/stacks/network-prod-core</div><div>network-prod-core</div><div>Prod Networking</div><div>Ready</div></div>
+              <div class="table-row"><div>Microsoft.Terraform/stacks/identity-shared</div><div>identity-shared</div><div>Shared Services</div><div>Ready</div></div>
+            </div>
+          </div>
+        `,
+        notes: [
+          ['Connected moment', 'Make the new Azure resource records visible before finishing.'],
+          ['Attribution', 'The registration enables Azure awareness, auditing, support, and visibility.'],
+          ['Execution boundary', 'Do not move Terraform functionality into Azure.']
+        ]
+      },
+      {
+        code: 'A9',
+        scenario: 'Scenario A',
+        title: 'Confirm and Finish',
+        status: 'Ready to finish',
+        summary: 'Confirm that existing Terraform infrastructure is connected to Azure and show what the operator can now see without implying any hidden apply.',
+        primaryAction: 'Finish onboarding',
+        fields: `
+          <div class="section">
+            <h3>Finish confirmation</h3>
+            <div class="field-grid">
+              <div class="field"><label for="finish-message">Confirmation message</label><input id="finish-message" value="Existing Terraform infrastructure is now connected to Azure" /></div>
+              <div class="field"><label for="apply-status">Terraform apply status</label><input id="apply-status" value="No apply triggered" /></div>
+              <div class="field"><label for="status-view">Azure status view</label><select id="status-view"><option>Show last run status</option><option>Show setup summary</option></select></div>
+              <div class="field"><label for="handoff-link">Deep action destination</label><input id="handoff-link" value="Open HCP Terraform workspace" /></div>
+            </div>
+          </div>
+          <div class="section">
+            <h3>Visible outcomes</h3>
+            <div class="check-grid">
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Terraform stacks in Portal</strong>Connected resources appear in Azure inventory.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Ownership metadata</strong>Teams and subscriptions are attached.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Run status</strong>Azure can show last known run status.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>HCP links</strong>Deep debugging stays in HCP Terraform.</span></label>
+            </div>
+          </div>
+        `,
+        notes: [
+          ['Finish rule', 'The confirmation must show actual connected outcomes.'],
+          ['Do not imply', 'No Terraform apply happened unless the user explicitly asks.'],
+          ['Next tab', 'Operate connected stacks from Azure and HCP Terraform.']
+        ]
+      },
+      {
+        code: 'B1',
+        scenario: 'Scenario B',
+        title: 'Operate After Setup Confirmation',
+        status: 'Steady state',
+        summary: 'Show what the operator can do after setup: view Terraform-managed infrastructure in Azure, approve or block future applies, inspect policy and run status, and hand support context to Microsoft.',
+        primaryAction: 'Save operating defaults',
+        fields: `
+          <div class="section">
+            <h3>Azure-side actions</h3>
+            <div class="check-grid">
+              <label class="check-row"><input type="checkbox" checked /><span><strong>View Terraform-managed infrastructure</strong>Group connected stacks by subscription and owner.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Approve or block future applies</strong>Use Azure governance controls for production changes.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>See policy and run status</strong>Surface Azure policy posture and HCP Terraform run state.</span></label>
+              <label class="check-row"><input type="checkbox" checked /><span><strong>Hand issues to Microsoft support</strong>Attach stack context, subscription, owner, and run metadata.</span></label>
+            </div>
+          </div>
+          <div class="section">
+            <h3>HCP Terraform continuity</h3>
+            <div class="field-grid single">
+              <div class="field"><label for="hcp-continuity">Preserved workflows</label><textarea id="hcp-continuity">Teams continue authoring modules and configs, running plans and applies, and debugging deeply in HCP Terraform. Azure adds visibility, governance, approvals, and support context without breaking existing workflows.</textarea></div>
+            </div>
+          </div>
+        `,
+        notes: [
+          ['Scenario B role', 'This is the operating surface after setup confirmation.'],
+          ['Azure role', 'Visibility, approvals, policy status, run status, and support context.'],
+          ['HCP role', 'Authoring, plans, applies, and deep debugging continue there.']
+        ]
+      }
+    ];
+
+    const tabList = document.getElementById('tabList');
+    const tabPanel = document.getElementById('tabPanel');
+
+    function renderReview(step) {
+      const items = step.notes.map(([label, text]) => `
+        <div class="review-item">
+          <strong>${label}</strong>
+          <span>${text}</span>
+        </div>
+      `).join('');
+
+      return `
+        <aside class="review-panel" aria-label="Section guidance">
+          <div>
+            <span class="kicker">${step.scenario}</span>
+            <h3>${step.code} guidance</h3>
+          </div>
+          <p>${step.summary}</p>
+          <div class="callout">Validation guardrail: this form section must not trigger Terraform apply, migrate state, or replace HCP Terraform execution.</div>
+          <div class="review-list">${items}</div>
+        </aside>
+      `;
+    }
+
+    function setActiveStep(index) {
+      const step = steps[index];
+
+      document.querySelectorAll('[role="tab"]').forEach((tab, tabIndex) => {
+        const isActive = tabIndex === index;
+        tab.setAttribute('aria-selected', String(isActive));
+        tab.setAttribute('tabindex', isActive ? '0' : '-1');
+      });
+
+      tabPanel.setAttribute('aria-labelledby', `tab-${index}`);
+      tabPanel.innerHTML = `
+        <div class="progress-block" aria-label="Form progress">
+          <strong class="group-label">Section ${index + 1} of ${steps.length}</strong>
+          <div class="progress-track" aria-hidden="true"><div class="progress-fill" style="width: ${((index + 1) / steps.length) * 100}%"></div></div>
+        </div>
+        <div class="form-head">
+          <div class="form-title">
+            <span class="kicker">${step.scenario} / ${step.code}</span>
+            <h2>${step.title}</h2>
+            <p>${step.summary}</p>
+          </div>
+          <span class="status-pill">${step.status}</span>
+        </div>
+        <div class="form-grid">
+          <form class="fieldsets" aria-label="${step.title}">
+            ${step.fields}
+            <div class="actions">
+              <button class="btn secondary" type="button" ${index === 0 ? 'disabled' : ''} data-direction="previous">Previous section</button>
+              <div class="button-group">
+                <button class="btn secondary" type="button">Save draft</button>
+                <button class="btn" type="button" data-direction="next">${index === steps.length - 1 ? step.primaryAction : step.primaryAction}</button>
+              </div>
+            </div>
+          </form>
+          ${renderReview(step)}
+        </div>
+      `;
+
+      tabPanel.querySelectorAll('[data-direction]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const nextIndex = button.dataset.direction === 'previous' ? Math.max(0, index - 1) : Math.min(steps.length - 1, index + 1);
+          setActiveStep(nextIndex);
+          document.getElementById(`tab-${nextIndex}`).focus();
+        });
+      });
+    }
+
+    tabList.innerHTML = steps.map((step, index) => `
+      <button class="tab" id="tab-${index}" role="tab" type="button" aria-controls="tabPanel" aria-selected="${index === 0 ? 'true' : 'false'}" tabindex="${index === 0 ? '0' : '-1'}" data-index="${index}">
+        <span class="tab-code">${step.code}</span>
+        <span class="tab-name">${step.title}</span>
+      </button>
+    `).join('');
+
+    tabList.addEventListener('click', (event) => {
+      const tab = event.target.closest('[role="tab"]');
+      if (tab) setActiveStep(Number(tab.dataset.index));
+    });
+
+    tabList.addEventListener('keydown', (event) => {
+      const current = document.activeElement.closest('[role="tab"]');
+      if (!current) return;
+
+      const currentIndex = Number(current.dataset.index);
+      let nextIndex = currentIndex;
+      if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % steps.length;
+      if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + steps.length) % steps.length;
+      if (event.key === 'Home') nextIndex = 0;
+      if (event.key === 'End') nextIndex = steps.length - 1;
+
+      if (nextIndex !== currentIndex) {
+        event.preventDefault();
+        setActiveStep(nextIndex);
+        document.getElementById(`tab-${nextIndex}`).focus();
+      }
+    });
+
+    setActiveStep(0);
+  </script>
+</body>
+</html>

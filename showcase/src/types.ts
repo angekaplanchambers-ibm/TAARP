@@ -19,7 +19,7 @@ export interface ShowcaseConfig {
   title: string;
   subtitle: string;
   meta: { pdr: string; date: string };
-  /** Output filename. Format: {seq}.{FeatureName}-{DraftVersion} (e.g., '001.IncidentResponse-Draft01') */
+  /** Output filename. Format: {seq}.{FeatureName}-{DraftVersion} (e.g., '006.AzureTerraformRP-TabbedForm-Draft02') */
   outputName: string;
   /** 'grayscale' applies white-bg wireframe token overrides. 'dark' uses default dark tokens. */
   theme?: 'grayscale' | 'dark';

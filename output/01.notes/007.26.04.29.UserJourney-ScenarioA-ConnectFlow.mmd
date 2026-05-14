@@ -1,0 +1,33 @@
+flowchart LR
+    A([Start: User in Azure Portal]) --> B[Search and select Terraform service]
+    B --> C[Click Get Started]
+
+    C --> D[Azure sets expectations\nHCP Terraform executes\nAzure handles discovery, governance, management]
+    D --> E[Connect to HCP Terraform organization\nOAuth or SSO]
+
+    E --> F[Azure verifies org permissions and workspace presence]
+    F --> G{Choose onboarding mode}
+
+    G -->|Option A| H[Connect existing workspaces\nPrimary path]
+    G -->|Option B| X[Import unmanaged Azure resources\nFuture or limited scope]
+
+    H --> I[Azure discovers eligible workspaces\nAzureRM provider, target subscriptions, run health]
+    I --> J[User selects workspaces to connect]
+
+    J --> K[Map each workspace to Azure scope\nSubscription or management group\nEnvironment and owner]
+    K --> L[Azure validates credentials and allowed scope]
+
+    L --> M[Configure trust\nManaged identity plus OIDC federation]
+    M --> N[Non-destructive validation\nState health and resource ownership]
+
+    N --> O{Enable optional Azure governance controls?}
+    O -->|Yes| P[Apply policy checks, approvals, limits, and cost signals]
+    O -->|No| Q[Skip governance controls]
+
+    P --> R[Register Terraform stacks as Azure RP resources\nMicrosoft.Terraform/stacks and environments]
+    Q --> R
+
+    R --> S[Confirmation\nShow status, ownership metadata, and links to HCP deep actions]
+    S --> T([Outcome: Connected infrastructure in Azure\nNo Terraform apply unless explicitly requested])
+
+    X --> Y([Deferred path for future rollout])

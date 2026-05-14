@@ -6,7 +6,7 @@ import fs from 'fs'
 
 // Read the outputName from the active showcase config.
 function readOutputName(): string {
-  const configPath = path.resolve(__dirname, 'showcases/incident-response/config.tsx')
+  const configPath = path.resolve(__dirname, 'showcases/azure-terraform-rp/config.tsx')
   const src = fs.readFileSync(configPath, 'utf-8')
   const match = src.match(/outputName:\s*['"]([^'"]+)['"]/)
   return match?.[1] ?? 'showcase'

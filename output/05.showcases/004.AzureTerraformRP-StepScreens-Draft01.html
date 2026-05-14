@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Azure Terraform RP Step Screens - Draft 01</title>
+  <style>
+    :root {
+      --bg: #eef3f8;
+      --bg-accent: #dfeaf4;
+      --panel: rgba(255, 255, 255, 0.86);
+      --panel-solid: #ffffff;
+      --ink: #102a43;
+      --ink-soft: #486581;
+      --line: rgba(16, 42, 67, 0.11);
+      --line-strong: rgba(16, 42, 67, 0.22);
+      --azure: #0078d4;
+      --azure-soft: #dff0ff;
+      --teal: #0f766e;
+      --teal-soft: #d8f2ee;
+      --amber: #b45309;
+      --amber-soft: #ffedd5;
+      --red: #b42318;
+      --red-soft: #fee4e2;
+      --green: #1f6f43;
+      --green-soft: #d9f2df;
+      --navy: #17324d;
+      --navy-soft: #e8eef8;
+      --shadow: 0 18px 60px rgba(16, 42, 67, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --font-sans: "Aptos", "Segoe UI", "Helvetica Neue", sans-serif;
+      --font-serif: "Iowan Old Style", "Palatino Linotype", serif;
+      --font-mono: "SFMono-Regular", "Consolas", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(0, 120, 212, 0.12), transparent 26%),
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.08), transparent 24%),
+        linear-gradient(180deg, #f4f8fb 0%, #eef3f8 100%);
+    }
+
+    .page {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      min-height: 100vh;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .sidebar {
+      padding: 26px;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+      position: sticky;
+      top: 20px;
+      height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .sidebar h1 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 44px;
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+      font-weight: 500;
+    }
+
+    .sidebar p {
+      margin: 0;
+      color: var(--ink-soft);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .meta-card {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--line);
+    }
+
+    .meta-card strong,
+    .stage-index,
+    .screen-chip strong,
+    .surface-label,
+    .note-card strong,
+    .metric strong,
+    .detail-label,
+    .badge,
+    .mini-label,
+    .field-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+    }
+
+    .meta-card span,
+    .screen-chip span,
+    .note-card p,
+    .metric span,
+    .detail-value,
+    .field-value,
+    .field-helper,
+    .body-copy,
+    .body-list li,
+    .status-text,
+    .table-cell,
+    .timeline-label,
+    .empty-label {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--ink);
+    }
+
+    .stage-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .stage-button {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .stage-button:hover,
+    .stage-button:focus-visible {
+      outline: none;
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .stage-button.is-active {
+      background: linear-gradient(180deg, var(--navy), #21476a);
+      border-color: #21476a;
+      color: #f8fbff;
+    }
+
+    .stage-button.is-active .stage-index,
+    .stage-button.is-active .stage-name,
+    .stage-button.is-active .stage-mode {
+      color: #f8fbff;
+    }
+
+    .stage-name {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .stage-mode {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-soft);
+      line-height: 1.4;
+    }
+
+    .main {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .header-card {
+      padding: 22px 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: end;
+    }
+
+    .header-card h2 {
+      margin: 0 0 10px;
+      font-size: 38px;
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+    }
+
+    .header-card p {
+      margin: 0;
+      color: var(--ink-soft);
+      line-height: 1.65;
+      max-width: 64ch;
+      font-size: 16px;
+    }
+
+    .screen-chip-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: end;
+    }
+
+    .screen-chip {
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--line);
+      min-width: 150px;
+    }
+
+    .screen-chip span { color: var(--ink-soft); }
+
+    .canvas-card {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .canvas-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 6px 6px 0;
+    }
+
+    .canvas-title h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .surface {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      overflow: hidden;
+      min-height: 720px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .app-header {
+      height: 62px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fbfdff 0%, #f6f9fc 100%);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #1590ff, #0078d4);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .header-search {
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      color: var(--ink-soft);
+      font-size: 13px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-chip {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .screen-body {
+      display: grid;
+      grid-template-columns: 230px 1fr 300px;
+      min-height: 658px;
+    }
+
+    .nav-rail {
+      border-right: 1px solid var(--line);
+      background: linear-gradient(180deg, #fafcff 0%, #f6f9fc 100%);
+      padding: 18px 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .nav-section {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #ffffff;
+      padding: 12px;
+    }
+
+    .nav-item {
+      display: block;
+      padding: 8px 10px;
+      border-radius: 10px;
+      color: var(--ink-soft);
+      font-size: 13px;
+      margin-top: 6px;
+      background: rgba(0, 120, 212, 0.04);
+    }
+
+    .nav-item.active {
+      background: var(--azure-soft);
+      color: var(--azure);
+      font-weight: 600;
+    }
+
+    .content {
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    }
+
+    .content-hero {
+      padding: 22px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(0, 120, 212, 0.08), rgba(255, 255, 255, 0.96));
+      display: grid;
+      gap: 10px;
+    }
+
+    .content-hero h4 {
+      margin: 0;
+      font-size: 32px;
+      line-height: 1.03;
+      letter-spacing: -0.04em;
+    }
+
+    .content-hero p {
+      margin: 0;
+      color: var(--ink-soft);
+      max-width: 60ch;
+      line-height: 1.6;
+    }
+
+    .cta-row,
+    .surface-grid,
+    .stack,
+    .toggle-grid,
+    .selection-grid,
+    .summary-grid,
+    .inventory-grid,
+    .result-grid,
+    .kpi-grid,
+    .support-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .btn,
+    .btn-secondary {
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+
+    .btn {
+      background: var(--azure);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .surface-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .surface-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .card h5 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .body-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--ink-soft);
+      display: grid;
+      gap: 6px;
+    }
+
+    .data-table {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .table-row,
+    .table-head {
+      display: grid;
+      gap: 10px;
+      padding: 12px 16px;
+      align-items: center;
+    }
+
+    .table-head {
+      background: #f7fbff;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .table-row + .table-row { border-top: 1px solid var(--line); }
+    .table-4 { grid-template-columns: 1.4fr 1fr 1fr 0.8fr; }
+    .table-5 { grid-template-columns: 1.3fr 1.1fr 1fr 0.8fr 0.8fr; }
+    .table-6 { grid-template-columns: 1.2fr 1fr 1fr 1fr 0.9fr 0.8fr; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink-soft);
+      width: fit-content;
+    }
+
+    .pill.good { background: var(--green-soft); color: var(--green); border-color: rgba(31, 111, 67, 0.18); }
+    .pill.info { background: var(--azure-soft); color: var(--azure); border-color: rgba(0, 120, 212, 0.18); }
+    .pill.warn { background: var(--amber-soft); color: var(--amber); border-color: rgba(180, 83, 9, 0.16); }
+    .pill.bad { background: var(--red-soft); color: var(--red); border-color: rgba(180, 35, 24, 0.16); }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .filter-chip.active {
+      background: var(--navy-soft);
+      color: var(--navy);
+      border-color: rgba(23, 50, 77, 0.15);
+    }
+
+    .selection-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .choice-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      background: #fff;
+      display: grid;
+      gap: 8px;
+    }
+
+    .choice-card.selected {
+      border-color: rgba(0, 120, 212, 0.35);
+      background: linear-gradient(180deg, rgba(0, 120, 212, 0.06), #fff);
+      box-shadow: inset 0 0 0 1px rgba(0, 120, 212, 0.08);
+    }
+
+    .choice-card.future {
+      opacity: 0.74;
+      background: #fbfbfb;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .field-value {
+      min-height: 20px;
+      font-size: 14px;
+    }
+
+    .field-helper {
+      color: var(--ink-soft);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .result-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .toggle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .inventory-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .support-grid { grid-template-columns: 1.1fr 0.9fr; }
+
+    .metric {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .metric span { color: var(--ink-soft); }
+
+    .toggle-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      background: #fff;
+      display: grid;
+      gap: 10px;
+    }
+
+    .toggle-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .switch {
+      width: 42px;
+      height: 24px;
+      border-radius: 999px;
+      background: #b9c8d6;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .switch::after {
+      content: "";
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #fff;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      box-shadow: 0 2px 4px rgba(16, 42, 67, 0.16);
+    }
+
+    .switch.on { background: var(--azure); }
+    .switch.on::after { left: 21px; }
+
+    .side-panel {
+      border-left: 1px solid var(--line);
+      background: linear-gradient(180deg, #f8fbff 0%, #f4f8fc 100%);
+      padding: 18px 16px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .note-card {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .timeline-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      margin-top: 6px;
+      background: var(--azure);
+    }
+
+    .empty-box {
+      border: 1px dashed var(--line-strong);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.65);
+      text-align: center;
+    }
+
+    .footer-notes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .detail-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .detail-label { margin-bottom: 6px; }
+
+    @media (max-width: 1200px) {
+      .page,
+      .screen-body,
+      .support-grid,
+      .header-card {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+      }
+
+      .nav-rail,
+      .side-panel {
+        border: none;
+        border-top: 1px solid var(--line);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page { padding: 16px; }
+      .surface-grid.two,
+      .surface-grid.three,
+      .selection-grid,
+      .form-grid,
+      .summary-grid,
+      .toggle-grid,
+      .inventory-grid,
+      .kpi-grid,
+      .result-grid,
+      .footer-notes,
+      .detail-grid,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+      .screen-body { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="panel sidebar">
+      <div>
+        <p class="eyebrow">Screen Design Draft</p>
+        <h1>Step Screens, Not Journey Notes</h1>
+      </div>
+      <p>
+        This draft turns the approved journey into actual product screens. Each stage uses one concrete Azure-style interface with layout, hierarchy, controls, and state cues.
+      </p>
+      <div class="meta-grid">
+        <div class="meta-card"><strong>Screens</strong><span>10 step-specific designs</span></div>
+        <div class="meta-card"><strong>Mode</strong><span>Connection first, operations after</span></div>
+        <div class="meta-card"><strong>Constraint</strong><span>No implied migration or forced apply</span></div>
+        <div class="meta-card"><strong>Surface</strong><span>Azure governs, HCP executes</span></div>
+      </div>
+      <div class="stage-list" id="stageList"></div>
+    </aside>
+
+    <main class="main">
+      <section class="panel header-card">
+        <div>
+          <p class="eyebrow" id="headerEyebrow">Step 1</p>
+          <h2 id="headerTitle">Enter Terraform in Azure</h2>
+          <p id="headerSummary"></p>
+        </div>
+        <div class="screen-chip-row" id="headerChips"></div>
+      </section>
+
+      <section class="panel canvas-card">
+        <div class="canvas-title">
+          <div>
+            <p class="eyebrow">Product Screen</p>
+            <h3 id="canvasTitle">Azure landing screen</h3>
+          </div>
+          <span class="pill info" id="canvasPill">Operator flow</span>
+        </div>
+
+        <div class="surface">
+          <div class="app-header">
+            <div class="brand"><span class="brand-mark">A</span><span>Azure Terraform RP</span></div>
+            <div class="header-search" id="headerSearch">Search Terraform workspaces, subscriptions, approvals...</div>
+            <div class="header-right">
+              <span class="header-chip" id="environmentChip">Prod tenant</span>
+              <span class="header-chip">Azure Platform Operator</span>
+            </div>
+          </div>
+          <div class="screen-body">
+            <div class="nav-rail" id="navRail"></div>
+            <div class="content" id="contentPanel"></div>
+            <div class="side-panel" id="sidePanel"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="footer-notes" id="footerNotes"></section>
+    </main>
+  </div>
+
+  <script>
+    const commonRail = [
+      { title: 'Onboarding', items: ['Get Started', 'Connect HCP', 'Workspaces', 'Scope Mapping'] },
+      { title: 'Operations', items: ['Connected Stacks', 'Approvals', 'Policy', 'Support'] },
+    ];
+
+    const steps = [
+      {
+        id: 'step-1',
+        number: '01',
+        name: 'Enter Terraform in Azure',
+        mode: 'Landing screen',
+        screenTitle: 'Azure landing screen',
+        screenPill: 'Entry point',
+        summary: 'First screen in Azure Portal. It should immediately reassure existing Terraform users that this path connects what already exists instead of starting a migration or provisioning wizard.',
+        chips: [
+          { label: 'Primary goal', value: 'Set expectations fast' },
+          { label: 'Main action', value: 'Get Started' },
+          { label: 'Risk to reduce', value: 'Existing users think this is greenfield only' },
+        ],
+        nav: commonRail,
+        headerSearch: 'Search services, connected stacks, or Terraform',
+        environment: 'Tenant: Azure Commercial',
+        footer: [
+          { label: 'Layout intent', value: 'One strong hero, one proof section, one primary action.' },
+          { label: 'Design focus', value: 'Clarify this is for already managed Terraform infrastructure.' },
+          { label: 'Do not imply', value: 'Import magic, state migration, or hidden run execution.' },
+        ],
+        renderContent() {
+          return `
+            <div class="content-hero">
+              <span class="pill info">Existing Terraform in Azure</span>
+              <h4>Bring existing HCP Terraform stacks into Azure visibility and governance.</h4>
+              <p>This experience connects what your teams already manage in HCP Terraform. Azure adds discovery, policy, approvals, and support context without moving execution into Azure.</p>
+              <div class="cta-row">
+                <button class="btn">Get Started</button>
+                <button class="btn-secondary">See how it works</button>
+              </div>
+            </div>
+            <div class="surface-grid two">
+              <div class="card">
+                <span class="surface-label">What stays in HCP Terraform</span>
+                <ul class="body-list">
+                  <li>Workspace execution</li>
+                  <li>Plans and applies</li>
+                  <li>Terraform authoring and debugging</li>
+                </ul>
+              </div>
+              <div class="card">
+                <span class="surface-label">What Azure adds</span>
+                <ul class="body-list">
+                  <li>Discovery of eligible workspaces</li>
+                  <li>Subscription-aware governance</li>
+                  <li>Visibility, approvals, and support handoff</li>
+                </ul>
+              </div>
+            </div>
+            <div class="card">
+              <span class="surface-label">Why start here</span>
+              <p class="body-copy">Teams already using Terraform want Azure-native awareness without rebuilding workflows. This landing screen sets that contract before any connection step begins.</p>
+            </div>
+          `;
+        },
+        renderSide() {
+          return `
+            <div class="note-card"><strong>User concern</strong><p>Is this for new deployments only, or can Azure connect the Terraform estate I already have?</p></div>
+            <div class="note-card"><strong>Required signal</strong><p>The phrase “existing Terraform” should appear above the fold before the primary button.</p></div>
+            <div class="timeline">
+              <div class="timeline-item"><span class="timeline-dot"></span><div><div class="mini-label">Step after this</div><div class="timeline-label">Explain the Azure and HCP operating model.</div></div></div>
+            </div>
+          `;
+        },
+      },
+      {
+        id: 'step-2',
+        number: '02',
+        name: 'Understand the Model',
+        mode: 'Expectation setting',
+        screenTitle: 'Operating model screen',
+        screenPill: 'Trust framing',
+        summary: 'This screen explains the split of responsibilities between Azure and HCP Terraform. It should feel like an explicit contract, not marketing copy.',
+        chips: [
+          { label: 'Primary goal', value: 'Make role boundaries obvious' },
+          { label: 'Main action', value: 'Continue to connect HCP' },
+          { label: 'Risk to reduce', value: 'Fear that Azure will replace Terraform execution' },
+        ],
+        nav: commonRail,
+        headerSearch: 'Search model docs, controls, and supported flows',
+        environment: 'Org model preview',
+        footer: [
+          { label: 'Layout intent', value: 'Three value cards plus one clear next step.' },
+          { label: 'Design focus', value: 'Set execution, governance, and support boundaries in plain language.' },
+          { label: 'Interaction note', value: 'Acknowledge before continuing so the user sees the contract once.' },
+        ],
+        renderContent() {
+          return `
+            <div class="content-hero">
+              <span class="pill info">How the connected model works</span>
+              <h4>Azure wraps Terraform with visibility and control. HCP Terraform stays the execution plane.</h4>
+              <p>The operator needs one answer before connecting anything: what changes, what does not change, and what Azure will never do automatically.</p>
+            </div>
+            <div class="surface-grid three">
+              <div class="card"><span class="surface-label">Execution</span><h5>Runs stay in HCP Terraform</h5><p class="body-copy">Plans, applies, workspace runs, and deep Terraform debugging do not move into Azure.</p></div>
+              <div class="card"><span class="surface-label">Governance</span><h5>Azure adds guardrails</h5><p class="body-copy">Approvals, policy checks, cost signals, and subscription-aware governance layer around the connected stack.</p></div>
+              <div class="card"><span class="surface-label">Trust</span><h5>No automatic apply</h5><p class="body-copy">Connecting a workspace never triggers a Terraform run unless an operator explicitly asks for one later.</p></div>
+            </div>
+            <div class="card">
+              <span class="surface-label">Acknowledgement</span>
+              <div class="cta-row">
+                <button class="btn">I understand - connect HCP Terraform</button>
+                <button class="btn-secondary">Read details</button>
+              </div>
+            </div>
+          `;
+        },
+        renderSide() {
+          return `
+            <div class="note-card"><strong>Design test</strong><p>After this screen, the operator should be able to explain the difference between “Azure-governed” and “Azure-executed.”</p></div>
+            <div class="note-card"><strong>Copy priority</strong><p>Use short, assertive statements. Avoid comparison charts that imply platform competition.</p></div>
+            <div class="note-card"><strong>Recommended pattern</strong><p>Helios-style cards and badges work well here because the content is explanatory, not operational.</p></div>
+          `;
+        },
+      },
+      {
+        id: 'step-3',
+        number: '03',
+        name: 'Connect HCP Terraform Org',
+        mode: 'Connection screen',
+        screenTitle: 'HCP connection and organization picker',
+        screenPill: 'Auth flow',
+        summary: 'This is the first operational screen. It should keep the user grounded during OAuth and immediately show whether their chosen organization is eligible for onboarding.',
+        chips: [
+          { label: 'Primary goal', value: 'Select a valid organization' },
+          { label: 'Main action', value: 'Connect and choose org' },
+          { label: 'Risk to reduce', value: 'Permission failure without explanation' },
+        ],
+        nav: commonRail,
+        headerSearch: 'Search organizations or onboarding prerequisites',
+        environment: 'Identity connected',
+        footer: [
+          { label: 'Layout intent', value: 'Auth state, org list, and readiness checks in one frame.' },
+          { label: 'Design focus', value: 'Keep the user oriented before and after redirect.' },
+          { label: 'Recovery pattern', value: 'Permission errors should show missing role and next action.' },
+        ],
+        renderContent() {
+          return `
+            <div class="surface-grid two">
+              <div class="card">
+                <span class="surface-label">Connection state</span>
+                <h5>HCP Terraform account connected</h5>
+                <div class="pill good">OAuth verified</div>
+                <p class="body-copy">Azure has an authorized session and can now list organizations the operator is allowed to onboard.</p>
+              </div>
+              <div class="card">
+                <span class="surface-label">Readiness checks</span>
+                <ul class="body-list">
+                  <li>Org admin or onboarding permission required</li>
+                  <li>At least one workspace must exist</li>
+                  <li>Workspace data can be inspected before selection</li>
+                </ul>
+              </div>
+            </div>
+            <div class="data-table">
+              <div class="table-head table-4"><div>Organization</div><div>Plan</div><div>Workspaces</div><div>Status</div></div>
+              <div class="table-row table-4"><div class="table-cell"><strong>platform-prod</strong><br><span class="status-text">Primary production org</span></div><div class="table-cell">Plus</div><div class="table-cell">42</div><div class="table-cell"><span class="pill good">Ready</span></div></div>
+              <div class="table-row table-4"><div class="table-cell"><strong>shared-services</strong><br><span class="status-text">Security and networking</span></div><div class="table-cell">Standard</div><div class="table-cell">18</div><div class="table-cell"><span class="pill info">Needs review</span></div></div>
+              <div class="table-row table-4"><div class="table-cell"><strong>partner-sandbox</strong><br><span class="status-text">External experimentation</span></div><div class="table-cell">Trial</div><div class="table-cell">4</div><div class="table-cell"><span class="pill warn">Limited</span></div></div>
+            </div>
+            <div class="cta-row">
+              <button class="btn">Use platform-prod</button>
+              <button class="btn-secondary">Change account</button>
+            </div>
+          `;
+        },
+        renderSide() {
+          return `
+            <div class="note-card"><strong>Validation details</strong><p>Show permission and workspace checks next to each organization instead of hiding them after selection.</p></div>
+            <div class="note-card"><strong>Failure mode</strong><p>If the user lacks onboarding permission, the row should still render and explain why it is blocked.</p></div>
+            <div class="timeline">
+              <div class="timeline-item"><span class="timeline-dot"></span><div><div class="mini-label">Next step</div><div class="timeline-label">Choose the onboarding mode for existing infrastructure.</div></div></div>
+            </div>
+          `;
+        },
+      },
+      {
+        id: 'step-4',
+        number: '04',
+        name: 'Choose Onboarding Mode',
+        mode: 'Decision screen',
+        screenTitle: 'Onboarding mode selection',
+        screenPill: 'Path selection',
+        summary: 'The screen should visually favor the existing-workspace path and treat import as future scope. This is where honesty matters most.',
+        chips: [
+          { label: 'Primary goal', value: 'Choose the existing path' },
+          { label: 'Main action', value: 'Continue to workspace discovery' },
+          { label: 'Risk to reduce', value: 'Import option steals attention from the real path' },
+        ],
+        nav: commonRail,
+        headerSearch: 'Search onboarding options and limitations',
+        environment: 'Mode selection',
+        footer: [
+          { label: 'Layout intent', value: 'Two large radio cards, unequal emphasis.' },
+          { label: 'Design focus', value: 'Reward the honest existing-workspace path with stronger visual weight.' },
+          { label: 'Future option', value: 'Keep import present, but visibly out of current scope.' },
+        ],
+        renderContent() {
+          return `
+            <div class="content-hero">
+              <span class="pill info">Choose your starting point</span>
+              <h4>How should Azure understand your infrastructure?</h4>
+              <p>For this workflow, the operator already has infrastructure managed by Terraform. The screen should make that path the obvious choice.</p>
+            </div>
+            <div class="selection-grid">
+              <div class="choice-card selected">
+                <span class="surface-label">Recommended</span>
+                <h5>Connect existing workspaces</h5>
+                <p class="body-copy">My infrastructure is already managed by Terraform. Azure should discover the existing workspaces, validate ownership, and register connected stack resources.</p>
+                <div class="pill good">Selected path</div>
+              </div>
+              <div class="choice-card future">
+                <span class="surface-label">Future / limited scope</span>
+                <h5>Import unmanaged Azure resources</h5>
+                <p class="body-copy">Use this later for resources not already under Terraform management. This is not the primary path for the current flow.</p>
+                <div class="pill warn">Not recommended here</div>
+              </div>
+            </div>
+            <div class="cta-row">
+              <button class="btn">Continue with existing workspaces</button>
+              <button class="btn-secondary">Learn about import limitations</button>
+            </div>
+          `;
+        },
+        renderSide() {
+          return `
+            <div class="note-card"><strong>Decision pattern</strong><p>Use radio-card treatment, not tabs. The operator is choosing a path, not browsing parallel content.</p></div>
+            <div class="note-card"><strong>Copy rule</strong><p>Say “existing workspaces” directly. Do not soften it into generic onboarding language.</p></div>
+          `;
+        },
+      },
+      {
+        id: 'step-5',
+        number: '05',
+        name: 'Discover Eligible Workspaces',
+        mode: 'Selection workspace',
+        screenTitle: 'Workspace discovery table',
+        screenPill: 'Candidate list',
+        summary: 'This is a real working screen with filters, a candidate table, and selection states. It should feel like operators can make decisions here, not just read a report.',
+        chips: [
+          { label: 'Primary goal', value: 'Select the right workspaces' },
+          { label: 'Main action', value: 'Add selected workspaces to mapping' },
+          { label: 'Risk to reduce', value: 'Low-confidence matches pollute trust' },
+        ],
+        nav: commonRail,
+        headerSearch: 'Search workspaces, repos, subscriptions, or owners',
+        environment: 'HCP org: platform-prod',
+        footer: [
+          { label: 'Layout intent', value: 'Filters on top, high-confidence table below, evidence on the right.' },
+          { label: 'Design focus', value: 'Make confidence legible without making the screen feel like a diagnosis tool.' },
+          { label: 'Interaction note', value: 'Multi-select should drive the next mapping step directly.' },
+        ],
+        renderContent() {
+          return `
+            <div class="filters">
+              <span class="filter-chip active">AzureRM provider</span>
+              <span class="filter-chip active">Remote execution</span>
+              <span class="filter-chip">Prod subscriptions</span>
+              <span class="filter-chip">Healthy state only</span>
+            </div>
+            <div class="data-table">
+              <div class="table-head table-6"><div>Workspace</div><div>Repository</div><div>Subscription hint</div><div>Execution</div><div>Run health</div><div>Select</div></div>
+              <div class="table-row table-6"><div class="table-cell"><strong>network-prod-core</strong><br><span class="status-text">Confidence 0.96</span></div><div class="table-cell">infra/network-core</div><div class="table-cell">Prod Networking</div><div class="table-cell">Remote</div><div class="table-cell"><span class="pill good">Healthy</span></div><div class="table-cell"><span class="pill info">Selected</span></div></div>
+              <div class="table-row table-6"><div class="table-cell"><strong>identity-shared</strong><br><span class="status-text">Confidence 0.91</span></div><div class="table-cell">infra/identity</div><div class="table-cell">Shared Services</div><div class="table-cell">Remote</div><div class="table-cell"><span class="pill info">Review</span></div><div class="table-cell"><span class="pill info">Selected</span></div></div>
+              <div class="table-row table-6"><div class="table-cell"><strong>partner-sandbox-east</strong><br><span class="status-text">Confidence 0.58</span></div><div class="table-cell">partner/sandbox</div><div class="table-cell">Unknown</div><div class="table-cell">Local</div><div class="table-cell"><span class="pill warn">Unsupported</span></div><div class="table-cell"><span class="pill">Skipped</span></div></div>
+            </div>
+            <div class="cta-row">
+              <button class="btn">Map 2 selected workspaces</button>
+              <button class="btn-secondary">Inspect raw evidence</button>
+            </div>
+          `;
+        },
+        renderSide() {
+          return `
+            <div class="note-card"><strong>Selection summary</strong><p>2 workspaces selected. 1 candidate requires manual review or exclusion because it uses local execution.</p></div>
+            <div class="note-card"><strong>Evidence shown</strong><p>Provider signal, run health, repo metadata, and subscription hint should be enough to justify selection.</p></div>
+            <div class="note-card"><strong>Right-side role</strong><p>Use this area for confidence rationale or raw metadata, not extra actions.</p></div>
+          `;
+        },
+      },
+      {
+        id: 'step-6',
+        number: '06',
+        name: 'Map Workspace to Azure Scope',
+        mode: 'Structured form',
+        screenTitle: 'Scope mapping workspace',
+        screenPill: 'Mapping form',
+        summary: 'Now the operator is doing structured configuration work. The screen should support repeated row-by-row mapping without losing overall progress.',
+        chips: [
+          { label: 'Primary goal', value: 'Assign scope and ownership correctly' },
+          { label: 'Main action', value: 'Save mappings and continue to validation' },
+          { label: 'Risk to reduce', value: 'Wrong subscription or incomplete ownership metadata' },
+        ],
+        nav: commonRail,
+        headerSearch: 'Search subscriptions, management groups, or owners',
+        environment: 'Scope planning',
+        footer: [
+          { label: 'Layout intent', value: 'One mapping row per workspace with sticky progress summary.' },
+          { label: 'Design focus', value: 'Make ownership and environment metadata feel first class, not optional.' },
+          { label: 'Interaction note', value: 'Inline validation should trigger before moving on.' },
+        ],
+        renderContent() {
+          return `
+            <div class="card">
+              <span class="surface-label">Mapping set 1 of 2</span>
+              <h5>network-prod-core</h5>
+              <div class="form-grid">
+                <div class="field"><span class="field-label">Subscription</span><div class="field-value">Prod Networking Subscription</div><div class="field-helper">Validated against allowed scopes</div></div>
+                <div class="field"><span class="field-label">Management group</span><div class="field-value">/platform/prod</div><div class="field-helper">Inherited governance boundary</div></div>
+                <div class="field"><span class="field-label">Environment</span><div class="field-value">Production</div><div class="field-helper">Used for policy recommendations</div></div>
+                <div class="field"><span class="field-label">Owner</span><div class="field-value">Network Platform Team</div><div class="field-helper">Support and audit routing</div></div>
+              </div>
+            </div>
+            <div class="card">
+              <span class="surface-label">Mapping set 2 of 2</span>
+              <h5>identity-shared</h5>
+              <div class="form-grid">
+                <div class="field"><span class="field-label">Subscription</span><div class="field-value">Shared Services Subscription</div><div class="field-helper">Valid target</div></div>
+                <div class="field"><span class="field-label">Management group</span><div class="field-value">/platform/shared</div><div class="field-helper">Allowed by governance policy</div></div>
+                <div class="field"><span class="field-label">Environment</span><div class="field-value">Shared Infrastructure</div><div class="field-helper">Applies baseline guardrails</div></div>
+                <div class="field"><span class="field-label">Owner</span><div class="field-value">Identity Services Team</div><div class="field-helper">Required before registration</div></div>
+              </div>
+            </div>
+            <div class="cta-row">
+              <button class="btn">Save mappings</button>
+              <button class="btn-secondary">Back to workspace list</button>
+            </div>
+          `;
+        },
+        renderSide() {
+          return `
+            <div class="note-card"><strong>Progress</strong><p>2 of 2 workspaces mapped. Azure can now prepare managed identity and RBAC prerequisites.</p></div>
+            <div class="note-card"><strong>Guardrail</strong><p>If a chosen scope is not allowed, block the save action and explain which rule is violated.</p></div>
+            <div class="timeline">
+              <div class="timeline-item"><span class="timeline-dot"></span><div><div class="mini-label">Next step</div><div class="timeline-label">Run the non-destructive ownership and state validation.</div></div></div>
+            </div>
+          `;
+        },
+      },
+      {
+        id: 'step-7',
+        number: '07',
+        name: 'Validate State and Ownership',
+        mode: 'Trust checkpoint',
+        screenTitle: 'Validation summary',
+        screenPill: 'Non-destructive check',
+        summary: 'This screen has to prove trust. It should feel evidence-based, calm, and explicit that no Terraform change is being applied.',
+        chips: [
+          { label: 'Primary goal', value: 'Prove Azure sees the same ownership reality' },
+          { label: 'Main action', value: 'Continue once validation is clean' },
+          { label: 'Risk to reduce', value: 'Any suspicion of hidden infrastructure mutation' },
+        ],
+        nav: commonRail,
+        headerSearch: 'Search validation evidence or mismatched resources',
+        environment: 'Validation running',
+        footer: [
+          { label: 'Layout intent', value: 'Large validation banner, then resource evidence and mismatch detail.' },
+          { label: 'Design focus', value: 'Show proof, not just a pass/fail label.' },
+          { label: 'Critical copy', value: 'Repeat that no apply or state migration has happened.' },
+        ],
+        renderContent() {
+          return `
+            <div class="content-hero">
+              <span class="pill good">Validation complete</span>
+              <h4>34 Terraform-managed resources match the mapped Azure scopes.</h4>
+              <p>No Terraform apply ran. No state migration was performed. Azure verified workspace state references, subscription alignment, and federated identity readiness.</p>
+            </div>
+            <div class="summary-grid">
+              <div class="metric"><strong>Resources matched</strong><div class="metric-value">34</div><span>Across 2 workspaces</span></div>
+              <div class="metric"><strong>Mismatches</strong><div class="metric-value">1</div><span>Needs owner review</span></div>
+              <div class="metric"><strong>Identity status</strong><div class="metric-value">Ready</div><span>Federated auth can proceed</span></div>
+            </div>
+            <div class="data-table">
+              <div class="table-head table-5"><div>Workspace</div><div>State health</div><div>Azure scope</div><div>Ownership</div><div>Result</div></div>
+              <div class="table-row table-5"><div class="table-cell">network-prod-core</div><div class="table-cell">Healthy</div><div class="table-cell">Prod Networking</div><div class="table-cell">34 resources matched</div><div class="table-cell"><span class="pill good">Pass</span></div></div>
+              <div class="table-row table-5"><div class="table-cell">identity-shared</div><div class="table-cell">Healthy</div><div class="table-cell">Shared Services</div><div class="table-cell">1 subscription tag mismatch</div><div class="table-cell"><span class="pill warn">Review</span></div></div>
+            </div>
+            <div class="cta-row">
+              <button class="btn">Continue to governance</button>
+              <button class="btn-secondary">Review mismatch detail</button>
+            </div>
+          `;
+        },
+        renderSide() {
+          return `
+            <div class="note-card"><strong>Trust message</strong><p>This is the step where the UI must explicitly say “No changes applied” in the main content, not only in fine print.</p></div>
+            <div class="note-card"><strong>Mismatches</strong><p>Show the mismatched item as a contained review issue, not a catastrophic red failure if onboarding can still proceed safely.</p></div>
+          `;
+        },
+      },
+      {
+        id: 'step-8',
+        number: '08',
+        name: 'Enable Governance Overlays',
+        mode: 'Control selection',
+        screenTitle: 'Governance controls',
+        screenPill: 'Additive controls',
+        summary: 'This is where Azure proves it adds value. The screen should behave like a layered control center, not a mandatory compliance wall.',
+        chips: [
+          { label: 'Primary goal', value: 'Turn on useful Azure-side controls' },
+          { label: 'Main action', value: 'Apply governance selections' },
+          { label: 'Risk to reduce', value: 'Controls feel mandatory or replacing Terraform-native policy' },
+        ],
+        nav: commonRail,
+        headerSearch: 'Search policies, approvals, or cost guardrails',
+        environment: 'Governance planning',
+        footer: [
+          { label: 'Layout intent', value: 'Toggle cards with recommendation and impact preview.' },
+          { label: 'Design focus', value: 'Use optional, recommended, and required labels clearly.' },
+          { label: 'Interaction note', value: 'Preview the impact before saving for production scopes.' },
+        ],
+        renderContent() {
+          return `
+            <div class="toggle-grid">
+              <div class="toggle-card">
+                <div class="toggle-head"><div><span class="surface-label">Recommended</span><h5>Policy evaluation before apply</h5></div><span class="switch on"></span></div>
+                <p class="body-copy">Run Azure policy checks before connected production workspaces can proceed with high-risk changes.</p>
+                <div class="pill info">Applies to production only</div>
+              </div>
+              <div class="toggle-card">
+                <div class="toggle-head"><div><span class="surface-label">Recommended</span><h5>Approval requirement</h5></div><span class="switch on"></span></div>
+                <p class="body-copy">Require Azure-side approval for production applies while preserving HCP Terraform as the execution surface.</p>
+                <div class="pill good">Owner and approver ready</div>
+              </div>
+              <div class="toggle-card">
+                <div class="toggle-head"><div><span class="surface-label">Optional</span><h5>Region and SKU limits</h5></div><span class="switch"></span></div>
+                <p class="body-copy">Block runs that target disallowed regions or unsupported service tiers.</p>
+                <div class="pill">Not enabled</div>
+              </div>
+              <div class="toggle-card">
+                <div class="toggle-head"><div><span class="surface-label">Optional</span><h5>Cost signals</h5></div><span class="switch on"></span></div>
+                <p class="body-copy">Surface cost alerts before runs complete so operators can stop unexpected expansion early.</p>
+                <div class="pill info">Signal only</div>
+              </div>
+            </div>
+            <div class="card">
+              <span class="surface-label">Impact preview</span>
+              <p class="body-copy">2 controls will block production applies without approval. 1 control will add advisory cost signals. HCP Terraform policy sets remain unchanged.</p>
+            </div>
+            <div class="cta-row">
+              <button class="btn">Apply governance selection</button>
+              <button class="btn-secondary">Skip and configure later</button>
+            </div>
+          `;
+        },
+        renderSide() {
+          return `
+            <div class="note-card"><strong>Positioning rule</strong><p>Azure governance wraps Terraform. The screen should never say that Azure is now the Terraform policy engine.</p></div>
+            <div class="note-card"><strong>Recommended emphasis</strong><p>Use recommendation badges and impact summary to help prod operators make fast choices without reading dense docs.</p></div>
+          `;
+        },
+      },
+      {
+        id: 'step-9',
+        number: '09',
+        name: 'Register Connected Stack Resources',
+        mode: 'Registration and results',
+        screenTitle: 'Connected stack registration results',
+        screenPill: 'Registration output',
+        summary: 'This is the “connected” moment. The screen should visibly convert the prior setup work into Azure-native stack records with immediate evidence of value.',
+        chips: [
+          { label: 'Primary goal', value: 'Create Azure-visible connected stack records' },
+          { label: 'Main action', value: 'Finish setup and view connected stacks' },
+          { label: 'Risk to reduce', value: 'Registration feels abstract or invisible' },
+        ],
+        nav: commonRail,
+        headerSearch: 'Search connected stacks or registration results',
+        environment: 'Registration complete',
+        footer: [
+          { label: 'Layout intent', value: 'Success banner, per-workspace results, then jump into inventory.' },
+          { label: 'Design focus', value: 'Make the outcome feel tangible in Azure immediately.' },
+          { label: 'Critical copy', value: 'Say again that no Terraform apply was triggered.' },
+        ],
+        renderContent() {
+          return `
+            <div class="content-hero">
+              <span class="pill good">Connected in Azure</span>
+              <h4>2 Terraform stacks are now registered as Azure-connected resources.</h4>
+              <p>Azure can now show stack status, ownership, policy posture, and support metadata. No Terraform apply was triggered during registration.</p>
+            </div>
+            <div class="result-grid">
+              <div class="metric"><strong>Stacks registered</strong><div class="metric-value">2</div><span>network-prod-core, identity-shared</span></div>
+              <div class="metric"><strong>Azure contexts linked</strong><div class="metric-value">2</div><span>Prod Networking and Shared Services</span></div>
+              <div class="metric"><strong>Deep links created</strong><div class="metric-value">2</div><span>Back to HCP Terraform workspaces</span></div>
+            </div>
+            <div class="inventory-grid">
+              <div class="card"><span class="surface-label">Connected stack resource</span><h5>Microsoft.Terraform/stacks/network-prod-core</h5><p class="body-copy">Azure now attributes Terraform-managed networking resources to this connected stack and exposes run status, owner, and support context.</p></div>
+              <div class="card"><span class="surface-label">Connected stack resource</span><h5>Microsoft.Terraform/stacks/identity-shared</h5><p class="body-copy">Identity resources now appear in Azure inventory with governance overlays and direct links back to the source workspace.</p></div>
+            </div>
+            <div class="cta-row">
+              <button class="btn">View connected stacks</button>
+              <button class="btn-secondary">Return to onboarding summary</button>
+            </div>
+          `;
+        },
+        renderSide() {
+          return `
+            <div class="note-card"><strong>Why this matters</strong><p>This is the first moment the operator gets visible Azure-native value from the connection flow.</p></div>
+            <div class="note-card"><strong>Design rule</strong><p>Never end this step with only a generic success toast. Show the actual new resources and what they unlock.</p></div>
+          `;
+        },
+      },
+      {
+        id: 'step-10',
+        number: '10',
+        name: 'Operate Connected Stacks',
+        mode: 'Steady-state dashboard',
+        screenTitle: 'Connected stack operations dashboard',
+        screenPill: 'Scenario B',
+        summary: 'This final screen is the operating destination. It should show Azure value clearly while still signaling that HCP Terraform remains the deeper action surface.',
+        chips: [
+          { label: 'Primary goal', value: 'Operate connected stacks inside Azure' },
+          { label: 'Main action', value: 'Inspect, approve, and route support' },
+          { label: 'Risk to reduce', value: 'Users assume Azure replaced HCP Terraform' },
+        ],
+        nav: commonRail,
+        headerSearch: 'Search connected stacks, approvals, or support cases',
+        environment: 'Connected stack operations',
+        footer: [
+          { label: 'Layout intent', value: 'Inventory, policy, and support in one operational dashboard.' },
+          { label: 'Design focus', value: 'Make Azure useful without obscuring the HCP handoff.' },
+          { label: 'Interaction note', value: 'Deep actions should link out to HCP Terraform deliberately.' },
+        ],
+        renderContent() {
+          return `
+            <div class="kpi-grid">
+              <div class="metric"><strong>Connected stacks</strong><div class="metric-value">14</div><span>Across 5 subscriptions</span></div>
+              <div class="metric"><strong>Pending approvals</strong><div class="metric-value">3</div><span>2 production, 1 shared services</span></div>
+              <div class="metric"><strong>Policy warnings</strong><div class="metric-value">2</div><span>Advisory only</span></div>
+            </div>
+            <div class="support-grid">
+              <div class="data-table">
+                <div class="table-head table-5"><div>Connected stack</div><div>Subscription</div><div>Last run</div><div>Policy</div><div>Action</div></div>
+                <div class="table-row table-5"><div class="table-cell"><strong>network-prod-core</strong><br><span class="status-text">Owned by Network Platform Team</span></div><div class="table-cell">Prod Networking</div><div class="table-cell"><span class="pill good">Applied</span></div><div class="table-cell"><span class="pill info">1 pending approval</span></div><div class="table-cell"><span class="pill">Open details</span></div></div>
+                <div class="table-row table-5"><div class="table-cell"><strong>identity-shared</strong><br><span class="status-text">Owned by Identity Services Team</span></div><div class="table-cell">Shared Services</div><div class="table-cell"><span class="pill warn">Policy review</span></div><div class="table-cell"><span class="pill">No blocker</span></div><div class="table-cell"><span class="pill">Open details</span></div></div>
+              </div>
+              <div class="stack">
+                <div class="card">
+                  <span class="surface-label">Approval queue</span>
+                  <h5>Production change approvals</h5>
+                  <p class="body-copy">Azure lets operators approve or block future applies from connected governance workflows.</p>
+                  <div class="cta-row"><button class="btn">Review approvals</button></div>
+                </div>
+                <div class="card">
+                  <span class="surface-label">Support handoff</span>
+                  <h5>Open support case with stack context</h5>
+                  <p class="body-copy">Route issues to Microsoft with connected metadata, run history, owner, and subscription context attached.</p>
+                  <div class="cta-row"><button class="btn-secondary">Create support case</button></div>
+                </div>
+                <div class="card">
+                  <span class="surface-label">Deep action</span>
+                  <h5>Continue in HCP Terraform</h5>
+                  <p class="body-copy">Use HCP Terraform for module authoring, run inspection, plan output, and deeper debugging.</p>
+                  <div class="cta-row"><button class="btn-secondary">Open workspace in HCP</button></div>
+                </div>
+              </div>
+            </div>
+          `;
+        },
+        renderSide() {
+          return `
+            <div class="note-card"><strong>Primary UX rule</strong><p>Azure is the governance and visibility layer. HCP Terraform is still the execution and authoring layer.</p></div>
+            <div class="note-card"><strong>Most important panel</strong><p>The inventory table is the center of gravity. It proves the connection flow produced a usable operating surface.</p></div>
+            <div class="note-card"><strong>Next iteration</strong><p>Approval drawers, support flows, and run status detail can all expand from this single steady-state screen.</p></div>
+          `;
+        },
+      },
+    ];
+
+    const stageList = document.getElementById('stageList');
+    const headerEyebrow = document.getElementById('headerEyebrow');
+    const headerTitle = document.getElementById('headerTitle');
+    const headerSummary = document.getElementById('headerSummary');
+    const headerChips = document.getElementById('headerChips');
+    const canvasTitle = document.getElementById('canvasTitle');
+    const canvasPill = document.getElementById('canvasPill');
+    const headerSearch = document.getElementById('headerSearch');
+    const environmentChip = document.getElementById('environmentChip');
+    const navRail = document.getElementById('navRail');
+    const contentPanel = document.getElementById('contentPanel');
+    const sidePanel = document.getElementById('sidePanel');
+    const footerNotes = document.getElementById('footerNotes');
+
+    function renderRail(step) {
+      return step.nav.map((section) => {
+        const items = section.items.map((item) => {
+          const isActive = step.name.toLowerCase().includes(item.toLowerCase()) || step.screenTitle.toLowerCase().includes(item.toLowerCase());
+          return `<span class="nav-item ${isActive ? 'active' : ''}">${item}</span>`;
+        }).join('');
+        return `<div class="nav-section"><span class="surface-label">${section.title}</span>${items}</div>`;
+      }).join('');
+    }
+
+    function renderFooter(step) {
+      return step.footer.map((item) => `
+        <div class="detail-card">
+          <span class="detail-label">${item.label}</span>
+          <div class="detail-value">${item.value}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderHeaderChips(step) {
+      return step.chips.map((chip) => `
+        <div class="screen-chip">
+          <strong>${chip.label}</strong>
+          <span>${chip.value}</span>
+        </div>
+      `).join('');
+    }
+
+    function setActiveStep(stepId) {
+      const step = steps.find((item) => item.id === stepId) || steps[0];
+
+      document.querySelectorAll('.stage-button').forEach((button) => {
+        button.classList.toggle('is-active', button.dataset.stepId === step.id);
+        button.setAttribute('aria-pressed', String(button.dataset.stepId === step.id));
+      });
+
+      headerEyebrow.textContent = `Step ${step.number}`;
+      headerTitle.textContent = step.name;
+      headerSummary.textContent = step.summary;
+      headerChips.innerHTML = renderHeaderChips(step);
+      canvasTitle.textContent = step.screenTitle;
+      canvasPill.textContent = step.screenPill;
+      headerSearch.textContent = step.headerSearch;
+      environmentChip.textContent = step.environment;
+      navRail.innerHTML = renderRail(step);
+      contentPanel.innerHTML = step.renderContent();
+      sidePanel.innerHTML = step.renderSide();
+      footerNotes.innerHTML = renderFooter(step);
+    }
+
+    stageList.innerHTML = steps.map((step) => `
+      <button class="stage-button" data-step-id="${step.id}" aria-pressed="false">
+        <span class="stage-index">${step.number}</span>
+        <span class="stage-name">${step.name}</span>
+        <span class="stage-mode">${step.mode}</span>
+      </button>
+    `).join('');
+
+    document.querySelectorAll('.stage-button').forEach((button) => {
+      button.addEventListener('click', () => setActiveStep(button.dataset.stepId));
+    });
+
+    setActiveStep(steps[0].id);
+  </script>
+</body>
+</html>

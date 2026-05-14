@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ShowcasePage } from './ShowcasePage';
-import { config } from '../showcases/incident-response/config';
+import { config } from '../showcases/azure-terraform-rp/config';
 
 // Grayscale wireframe design tokens (provides var(--z-*) custom properties)
 import '@z/ds/index.css';

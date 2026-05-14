@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Azure Terraform RP Approved Flows - Layout Draft 01</title>
+  <style>
+    :root {
+      --bg: #f4efe8;
+      --surface: rgba(255, 251, 246, 0.82);
+      --surface-strong: #fffaf3;
+      --surface-dark: #14323b;
+      --ink: #1b262c;
+      --ink-soft: #45545a;
+      --ink-inverse: #f4efe8;
+      --line: rgba(20, 50, 59, 0.14);
+      --line-strong: rgba(20, 50, 59, 0.28);
+      --accent: #0f6d83;
+      --accent-soft: #d8ecf1;
+      --accent-warm: #c4682f;
+      --accent-warm-soft: #f8dfcf;
+      --success: #2f6b43;
+      --success-soft: #dcecdf;
+      --shadow: 0 24px 80px rgba(27, 38, 44, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --font-sans: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+      --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+      --font-mono: "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(196, 104, 47, 0.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(15, 109, 131, 0.12), transparent 22%),
+        linear-gradient(180deg, #f8f2ea 0%, #f4efe8 48%, #efe8df 100%);
+    }
+
+    a { color: inherit; }
+
+    .page-nav {
+      position: fixed;
+      top: 22px;
+      right: 22px;
+      z-index: 20;
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      background: rgba(255, 250, 243, 0.72);
+      backdrop-filter: blur(16px);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+    }
+
+    .page-nav a {
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+
+    .page-nav a:hover,
+    .page-nav a:focus-visible {
+      outline: none;
+      background: var(--accent-soft);
+      color: var(--ink);
+    }
+
+    .screen {
+      min-height: 100vh;
+      padding: 56px 28px;
+      display: flex;
+      align-items: center;
+    }
+
+    .shell {
+      width: min(1280px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 22px;
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin: 0 0 12px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero-copy {
+      padding: 42px;
+    }
+
+    .hero h1,
+    .final-title {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: clamp(3rem, 6vw, 5.3rem);
+      line-height: 0.95;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p,
+    .final-lead,
+    .step-summary {
+      font-size: 18px;
+      line-height: 1.65;
+      color: var(--ink-soft);
+    }
+
+    .hero p { max-width: 50ch; }
+
+    .chip-row,
+    .detail-grid,
+    .final-grid,
+    .stat-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .chip-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 26px;
+    }
+
+    .chip {
+      padding: 16px 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.58);
+    }
+
+    .chip strong,
+    .label,
+    .tab-index,
+    .metric-value,
+    .callout-title {
+      display: block;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      color: var(--ink-soft);
+      margin-bottom: 8px;
+    }
+
+    .chip span,
+    .metric-label,
+    .detail-card p,
+    .callout p,
+    .final-card p {
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--ink);
+    }
+
+    .hero-frame {
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+      background:
+        linear-gradient(160deg, rgba(15, 109, 131, 0.1), transparent 45%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.5));
+    }
+
+    .mini-window,
+    .final-window {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--surface-strong);
+    }
+
+    .window-bar {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(20, 50, 59, 0.04);
+    }
+
+    .window-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(20, 50, 59, 0.18);
+    }
+
+    .mini-body {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .mini-rail,
+    .mini-content-block,
+    .mini-footer-band,
+    .tab-preview,
+    .status-row,
+    .final-sidebar,
+    .final-main-card {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: #fffdf9;
+    }
+
+    .mini-rail {
+      height: 52px;
+      background: linear-gradient(90deg, var(--accent-soft), rgba(255, 255, 255, 0));
+    }
+
+    .mini-content-block { height: 158px; }
+    .mini-footer-band { height: 72px; background: var(--accent-warm-soft); }
+
+    .tabbed-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .sidebar {
+      padding: 26px;
+      position: sticky;
+      top: 38px;
+    }
+
+    .sidebar h2,
+    .step-title,
+    .final-card h2 {
+      margin: 0 0 12px;
+      font-size: 28px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .sidebar p { color: var(--ink-soft); line-height: 1.6; }
+
+    .stat-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .metric {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      background: rgba(20, 50, 59, 0.04);
+      border: 1px solid var(--line);
+    }
+
+    .metric-value {
+      font-size: 26px;
+      color: var(--ink);
+      margin-bottom: 4px;
+      letter-spacing: -0.03em;
+      text-transform: none;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-soft);
+    }
+
+    .workspace {
+      padding: 22px;
+    }
+
+    .workspace-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .workspace-head p {
+      margin: 0;
+      max-width: 58ch;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+
+    .tablist {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+      border-radius: 999px;
+      padding: 11px 14px;
+      min-width: 96px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .tab:hover,
+    .tab:focus-visible {
+      outline: none;
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: #fffdf9;
+    }
+
+    .tab[aria-selected="true"] {
+      background: var(--surface-dark);
+      color: var(--ink-inverse);
+      border-color: var(--surface-dark);
+    }
+
+    .tab[aria-selected="true"] .tab-index,
+    .tab[aria-selected="true"] .tab-label {
+      color: var(--ink-inverse);
+    }
+
+    .tab-index {
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+
+    .tab-label {
+      display: block;
+      font-size: 13px;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    .step-panel {
+      display: none;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .step-panel.is-active { display: grid; }
+
+    .step-card,
+    .callout,
+    .detail-card,
+    .final-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fffdf9;
+    }
+
+    .step-card {
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .step-title {
+      font-family: var(--font-serif);
+      font-size: 42px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .detail-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .detail-card {
+      padding: 16px;
+      background: rgba(20, 50, 59, 0.03);
+    }
+
+    .label { margin-bottom: 6px; }
+
+    .callout-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .callout {
+      padding: 18px;
+    }
+
+    .callout.highlight {
+      background: linear-gradient(180deg, var(--accent-soft), rgba(255, 255, 255, 0.92));
+    }
+
+    .callout.warning {
+      background: linear-gradient(180deg, var(--accent-warm-soft), rgba(255, 255, 255, 0.92));
+    }
+
+    .callout.success {
+      background: linear-gradient(180deg, var(--success-soft), rgba(255, 255, 255, 0.92));
+    }
+
+    .final-layout {
+      display: grid;
+      grid-template-columns: 0.88fr 1.12fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .final-card {
+      padding: 32px;
+    }
+
+    .final-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 18px;
+    }
+
+    .final-window {
+      background: linear-gradient(180deg, #173740, #123039);
+      color: var(--ink-inverse);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .final-window .window-bar {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .final-window .window-dot {
+      background: rgba(255, 255, 255, 0.24);
+    }
+
+    .final-body {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 14px;
+      min-height: 420px;
+    }
+
+    .final-sidebar {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.08);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .final-sidebar .nav-chip,
+    .status-pill {
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ink-inverse);
+    }
+
+    .final-main-card {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      background: transparent;
+      border: none;
+    }
+
+    .status-pill {
+      background: rgba(255, 255, 255, 0.08);
+      min-height: 72px;
+      border-radius: var(--radius-md);
+    }
+
+    .status-pill strong {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(244, 239, 232, 0.74);
+      margin-bottom: 8px;
+    }
+
+    .status-pill span {
+      display: block;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .final-caption {
+      font-size: 12px;
+      color: rgba(244, 239, 232, 0.72);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1024px) {
+      .hero,
+      .tabbed-layout,
+      .step-panel,
+      .final-layout,
+      .final-body {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .screen { padding: 72px 16px 32px; }
+      .hero-copy,
+      .sidebar,
+      .workspace,
+      .final-card { padding: 24px; }
+      .chip-row,
+      .detail-grid,
+      .final-grid,
+      .stat-grid,
+      .status-row {
+        grid-template-columns: 1fr;
+      }
+      .page-nav {
+        left: 16px;
+        right: 16px;
+        top: 14px;
+        justify-content: space-between;
+      }
+      .page-nav a {
+        flex: 1;
+        text-align: center;
+      }
+      .workspace-head {
+        flex-direction: column;
+        align-items: start;
+      }
+      .step-title { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="page-nav" aria-label="Screen navigation">
+    <a href="#screen-start">Start</a>
+    <a href="#screen-journey">Journey Tabs</a>
+    <a href="#screen-finish">Final</a>
+  </nav>
+
+  <section class="screen" id="screen-start">
+    <div class="shell hero">
+      <article class="panel hero-copy">
+        <p class="eyebrow">Layout Draft 01</p>
+        <h1>Connect First. Operate After.</h1>
+        <p>
+          This first screen frames the journey before any detailed work begins. The operator is already in Azure,
+          already manages infrastructure in HCP Terraform, and needs a clear promise: Azure will discover,
+          validate, and govern without forcing migration or a surprise apply.
+        </p>
+        <div class="chip-row">
+          <div class="chip">
+            <strong>Scenario A</strong>
+            <span>Single onboarding flow from Azure Portal into connected Terraform stack registration.</span>
+          </div>
+          <div class="chip">
+            <strong>Scenario B</strong>
+            <span>Operating view after setup: visibility, approvals, policy, support context, and HCP deep links.</span>
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel hero-frame" aria-label="Start screen wireframe preview">
+        <div class="mini-window">
+          <div class="window-bar">
+            <span class="window-dot"></span>
+            <span class="window-dot"></span>
+            <span class="window-dot"></span>
+          </div>
+          <div class="mini-body">
+            <div class="mini-rail"></div>
+            <div class="mini-content-block"></div>
+            <div class="mini-footer-band"></div>
+          </div>
+        </div>
+        <div class="chip">
+          <strong>Screen Goal</strong>
+          <span>Set expectations, reduce migration fear, and move the user into the step-by-step connect flow.</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-journey">
+    <div class="shell tabbed-layout">
+      <aside class="panel sidebar">
+        <p class="eyebrow">Middle Screen</p>
+        <h2>Each Journey Step Lives In One Tab</h2>
+        <p>
+          This second screen stays structurally stable while the content changes step by step. It keeps the operator
+          in one place, lets you compare flow sequencing quickly, and makes it easy to revise labels or order later.
+        </p>
+        <div class="stat-grid">
+          <div class="metric">
+            <span class="metric-value">10</span>
+            <span class="metric-label">Journey Steps</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">2</span>
+            <span class="metric-label">Scenarios</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">1</span>
+            <span class="metric-label">Tabbed Screen</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">0</span>
+            <span class="metric-label">Forced Apply</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="panel workspace">
+        <div class="workspace-head">
+          <div>
+            <p class="eyebrow">Scenario A Detail</p>
+            <h2 class="step-title" style="font-size: 50px; margin: 0 0 6px;">Connection Journey</h2>
+            <p>
+              Keep the overall frame fixed. The only changing surface is the step content inside the workspace.
+              That gives you one repeatable screen pattern for all onboarding stages.
+            </p>
+          </div>
+          <div class="chip" style="max-width: 280px;">
+            <strong>Simple Starting Rule</strong>
+            <span>Use each tab as one stage card, not a fully new page. The layout should be reusable before it gets polished.</span>
+          </div>
+        </div>
+
+        <div class="tablist" role="tablist" aria-label="Journey steps">
+          <button class="tab" role="tab" aria-selected="true" aria-controls="panel-step-1" id="tab-step-1" data-panel="panel-step-1">
+            <span class="tab-index">01</span>
+            <span class="tab-label">Enter Azure</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-step-2" id="tab-step-2" data-panel="panel-step-2">
+            <span class="tab-index">02</span>
+            <span class="tab-label">Understand Model</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-step-3" id="tab-step-3" data-panel="panel-step-3">
+            <span class="tab-index">03</span>
+            <span class="tab-label">Connect HCP Org</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-step-4" id="tab-step-4" data-panel="panel-step-4">
+            <span class="tab-index">04</span>
+            <span class="tab-label">Choose Mode</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-step-5" id="tab-step-5" data-panel="panel-step-5">
+            <span class="tab-index">05</span>
+            <span class="tab-label">Discover Workspaces</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-step-6" id="tab-step-6" data-panel="panel-step-6">
+            <span class="tab-index">06</span>
+            <span class="tab-label">Map Scope</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-step-7" id="tab-step-7" data-panel="panel-step-7">
+            <span class="tab-index">07</span>
+            <span class="tab-label">Validate Trust</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-step-8" id="tab-step-8" data-panel="panel-step-8">
+            <span class="tab-index">08</span>
+            <span class="tab-label">Enable Governance</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-step-9" id="tab-step-9" data-panel="panel-step-9">
+            <span class="tab-index">09</span>
+            <span class="tab-label">Register Stacks</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-step-10" id="tab-step-10" data-panel="panel-step-10">
+            <span class="tab-index">10</span>
+            <span class="tab-label">Operate In Azure</span>
+          </button>
+        </div>
+
+        <section class="step-panel is-active" id="panel-step-1" role="tabpanel" aria-labelledby="tab-step-1">
+          <article class="step-card">
+            <div>
+              <p class="eyebrow">Step 1</p>
+              <h3 class="step-title">Enter Terraform In Azure</h3>
+              <p class="step-summary">The operator lands in the Terraform entry point from Azure Portal search and needs immediate confirmation that this flow is meant for existing Terraform users.</p>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-card"><span class="label">User Action</span><p>Search for Terraform, open the Azure entry point, and decide whether this is the correct path.</p></div>
+              <div class="detail-card"><span class="label">UI Focus</span><p>Large welcome panel with clear “existing Terraform” language and a single primary start action.</p></div>
+              <div class="detail-card"><span class="label">System Behavior</span><p>Reads tenant and role context, then confirms the user can continue onboarding.</p></div>
+              <div class="detail-card"><span class="label">User Concern</span><p>“Is this a new provisioning workflow, or can I connect what already exists?”</p></div>
+            </div>
+          </article>
+          <aside class="callout-stack">
+            <div class="callout highlight"><span class="callout-title">Layout Note</span><p>Start with one full-width message area, one explanatory side panel, and a strong continue button.</p></div>
+            <div class="callout warning"><span class="callout-title">Risk To Avoid</span><p>Do not open with import language. That sends the user down the wrong mental model before trust is established.</p></div>
+          </aside>
+        </section>
+
+        <section class="step-panel" id="panel-step-2" role="tabpanel" aria-labelledby="tab-step-2">
+          <article class="step-card">
+            <div>
+              <p class="eyebrow">Step 2</p>
+              <h3 class="step-title">Understand The Operating Model</h3>
+              <p class="step-summary">This tab is the expectations screen. It explains that HCP Terraform still executes runs and Azure adds discovery, governance, and management.</p>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-card"><span class="label">User Action</span><p>Read and confirm how Azure and HCP Terraform divide responsibility.</p></div>
+              <div class="detail-card"><span class="label">UI Focus</span><p>Three-column value explanation: execution stays in HCP, Azure adds visibility, no automatic apply occurs.</p></div>
+              <div class="detail-card"><span class="label">System Behavior</span><p>Feature flags and copy configuration shape the rest of the flow.</p></div>
+              <div class="detail-card"><span class="label">User Concern</span><p>“Will Azure take over Terraform, credentials, or state?”</p></div>
+            </div>
+          </article>
+          <aside class="callout-stack">
+            <div class="callout highlight"><span class="callout-title">Layout Note</span><p>Use small benefit cards instead of long paragraphs. The screen is about trust framing, not detailed documentation.</p></div>
+            <div class="callout success"><span class="callout-title">Success Signal</span><p>The operator should leave this step knowing Azure wraps Terraform rather than replaces it.</p></div>
+          </aside>
+        </section>
+
+        <section class="step-panel" id="panel-step-3" role="tabpanel" aria-labelledby="tab-step-3">
+          <article class="step-card">
+            <div>
+              <p class="eyebrow">Step 3</p>
+              <h3 class="step-title">Connect The HCP Terraform Organization</h3>
+              <p class="step-summary">The operator completes OAuth or SSO, chooses an HCP Terraform organization, and lets Azure validate whether onboarding permissions are present.</p>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-card"><span class="label">User Action</span><p>Authenticate, pick an organization, and return to Azure with connected context.</p></div>
+              <div class="detail-card"><span class="label">UI Focus</span><p>Organization picker, permission status, and a simple readiness indicator.</p></div>
+              <div class="detail-card"><span class="label">System Behavior</span><p>Checks org membership, permissions, and whether workspaces exist to onboard.</p></div>
+              <div class="detail-card"><span class="label">User Concern</span><p>“Do I have enough permission to do this once, correctly, without manual backtracking?”</p></div>
+            </div>
+          </article>
+          <aside class="callout-stack">
+            <div class="callout highlight"><span class="callout-title">Layout Note</span><p>Keep auth, org selection, and permission feedback on one screen so the user does not lose context during redirect.</p></div>
+            <div class="callout warning"><span class="callout-title">Risk To Avoid</span><p>Do not make permission failure feel like a dead end. Show what role is missing and who can unblock it.</p></div>
+          </aside>
+        </section>
+
+        <section class="step-panel" id="panel-step-4" role="tabpanel" aria-labelledby="tab-step-4">
+          <article class="step-card">
+            <div>
+              <p class="eyebrow">Step 4</p>
+              <h3 class="step-title">Choose The Existing Workspace Path</h3>
+              <p class="step-summary">The operator explicitly selects “Connect existing workspaces.” This locks the rest of the UI to the honest path for already-managed infrastructure.</p>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-card"><span class="label">User Action</span><p>Select the existing Terraform path and skip future import capabilities for now.</p></div>
+              <div class="detail-card"><span class="label">UI Focus</span><p>Two choice cards with strong visual emphasis on the recommended existing-workspace option.</p></div>
+              <div class="detail-card"><span class="label">System Behavior</span><p>Stores the onboarding mode and filters the remaining experience accordingly.</p></div>
+              <div class="detail-card"><span class="label">User Concern</span><p>“Will the UI push me into import or migration even though my infra is already managed?”</p></div>
+            </div>
+          </article>
+          <aside class="callout-stack">
+            <div class="callout highlight"><span class="callout-title">Layout Note</span><p>Use one primary option card and one clearly secondary future-scope card. Avoid equal visual weight.</p></div>
+            <div class="callout success"><span class="callout-title">Success Signal</span><p>The user should feel the product is meeting them where they are, not redirecting the problem.</p></div>
+          </aside>
+        </section>
+
+        <section class="step-panel" id="panel-step-5" role="tabpanel" aria-labelledby="tab-step-5">
+          <article class="step-card">
+            <div>
+              <p class="eyebrow">Step 5</p>
+              <h3 class="step-title">Discover Eligible Workspaces</h3>
+              <p class="step-summary">Azure queries HCP Terraform for AzureRM-related workspaces, then presents a short list with enough metadata for confident selection.</p>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-card"><span class="label">User Action</span><p>Filter, review, and select the workspaces that should become Azure-connected stacks.</p></div>
+              <div class="detail-card"><span class="label">UI Focus</span><p>Workspace table with repo, subscription hint, execution mode, and recent run health.</p></div>
+              <div class="detail-card"><span class="label">System Behavior</span><p>Reads workspace, run, and state metadata to determine likely Azure-managed candidates.</p></div>
+              <div class="detail-card"><span class="label">User Concern</span><p>“Is Azure showing me the right workspaces, or is this list noisy and incomplete?”</p></div>
+            </div>
+          </article>
+          <aside class="callout-stack">
+            <div class="callout highlight"><span class="callout-title">Layout Note</span><p>Make this tab feel like a selection workspace: table left, evidence or filters right, action bar pinned low.</p></div>
+            <div class="callout warning"><span class="callout-title">Risk To Avoid</span><p>Showing too many low-confidence matches will erode trust faster than showing a smaller, clearer list.</p></div>
+          </aside>
+        </section>
+
+        <section class="step-panel" id="panel-step-6" role="tabpanel" aria-labelledby="tab-step-6">
+          <article class="step-card">
+            <div>
+              <p class="eyebrow">Step 6</p>
+              <h3 class="step-title">Map Workspaces To Azure Scope</h3>
+              <p class="step-summary">For each selected workspace, the operator assigns subscription or management group, environment, and owner so Azure can govern it correctly.</p>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-card"><span class="label">User Action</span><p>Complete scope and ownership mapping for each workspace in scope.</p></div>
+              <div class="detail-card"><span class="label">UI Focus</span><p>Structured mapping rows with scope pickers, environment tags, and owner fields.</p></div>
+              <div class="detail-card"><span class="label">System Behavior</span><p>Prepares managed identity, RBAC, and allowed-scope checks behind the scenes.</p></div>
+              <div class="detail-card"><span class="label">User Concern</span><p>“If I map this wrong, will Azure attach the workspace to the wrong subscription?”</p></div>
+            </div>
+          </article>
+          <aside class="callout-stack">
+            <div class="callout highlight"><span class="callout-title">Layout Note</span><p>This tab benefits from row-level validation and a persistent right-side summary of mappings already completed.</p></div>
+            <div class="callout success"><span class="callout-title">Success Signal</span><p>Ownership and environment metadata are explicit before the user reaches validation.</p></div>
+          </aside>
+        </section>
+
+        <section class="step-panel" id="panel-step-7" role="tabpanel" aria-labelledby="tab-step-7">
+          <article class="step-card">
+            <div>
+              <p class="eyebrow">Step 7</p>
+              <h3 class="step-title">Validate State And Ownership</h3>
+              <p class="step-summary">This is the trust checkpoint. Azure compares Terraform state references with Azure resource identifiers and confirms the mapped scope without changing infrastructure.</p>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-card"><span class="label">User Action</span><p>Review match results, mismatches, and whether the connection is safe to continue.</p></div>
+              <div class="detail-card"><span class="label">UI Focus</span><p>Non-destructive validation report with “resources found,” “resources mismatched,” and “no changes applied” messaging.</p></div>
+              <div class="detail-card"><span class="label">System Behavior</span><p>Checks state version data, resource graph evidence, and federated identity readiness.</p></div>
+              <div class="detail-card"><span class="label">User Concern</span><p>“Is this the step where something hidden changes, or is Azure really just proving what it sees?”</p></div>
+            </div>
+          </article>
+          <aside class="callout-stack">
+            <div class="callout warning"><span class="callout-title">Critical Message</span><p>The screen should visibly say that no plan, apply, or state migration is happening here.</p></div>
+            <div class="callout success"><span class="callout-title">Success Signal</span><p>The user sees a credible governed-resource count and enough evidence to proceed confidently.</p></div>
+          </aside>
+        </section>
+
+        <section class="step-panel" id="panel-step-8" role="tabpanel" aria-labelledby="tab-step-8">
+          <article class="step-card">
+            <div>
+              <p class="eyebrow">Step 8</p>
+              <h3 class="step-title">Enable Azure Governance Overlays</h3>
+              <p class="step-summary">This is where Azure delivers additive value: policy checks, approval requirements, region or SKU limits, and cost signals layered around Terraform.</p>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-card"><span class="label">User Action</span><p>Choose the controls that should apply to these connected stacks now.</p></div>
+              <div class="detail-card"><span class="label">UI Focus</span><p>Control cards with clear “optional,” “recommended,” and “required for prod” labels.</p></div>
+              <div class="detail-card"><span class="label">System Behavior</span><p>Saves policy and approval configuration without changing where Terraform plans and applies run.</p></div>
+              <div class="detail-card"><span class="label">User Concern</span><p>“Are these guardrails useful, or is Azure trying to replace Sentinel and my existing workflows?”</p></div>
+            </div>
+          </article>
+          <aside class="callout-stack">
+            <div class="callout highlight"><span class="callout-title">Layout Note</span><p>Use grouped policy tiles. This tab should feel like selective layering, not a mandatory configuration gauntlet.</p></div>
+            <div class="callout warning"><span class="callout-title">Risk To Avoid</span><p>If every control looks mandatory, the flow shifts from additive governance to perceived takeover.</p></div>
+          </aside>
+        </section>
+
+        <section class="step-panel" id="panel-step-9" role="tabpanel" aria-labelledby="tab-step-9">
+          <article class="step-card">
+            <div>
+              <p class="eyebrow">Step 9</p>
+              <h3 class="step-title">Register Connected Stack Resources</h3>
+              <p class="step-summary">Azure writes the connected representation of each Terraform stack so it becomes visible, attributable, and supportable inside Azure.</p>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-card"><span class="label">User Action</span><p>Confirm setup and finish registration after validation and governance choices are complete.</p></div>
+              <div class="detail-card"><span class="label">UI Focus</span><p>Registration summary, per-workspace result list, and explicit confirmation that no Terraform apply ran.</p></div>
+              <div class="detail-card"><span class="label">System Behavior</span><p>Creates Azure-side inventory records linked to HCP workspace, scope, repo, owner, and governance metadata.</p></div>
+              <div class="detail-card"><span class="label">User Concern</span><p>“Will I get real Azure visibility after this, or just a confirmation message with no tangible value?”</p></div>
+            </div>
+          </article>
+          <aside class="callout-stack">
+            <div class="callout success"><span class="callout-title">Layout Note</span><p>Show a concrete “before vs after” inventory view here. This is the moment the connected model should become visible.</p></div>
+            <div class="callout highlight"><span class="callout-title">Success Signal</span><p>The user can point to Azure-native objects that now represent the Terraform estate.</p></div>
+          </aside>
+        </section>
+
+        <section class="step-panel" id="panel-step-10" role="tabpanel" aria-labelledby="tab-step-10">
+          <article class="step-card">
+            <div>
+              <p class="eyebrow">Step 10</p>
+              <h3 class="step-title">Operate Connected Stacks</h3>
+              <p class="step-summary">This is the bridge to Scenario B. Azure now shows Terraform-managed infrastructure, policy, run status, approval controls, and support context while HCP Terraform stays the deep action surface.</p>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-card"><span class="label">User Action</span><p>Inspect stacks by subscription, review policy and run status, approve or block future applies, and hand issues to support.</p></div>
+              <div class="detail-card"><span class="label">UI Focus</span><p>Connected stack inventory, status summaries, approval controls, and clear deep links to HCP Terraform.</p></div>
+              <div class="detail-card"><span class="label">System Behavior</span><p>Reads status and governance metadata across Azure and HCP-linked stack records.</p></div>
+              <div class="detail-card"><span class="label">User Concern</span><p>“Can Azure add useful operations here without hiding the real Terraform control plane?”</p></div>
+            </div>
+          </article>
+          <aside class="callout-stack">
+            <div class="callout success"><span class="callout-title">Bridge To Final Screen</span><p>This tab is where the tabbed experience transitions into the steady-state single-screen operating view.</p></div>
+            <div class="callout highlight"><span class="callout-title">Design Constraint</span><p>Keep Azure controls visible, but every deep action should still acknowledge HCP Terraform as the authoring and execution source.</p></div>
+          </aside>
+        </section>
+      </main>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-finish">
+    <div class="shell final-layout">
+      <article class="panel final-card">
+        <p class="eyebrow">Scenario B</p>
+        <h2 class="final-title">The Connected Operating View</h2>
+        <p class="final-lead">
+          The final screen is the steady-state destination. It should feel calmer than the onboarding flow: fewer decisions,
+          more clarity, and obvious separation between Azure governance actions and HCP Terraform deep work.
+        </p>
+        <div class="final-grid">
+          <div class="chip">
+            <strong>Azure Does</strong>
+            <span>Inventory, policy signals, approvals, support context, ownership metadata, and subscription-level visibility.</span>
+          </div>
+          <div class="chip">
+            <strong>HCP Terraform Does</strong>
+            <span>Module authoring, plan and apply execution, deeper debugging, and workspace-native Terraform actions.</span>
+          </div>
+          <div class="chip">
+            <strong>Primary Outcome</strong>
+            <span>Azure gains awareness and governance context without pulling Terraform functionality into Azure.</span>
+          </div>
+          <div class="chip">
+            <strong>Iteration Path</strong>
+            <span>From here you can add richer tables, approval drawers, and support workflows without changing the overall screen model.</span>
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel final-window" aria-label="Final operating screen preview">
+        <div class="window-bar">
+          <span class="window-dot"></span>
+          <span class="window-dot"></span>
+          <span class="window-dot"></span>
+        </div>
+        <div class="final-body">
+          <div class="final-sidebar">
+            <div class="nav-chip">Connected Stacks</div>
+            <div class="nav-chip">Approvals</div>
+            <div class="nav-chip">Policy Signals</div>
+            <div class="nav-chip">Support Context</div>
+          </div>
+          <div class="final-main-card">
+            <div class="status-row">
+              <div class="status-pill">
+                <strong>Visibility</strong>
+                <span>View Terraform-managed infra by subscription.</span>
+              </div>
+              <div class="status-pill">
+                <strong>Governance</strong>
+                <span>Approve or block future applies with Azure controls.</span>
+              </div>
+              <div class="status-pill">
+                <strong>Support</strong>
+                <span>Hand issues to Microsoft with linked Terraform context.</span>
+              </div>
+            </div>
+            <div class="callout success">
+              <span class="callout-title">Final Screen Goal</span>
+              <p>Show ongoing value without implying that Azure replaced the Terraform workflow. This is the operating layer, not the new execution engine.</p>
+            </div>
+            <p class="final-caption">
+              Draft intent: one intro screen, one tabbed journey screen, one steady-state screen. The structure is deliberately simple so the next pass can focus on hierarchy, naming, and which parts deserve richer interaction.
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const panels = Array.from(document.querySelectorAll('.step-panel'));
+
+    function activateTab(tab) {
+      const targetId = tab.dataset.panel;
+      tabs.forEach((item) => {
+        item.setAttribute('aria-selected', String(item === tab));
+        item.tabIndex = item === tab ? 0 : -1;
+      });
+      panels.forEach((panel) => {
+        panel.classList.toggle('is-active', panel.id === targetId);
+      });
+    }
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activateTab(tab));
+      tab.addEventListener('keydown', (event) => {
+        const lastIndex = tabs.length - 1;
+        let nextIndex = index;
+
+        if (event.key === 'ArrowRight') nextIndex = index === lastIndex ? 0 : index + 1;
+        if (event.key === 'ArrowLeft') nextIndex = index === 0 ? lastIndex : index - 1;
+        if (event.key === 'Home') nextIndex = 0;
+        if (event.key === 'End') nextIndex = lastIndex;
+
+        if (nextIndex !== index) {
+          event.preventDefault();
+          tabs[nextIndex].focus();
+          activateTab(tabs[nextIndex]);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
