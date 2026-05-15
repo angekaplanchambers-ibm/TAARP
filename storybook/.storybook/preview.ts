@@ -1,7 +1,8 @@
 import type { Preview } from '@storybook/react'
 import React from 'react'
 
-// Import design tokens (grayscale wireframe system)
+// Import Helios product tokens, then the local wireframe token aliases.
+import '@hashicorp/design-system-tokens/dist/products/css/tokens.css'
 import '@z/ds/index.css'
 
 // Import the browser chrome wrapper

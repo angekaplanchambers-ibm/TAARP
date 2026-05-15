@@ -8,36 +8,36 @@
 @layer base {
   :root {
     /* -- Surfaces -- */
-    --z-bg:             #ffffff;
-    --z-bg-hover:       #e8e8e8;
-    --z-layer-01:       #f4f4f4;
-    --z-layer-02:       #e0e0e0;
-    --z-surface:        #f4f4f4;
+    --z-bg:             var(--token-color-page-primary, #ffffff);
+    --z-bg-hover:       var(--token-color-surface-interactive-hover, #e8e8e8);
+    --z-layer-01:       var(--token-color-surface-faint, #f4f4f4);
+    --z-layer-02:       var(--token-color-surface-strong, #e0e0e0);
+    --z-surface:        var(--token-color-surface-faint, #f4f4f4);
     --z-overlay:        rgba(0, 0, 0, 0.3);
 
     /* -- Borders -- */
-    --z-border-subtle:  #c6c6c6;
-    --z-border-strong:  #8d8d8d;
+    --z-border-subtle:  var(--token-color-border-primary, #c6c6c6);
+    --z-border-strong:  var(--token-color-border-strong, #8d8d8d);
 
     /* -- Text -- */
-    --z-text-primary:   #161616;
-    --z-text-secondary: #525252;
-    --z-text-helper:    #6f6f6f;
-    --z-text-placeholder: #8d8d8d;
+    --z-text-primary:   var(--token-color-foreground-strong, #161616);
+    --z-text-secondary: var(--token-color-foreground-primary, #525252);
+    --z-text-helper:    var(--token-color-foreground-faint, #6f6f6f);
+    --z-text-placeholder: var(--token-color-foreground-disabled, #8d8d8d);
 
     /* -- Interactive (blue for focus/links only) -- */
-    --z-focus:          #0f62fe;
-    --z-interactive:    #0f62fe;
+    --z-focus:          var(--token-color-focus-action-internal, #0f62fe);
+    --z-interactive:    var(--token-color-foreground-action, #0f62fe);
 
     /* -- Status (functional differentiation) -- */
-    --z-success:        #198038;
-    --z-error:          #da1e28;
-    --z-warning:        #f1c21b;
-    --z-info:           #0043ce;
+    --z-success:        var(--token-color-foreground-success, #198038);
+    --z-error:          var(--token-color-foreground-critical, #da1e28);
+    --z-warning:        var(--token-color-foreground-warning, #f1c21b);
+    --z-info:           var(--token-color-foreground-action-active, #0043ce);
 
     /* -- Typography -- */
-    --z-font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --z-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    --z-font-sans: var(--token-typography-font-stack-text, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+    --z-font-mono: var(--token-typography-font-stack-code, ui-monospace, 'SF Mono', Menlo, Consolas, monospace);
 
     --z-text-2xs:  0.625rem;
     --z-text-xs:   0.6875rem;
@@ -72,18 +72,30 @@
     --z-space-09: 3rem;
     --z-space-10: 4rem;
 
+    /* -- Helios-compatible layout aliases -- */
+    --hds-space-4: 0.25rem;
+    --hds-space-8: 0.5rem;
+    --hds-space-12: 0.75rem;
+    --hds-space-16: 1rem;
+    --hds-space-20: 1.25rem;
+    --hds-space-24: 1.5rem;
+    --hds-space-32: 2rem;
+    --hds-breakpoint-sm: 480px;
+    --hds-breakpoint-md: 768px;
+    --hds-breakpoint-lg: 1024px;
+
     /* -- Border Radius -- */
     --z-radius-none: 0;
-    --z-radius-sm:   2px;
-    --z-radius-md:   4px;
-    --z-radius-lg:   8px;
+    --z-radius-sm:   var(--token-border-radius-x-small, 2px);
+    --z-radius-md:   var(--token-border-radius-small, 4px);
+    --z-radius-lg:   var(--token-border-radius-large, 8px);
     --z-radius-xl:   12px;
     --z-radius-full: 50%;
 
     /* -- Shadows -- */
-    --z-shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.05);
-    --z-shadow-md:   0 2px 8px rgba(0, 0, 0, 0.08);
-    --z-shadow-lg:   0 4px 16px rgba(0, 0, 0, 0.12);
+    --z-shadow-sm:   var(--token-elevation-low-box-shadow, 0 1px 3px rgba(0, 0, 0, 0.05));
+    --z-shadow-md:   var(--token-elevation-mid-box-shadow, 0 2px 8px rgba(0, 0, 0, 0.08));
+    --z-shadow-lg:   var(--token-elevation-high-box-shadow, 0 4px 16px rgba(0, 0, 0, 0.12));
 
     /* -- Transitions -- */
     --z-transition-fast: 0.15s ease;
@@ -120,7 +132,7 @@
 
   /* Focus ring */
   *:focus-visible {
-    outline: 2px solid var(--z-focus);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: var(--token-focus-ring-action-box-shadow, 0 0 0 2px var(--z-focus));
   }
 }
