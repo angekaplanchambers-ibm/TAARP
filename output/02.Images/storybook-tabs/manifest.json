@@ -1,0 +1,98 @@
+{
+  "storybookUrl": "http://127.0.0.1:6010/iframe.html?id=wireframes-azure-terraform-rp-tabbed-form--onboarding-form&viewMode=story",
+  "capturedAt": "2026-05-15T15:06:45.586Z",
+  "width": 1600,
+  "height": 1100,
+  "captures": [
+    {
+      "index": 0,
+      "code": "A1",
+      "title": "Initial Setup in Azure Portal",
+      "fileName": "01-a1-initial-setup-in-azure-portal.png",
+      "filePath": "/Users/ange/TAARP/output/02.Images/storybook-tabs/01-a1-initial-setup-in-azure-portal.png",
+      "width": 1600,
+      "height": 1100
+    },
+    {
+      "index": 1,
+      "code": "A2",
+      "title": "Connect to HCP Terraform",
+      "fileName": "02-a2-connect-to-hcp-terraform.png",
+      "filePath": "/Users/ange/TAARP/output/02.Images/storybook-tabs/02-a2-connect-to-hcp-terraform.png",
+      "width": 1600,
+      "height": 1100
+    },
+    {
+      "index": 2,
+      "code": "A3",
+      "title": "Choose Onboarding Mode",
+      "fileName": "03-a3-choose-onboarding-mode.png",
+      "filePath": "/Users/ange/TAARP/output/02.Images/storybook-tabs/03-a3-choose-onboarding-mode.png",
+      "width": 1600,
+      "height": 1100
+    },
+    {
+      "index": 3,
+      "code": "A4",
+      "title": "Discover Existing Terraform Workspaces",
+      "fileName": "04-a4-discover-existing-terraform-workspaces.png",
+      "filePath": "/Users/ange/TAARP/output/02.Images/storybook-tabs/04-a4-discover-existing-terraform-workspaces.png",
+      "width": 1600,
+      "height": 1100
+    },
+    {
+      "index": 4,
+      "code": "A5",
+      "title": "Map Workspaces to Azure Scope",
+      "fileName": "05-a5-map-workspaces-to-azure-scope.png",
+      "filePath": "/Users/ange/TAARP/output/02.Images/storybook-tabs/05-a5-map-workspaces-to-azure-scope.png",
+      "width": 1600,
+      "height": 1100
+    },
+    {
+      "index": 5,
+      "code": "A6",
+      "title": "Verify State and Resource Ownership",
+      "fileName": "06-a6-verify-state-and-resource-ownership.png",
+      "filePath": "/Users/ange/TAARP/output/02.Images/storybook-tabs/06-a6-verify-state-and-resource-ownership.png",
+      "width": 1600,
+      "height": 1100
+    },
+    {
+      "index": 6,
+      "code": "A7",
+      "title": "Enable Azure Governance",
+      "fileName": "07-a7-enable-azure-governance.png",
+      "filePath": "/Users/ange/TAARP/output/02.Images/storybook-tabs/07-a7-enable-azure-governance.png",
+      "width": 1600,
+      "height": 1100
+    },
+    {
+      "index": 7,
+      "code": "A8",
+      "title": "Register Terraform Workspaces as Azure Resources",
+      "fileName": "08-a8-register-terraform-workspaces-as-azure-resources.png",
+      "filePath": "/Users/ange/TAARP/output/02.Images/storybook-tabs/08-a8-register-terraform-workspaces-as-azure-resources.png",
+      "width": 1600,
+      "height": 1100
+    },
+    {
+      "index": 8,
+      "code": "A9",
+      "title": "Confirm and Finish",
+      "fileName": "09-a9-confirm-and-finish.png",
+      "filePath": "/Users/ange/TAARP/output/02.Images/storybook-tabs/09-a9-confirm-and-finish.png",
+      "width": 1600,
+      "height": 1100
+    },
+    {
+      "index": 9,
+      "code": "B1",
+      "title": "Operate After Setup Confirmation",
+      "fileName": "10-b1-operate-after-setup-confirmation.png",
+      "filePath": "/Users/ange/TAARP/output/02.Images/storybook-tabs/10-b1-operate-after-setup-confirmation.png",
+      "width": 1600,
+      "height": 1100
+    }
+  ]
+}
