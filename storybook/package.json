@@ -3,7 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "archive-version-previews": "node stories/wireframes/_archive-version-previews.mjs",
+    "generate-versions": "node stories/wireframes/_generate-version-stories.mjs",
+    "prestorybook": "npm run generate-versions",
     "storybook": "storybook dev -p 6007",
+    "prebuild-storybook": "npm run generate-versions",
     "build-storybook": "storybook build"
   },
   "dependencies": {

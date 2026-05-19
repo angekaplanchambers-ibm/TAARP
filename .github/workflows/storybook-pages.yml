@@ -21,6 +21,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Capture production timestamp
+        run: echo "VERSION_PRODUCTION_AT=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -32,6 +37,10 @@ jobs:
       - name: Install dependencies
         working-directory: storybook
         run: npm ci
+
+      - name: Archive version previews
+        working-directory: storybook
+        run: npm run archive-version-previews
 
       - name: Build Storybook
         working-directory: storybook

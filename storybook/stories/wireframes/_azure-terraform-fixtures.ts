@@ -41,26 +41,18 @@ export interface AzureFormSection {
 
 export interface AzureFormStep {
   code: string;
-  scenario: 'Scenario A' | 'Scenario B';
   title: string;
-  status: string;
   summary: string;
   primaryAction: string;
   sections: AzureFormSection[];
-  guidance: Array<{
-    label: string;
-    value: string;
-  }>;
 }
 
-export const azureTerraformSteps: AzureFormStep[] = [
+const azureTerraformStepSource: AzureFormStep[] = [
   {
     code: 'A1',
-    scenario: 'Scenario A',
-    title: 'Initial Setup in Azure Portal',
-    status: 'Ready for input',
-    summary: 'Set expectations before the operator connects anything. Azure adds visibility and governance while HCP Terraform remains the control plane.',
-    primaryAction: 'Save setup expectations',
+    title: 'Connect to HCP TF',
+    summary: 'Establish trust between Azure and HCP Terraform before discovery, governance, or workspace registration begins.',
+    primaryAction: 'Continue after HCP connection',
     sections: [
       {
         title: 'Entry point',
@@ -81,17 +73,10 @@ export const azureTerraformSteps: AzureFormStep[] = [
         ],
       },
     ],
-    guidance: [
-      { label: 'User question', value: 'Is this greenfield only, or can I connect what I already have?' },
-      { label: 'Required signal', value: 'Show "existing Terraform" before the primary action.' },
-      { label: 'Next tab', value: 'Establish trust with HCP Terraform connection.' },
-    ],
   },
   {
     code: 'A2',
-    scenario: 'Scenario A',
     title: 'Connect to HCP Terraform',
-    status: 'Requires identity',
     summary: 'Capture how the operator creates or connects an HCP Terraform organization and verify permission before workspace discovery.',
     primaryAction: 'Verify HCP organization',
     sections: [
@@ -112,17 +97,10 @@ export const azureTerraformSteps: AzureFormStep[] = [
         ],
       },
     ],
-    guidance: [
-      { label: 'Permission gate', value: 'Do not let discovery start until org admin or onboarding permission is verified.' },
-      { label: 'Recovery', value: 'If permission fails, explain which HCP role is needed.' },
-      { label: 'Trust cue', value: 'Show the selected org name immediately after OAuth returns.' },
-    ],
   },
   {
     code: 'A3',
-    scenario: 'Scenario A',
     title: 'Choose Onboarding Mode',
-    status: 'Decision required',
     summary: 'Make the existing-workspace path the selected and honest path. Import remains visible as future or limited scope.',
     primaryAction: 'Continue with existing workspaces',
     sections: [
@@ -141,17 +119,10 @@ export const azureTerraformSteps: AzureFormStep[] = [
         ],
       },
     ],
-    guidance: [
-      { label: 'Design pattern', value: 'Use radio selection because this is a path decision.' },
-      { label: 'Avoid', value: 'Do not make import look equivalent to the existing workspace path.' },
-      { label: 'Copy requirement', value: 'Use "existing workspaces" directly.' },
-    ],
   },
   {
     code: 'A4',
-    scenario: 'Scenario A',
     title: 'Discover Existing Terraform Workspaces',
-    status: 'Selection in progress',
     summary: 'Query HCP Terraform for AzureRM workspaces, subscription hints, execution mode, and run health. The form lets the operator select eligible workspaces.',
     primaryAction: 'Add selected workspaces',
     sections: [
@@ -173,17 +144,10 @@ export const azureTerraformSteps: AzureFormStep[] = [
         ],
       },
     ],
-    guidance: [
-      { label: 'Evidence needed', value: 'Provider, subscription hint, execution mode, and run health must be visible.' },
-      { label: 'Selection rule', value: 'Low-confidence local execution should be skippable without blocking the flow.' },
-      { label: 'Next tab', value: 'Map selected workspaces to Azure scope.' },
-    ],
   },
   {
     code: 'A5',
-    scenario: 'Scenario A',
     title: 'Map Workspaces to Azure Scope',
-    status: 'Mapping required',
     summary: 'Collect subscription, management group, environment, and owner metadata for each selected workspace before Azure configures identity and trust.',
     primaryAction: 'Validate mappings',
     sections: [
@@ -206,17 +170,10 @@ export const azureTerraformSteps: AzureFormStep[] = [
         ],
       },
     ],
-    guidance: [
-      { label: 'Validation', value: 'Block continuation if a target subscription is not allowed.' },
-      { label: 'Identity outcome', value: 'Managed identity and OIDC trust are configured behind the scenes after validation.' },
-      { label: 'Secret handling', value: 'Service principals and secrets should be eliminated from the target flow.' },
-    ],
   },
   {
     code: 'A6',
-    scenario: 'Scenario A',
     title: 'Verify State and Resource Ownership',
-    status: 'Non-destructive validation',
     summary: 'Confirm Terraform state health, Azure resource IDs, and subscription alignment without applying changes or migrating state.',
     primaryAction: 'Accept validation results',
     sections: [
@@ -239,17 +196,10 @@ export const azureTerraformSteps: AzureFormStep[] = [
         ],
       },
     ],
-    guidance: [
-      { label: 'Trust copy', value: 'Say "No changes applied" in the main section.' },
-      { label: 'Mismatch handling', value: 'Treat minor mismatches as review items, not catastrophic failure.' },
-      { label: 'Gate', value: 'The operator must understand what Azure verified before governance is enabled.' },
-    ],
   },
   {
     code: 'A7',
-    scenario: 'Scenario A',
     title: 'Enable Azure Governance',
-    status: 'Optional controls',
     summary: 'Let the operator opt into Azure-side controls that wrap existing Terraform workflows without replacing Sentinel or HCP Terraform policy.',
     primaryAction: 'Save governance selection',
     sections: [
@@ -270,17 +220,10 @@ export const azureTerraformSteps: AzureFormStep[] = [
         ],
       },
     ],
-    guidance: [
-      { label: 'Value moment', value: 'This is the first tangible Azure-only value in the flow.' },
-      { label: 'Optionality', value: 'Recommended controls can be emphasized but should not feel forced.' },
-      { label: 'Boundary', value: 'Azure wraps, HCP Terraform executes.' },
-    ],
   },
   {
     code: 'A8',
-    scenario: 'Scenario A',
     title: 'Register Terraform Workspaces as Azure Resources',
-    status: 'Registration output',
     summary: 'Create Azure RP resources that represent Terraform stacks and environments, linking each record to HCP Terraform and Azure subscription context.',
     primaryAction: 'Register connected resources',
     sections: [
@@ -301,17 +244,10 @@ export const azureTerraformSteps: AzureFormStep[] = [
         ],
       },
     ],
-    guidance: [
-      { label: 'Connected moment', value: 'Make the new Azure resource records visible before finishing.' },
-      { label: 'Attribution', value: 'The registration enables Azure awareness, auditing, support, and visibility.' },
-      { label: 'Execution boundary', value: 'Do not move Terraform functionality into Azure.' },
-    ],
   },
   {
     code: 'A9',
-    scenario: 'Scenario A',
     title: 'Confirm and Finish',
-    status: 'Ready to finish',
     summary: 'Confirm that existing Terraform infrastructure is connected to Azure and show what the operator can now see without implying any hidden apply.',
     primaryAction: 'Finish onboarding',
     sections: [
@@ -334,17 +270,10 @@ export const azureTerraformSteps: AzureFormStep[] = [
         ],
       },
     ],
-    guidance: [
-      { label: 'Finish rule', value: 'The confirmation must show actual connected outcomes.' },
-      { label: 'Do not imply', value: 'No Terraform apply happened unless the user explicitly asks.' },
-      { label: 'Next tab', value: 'Operate connected stacks from Azure and HCP Terraform.' },
-    ],
   },
   {
     code: 'B1',
-    scenario: 'Scenario B',
     title: 'Operate After Setup Confirmation',
-    status: 'Steady state',
     summary: 'Show what the operator can do after setup: view Terraform-managed infrastructure in Azure, approve or block future applies, inspect policy and run status, and hand support context to Microsoft.',
     primaryAction: 'Save operating defaults',
     sections: [
@@ -365,10 +294,26 @@ export const azureTerraformSteps: AzureFormStep[] = [
         ],
       },
     ],
-    guidance: [
-      { label: 'Scenario B role', value: 'This is the operating surface after setup confirmation.' },
-      { label: 'Azure role', value: 'Visibility, approvals, policy status, run status, and support context.' },
-      { label: 'HCP role', value: 'Authoring, plans, applies, and deep debugging continue there.' },
-    ],
+  },
+];
+
+export const azureTerraformSteps: AzureFormStep[] = [
+  azureTerraformStepSource[0],
+  {
+    ...azureTerraformStepSource[3],
+    title: 'Workspaces',
+  },
+  {
+    ...azureTerraformStepSource[4],
+    title: 'Map Workspaces',
+  },
+  azureTerraformStepSource[6],
+  {
+    ...azureTerraformStepSource[7],
+    title: 'Register Workspaces in Azure',
+  },
+  {
+    ...azureTerraformStepSource[8],
+    title: 'Confirm',
   },
 ];
