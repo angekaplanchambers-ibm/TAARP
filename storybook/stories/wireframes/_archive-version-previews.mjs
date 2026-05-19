@@ -84,6 +84,8 @@ function archiveCommit(commit) {
       symlinkSync(nodeModulesPath, worktreeNodeModules, 'dir');
     }
 
+    mkdirSync(path.join(worktreeStorybookDir, 'public'), { recursive: true });
+
     rmSync(archiveDir, { recursive: true, force: true });
     mkdirSync(archiveDir, { recursive: true });
     run('npm', ['--prefix', worktreeStorybookDir, 'run', 'build-storybook', '--', '--output-dir', archiveDir], { cwd: repoRoot });

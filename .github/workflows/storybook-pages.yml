@@ -18,6 +18,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      VERSION_HISTORY_LIMIT: 12
+      VERSION_PREVIEW_LIMIT: 12
     steps:
       - name: Checkout
         uses: actions/checkout@v4
