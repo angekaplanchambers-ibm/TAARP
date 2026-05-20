@@ -391,12 +391,53 @@ const PRODUCT_FRAME: CSSProperties = {
 };
 
 const AZURE_BAR: CSSProperties = {
+  position: 'relative',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   height: 40,
   padding: '0 8px',
   background: '#0078d4',
+};
+
+const AZURE_MENU_BUTTON: CSSProperties = {
+  position: 'absolute',
+  left: 8,
+  width: 32,
+  height: 28,
+  border: '1px solid rgba(255, 255, 255, 0.65)',
+  borderRadius: 2,
+  background: 'transparent',
+  color: '#ffffff',
+  fontSize: 18,
+  fontWeight: 700,
+  lineHeight: 1,
+  cursor: 'pointer',
+};
+
+const AZURE_MENU_DROPDOWN: CSSProperties = {
+  position: 'absolute',
+  top: 36,
+  left: 8,
+  width: 220,
+  border: '1px solid #d2d0ce',
+  borderRadius: 2,
+  background: '#ffffff',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.22)',
+  zIndex: 4,
+  overflow: 'hidden',
+};
+
+const AZURE_MENU_ITEM: CSSProperties = {
+  width: '100%',
+  minHeight: 38,
+  border: 'none',
+  background: '#ffffff',
+  color: '#242424',
+  padding: '0 14px',
+  fontSize: 13,
+  textAlign: 'left',
+  cursor: 'pointer',
 };
 
 const AZURE_SEARCH: CSSProperties = {
@@ -540,7 +581,7 @@ const PRODUCT_PANEL: CSSProperties = {
 
 const HOME_BUTTON: CSSProperties = {
   position: 'absolute',
-  left: 8,
+  left: 48,
   height: 26,
   border: '1px solid rgba(255, 255, 255, 0.65)',
   borderRadius: 2,
@@ -612,19 +653,21 @@ function TerraformIcon() {
   return <span style={{ width: 28, height: 28, borderRadius: 4, display: 'grid', placeItems: 'center', background: '#f4ecff', color: '#7b42bc', fontSize: 13, fontWeight: 700 }} aria-hidden="true">T</span>;
 }
 
-function SplashCard({ icon, title, description }: { icon: string; title: string; description: string }) {
+function SplashCard({ icon, title, description, onClick }: { icon: string; title: string; description: string; onClick?: () => void }) {
+  const CardElement = onClick ? 'button' : 'div';
+
   return (
-    <div style={SPLASH_CARD}>
+    <CardElement type={onClick ? 'button' : undefined} onClick={onClick} style={{ ...SPLASH_CARD, border: `1px solid ${onClick ? '#106ebe' : '#e1e1e1'}`, cursor: onClick ? 'pointer' : 'default' }}>
       <span style={SPLASH_CARD_ICON} aria-hidden="true">{icon}</span>
       <span style={{ display: 'grid', gap: 12 }}>
         <span style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.25 }}>{title}</span>
         <span style={{ fontSize: 15, lineHeight: 1.45 }}>{description}</span>
       </span>
-    </div>
+    </CardElement>
   );
 }
 
-function AzureSearchForm({ onTerraformSelect }: { onTerraformSelect: () => void }) {
+function AzureSearchForm({ onTerraformSelect, resultsId = 'azure-search-results' }: { onTerraformSelect: () => void; resultsId?: string }) {
   const [searchQuery, setSearchQuery] = useState('');
   const shouldShowTerraformResult = searchQuery.trim().toLowerCase().startsWith('t');
 
@@ -639,7 +682,7 @@ function AzureSearchForm({ onTerraformSelect }: { onTerraformSelect: () => void 
     >
       <input
         aria-autocomplete="list"
-        aria-controls="azure-splash-search-results"
+        aria-controls={resultsId}
         aria-expanded={shouldShowTerraformResult}
         aria-label="Search resources, services and docs"
         autoComplete="off"
@@ -651,7 +694,7 @@ function AzureSearchForm({ onTerraformSelect }: { onTerraformSelect: () => void 
       />
       <button type="submit" style={AZURE_SEARCH_BUTTON}>Search</button>
       {shouldShowTerraformResult ? (
-        <div id="azure-splash-search-results" role="listbox" style={AZURE_SEARCH_DROPDOWN}>
+        <div id={resultsId} role="listbox" style={AZURE_SEARCH_DROPDOWN}>
           <button type="button" role="option" aria-selected="false" style={AZURE_SEARCH_RESULT} onClick={onTerraformSelect}>
             <TerraformIcon />
             <span>Terraform</span>
@@ -662,16 +705,24 @@ function AzureSearchForm({ onTerraformSelect }: { onTerraformSelect: () => void 
   );
 }
 
-function AzureTopBar({ onHome, onTerraformSelect }: { onHome?: () => void; onTerraformSelect: () => void }) {
+function AzureTopBar({ onHome, onTerraformSelect, onCreateResource }: { onHome?: () => void; onTerraformSelect: () => void; onCreateResource: () => void }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <header className="azure-splash-bar" style={AZURE_BAR} aria-label="Search resources">
+      <button type="button" aria-expanded={isMenuOpen} aria-haspopup="menu" aria-label="Open navigation menu" style={AZURE_MENU_BUTTON} onClick={() => setIsMenuOpen((currentValue) => !currentValue)}>☰</button>
+      {isMenuOpen ? (
+        <div role="menu" style={AZURE_MENU_DROPDOWN}>
+          <button type="button" role="menuitem" style={AZURE_MENU_ITEM} onClick={() => { setIsMenuOpen(false); onCreateResource(); }}>Create a resource</button>
+        </div>
+      ) : null}
       {onHome ? <button type="button" style={HOME_BUTTON} onClick={onHome}>Home</button> : null}
-      <AzureSearchForm onTerraformSelect={onTerraformSelect} />
+      <AzureSearchForm onTerraformSelect={onTerraformSelect} resultsId="azure-topbar-search-results" />
     </header>
   );
 }
 
-function AzurePortalSplash({ onSearchResult }: { onSearchResult: () => void }) {
+function AzurePortalSplash({ onSearchResult, onCreateResource }: { onSearchResult: () => void; onCreateResource: () => void }) {
   const cards = [
     { icon: 'TPL', title: 'Start with a template', description: 'Deploy in minutes using pre-made templates.' },
     { icon: '+', title: 'Create a resource', description: 'Choose a service to create a resource in your subscription.' },
@@ -681,7 +732,7 @@ function AzurePortalSplash({ onSearchResult }: { onSearchResult: () => void }) {
 
   return (
     <div style={SPLASH_FRAME}>
-      <AzureTopBar onTerraformSelect={onSearchResult} />
+      <AzureTopBar onTerraformSelect={onSearchResult} onCreateResource={onCreateResource} />
 
       <main className="azure-splash-main" style={SPLASH_MAIN}>
         <section style={SPLASH_CONTENT} aria-label="Azure portal start screen">
@@ -691,7 +742,7 @@ function AzurePortalSplash({ onSearchResult }: { onSearchResult: () => void }) {
 
           <div className="azure-splash-grid" style={SPLASH_GRID}>
             {cards.map((card) => (
-              <SplashCard key={card.title} icon={card.icon} title={card.title} description={card.description} />
+              <SplashCard key={card.title} icon={card.icon} title={card.title} description={card.description} onClick={card.title === 'Create a resource' ? onCreateResource : undefined} />
             ))}
           </div>
         </section>
@@ -700,10 +751,41 @@ function AzurePortalSplash({ onSearchResult }: { onSearchResult: () => void }) {
   );
 }
 
-function TerraformProductScreen({ stackWorkspaces, onGetStarted, onHome, onTerraformSearch }: { stackWorkspaces: WorkspaceRow[]; onGetStarted: () => void; onHome: () => void; onTerraformSearch: () => void }) {
+function CreateResourcePage({ onHome, onTerraformSearch, onCreateResource, onGetStarted }: { onHome: () => void; onTerraformSearch: () => void; onCreateResource: () => void; onGetStarted: () => void }) {
   return (
     <div style={PRODUCT_FRAME}>
-      <AzureTopBar onHome={onHome} onTerraformSelect={onTerraformSearch} />
+      <AzureTopBar onHome={onHome} onTerraformSelect={onTerraformSearch} onCreateResource={onCreateResource} />
+      <main style={PRODUCT_MAIN}>
+        <section style={{ ...PRODUCT_CONTENT, justifyItems: 'stretch' }} aria-label="Create a resource page">
+          <div style={{ display: 'grid', gap: hds.space20 }}>
+            <h1 style={{ margin: 0, fontSize: 34, lineHeight: 1.15, fontWeight: 700, letterSpacing: 0 }}>Create a resource</h1>
+            <div style={{ justifySelf: 'start' }}>
+              <AzureSearchForm onTerraformSelect={onTerraformSearch} resultsId="azure-create-resource-search-results" />
+            </div>
+          </div>
+
+          <section style={{ ...PRODUCT_PANEL, width: 'min(460px, 100%)', justifySelf: 'center' }} aria-label="Terraform resource card">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <TerraformIcon />
+              <strong style={{ fontSize: 18, lineHeight: 1.25 }}>Terraform</strong>
+            </div>
+            <p style={{ margin: 0, color: '#3b3d45', fontSize: 16, lineHeight: 1.55 }}>
+              Connect existing Terraform-managed infrastructure to Azure without changing your current workflows.
+            </p>
+            <div>
+              <button type="button" style={BUTTON_PRIMARY} onClick={onGetStarted}>Get Started</button>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+function TerraformProductScreen({ stackWorkspaces, onGetStarted, onHome, onTerraformSearch, onCreateResource }: { stackWorkspaces: WorkspaceRow[]; onGetStarted: () => void; onHome: () => void; onTerraformSearch: () => void; onCreateResource: () => void }) {
+  return (
+    <div style={PRODUCT_FRAME}>
+      <AzureTopBar onHome={onHome} onTerraformSelect={onTerraformSearch} onCreateResource={onCreateResource} />
       <header style={PRODUCT_HEADER} aria-label="Terraform product header">
         <TerraformIcon />
         <h1 style={{ margin: 0, fontSize: 20, lineHeight: 1.25, fontWeight: 600, letterSpacing: 0 }}>Terraform</h1>
@@ -1284,7 +1366,7 @@ function StepperStep({ step, index, currentStep, onStepChange, onKeyDown }: { st
 
 export function AzureTerraformTabbedFormWireframe() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [screen, setScreen] = useState<'splash' | 'product' | 'stepper'>('splash');
+  const [screen, setScreen] = useState<'splash' | 'product' | 'resource' | 'stepper'>('splash');
   const [formSelections, setFormSelections] = useState<FormSelections>(() => getInitialFormSelections());
   const [selectedOrganization, setSelectedOrganization] = useState('');
   const [ssoStatus, setSsoStatus] = useState<SsoStatus>('idle');
@@ -1351,18 +1433,22 @@ export function AzureTerraformTabbedFormWireframe() {
   }
 
   if (screen === 'splash') {
-    return <AzurePortalSplash onSearchResult={() => setScreen('product')} />;
+    return <AzurePortalSplash onSearchResult={() => setScreen('product')} onCreateResource={() => setScreen('resource')} />;
   }
 
   if (screen === 'product') {
-    return <TerraformProductScreen stackWorkspaces={productStackWorkspaces} onGetStarted={() => setScreen('stepper')} onHome={() => setScreen('splash')} onTerraformSearch={() => setScreen('product')} />;
+    return <TerraformProductScreen stackWorkspaces={productStackWorkspaces} onGetStarted={() => setScreen('stepper')} onHome={() => setScreen('splash')} onTerraformSearch={() => setScreen('product')} onCreateResource={() => setScreen('resource')} />;
+  }
+
+  if (screen === 'resource') {
+    return <CreateResourcePage onHome={() => setScreen('splash')} onTerraformSearch={() => setScreen('product')} onCreateResource={() => setScreen('resource')} onGetStarted={() => setScreen('product')} />;
   }
 
   return (
     <div className="azure-terraform-shell" style={APP_FRAME}>
       <style>{RESPONSIVE_STYLES}</style>
       <a className="azure-terraform-skip-link" href="#azure-terraform-main" style={SKIP_LINK}>Skip to form</a>
-      <AzureTopBar onHome={() => setScreen('splash')} onTerraformSelect={() => setScreen('product')} />
+      <AzureTopBar onHome={() => setScreen('splash')} onTerraformSelect={() => setScreen('product')} onCreateResource={() => setScreen('resource')} />
       <main className="azure-terraform-main" id="azure-terraform-main" style={MAIN}>
         <section style={PAGE_CARD} aria-label="Stepper onboarding form">
           <TerraformHeader />
