@@ -807,9 +807,60 @@ function TerraformProductScreen({ stackWorkspaces, onGetStarted, onHome, onTerra
             </div>
           </div>
 
-          <section style={PRODUCT_PANEL} aria-labelledby="existing-terraform-stacks-heading">
-            <TerraformStacksTable selectedWorkspaces={stackWorkspaces} headingId="existing-terraform-stacks-heading" headingLevel="h2" description="Existing stacks already connected to Azure." />
-          </section>
+          {stackWorkspaces.length > 0 ? (
+            <section style={PRODUCT_PANEL} aria-labelledby="existing-terraform-stacks-heading">
+              <TerraformStacksTable selectedWorkspaces={stackWorkspaces} headingId="existing-terraform-stacks-heading" headingLevel="h2" description="Existing stacks already connected to Azure." />
+            </section>
+          ) : null}
+        </section>
+      </main>
+    </div>
+  );
+}
+
+function TerraformCSuccessScreen({ onHome, onTerraformSearch, onCreateResource }: { onHome: () => void; onTerraformSearch: () => void; onCreateResource: () => void }) {
+  return (
+    <div style={PRODUCT_FRAME}>
+      <AzureTopBar onHome={onHome} onTerraformSelect={onTerraformSearch} onCreateResource={onCreateResource} />
+      <header style={PRODUCT_HEADER} aria-label="Terraform product header">
+        <TerraformIcon />
+        <h1 style={{ margin: 0, fontSize: 20, lineHeight: 1.25, fontWeight: 600, letterSpacing: 0 }}>Terraform</h1>
+      </header>
+      <main style={PRODUCT_MAIN}>
+        <section style={PRODUCT_CONTENT} aria-label="Setup complete">
+          <div style={PRODUCT_PANEL}>
+            <div style={{ display: 'grid', gap: 14 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ color: hds.success, fontWeight: 700, fontSize: 20 }} aria-hidden="true">✓</span>
+                <span style={{ color: hds.success, fontWeight: 700, fontSize: 15 }}>Connected</span>
+              </div>
+              <h2 style={{ margin: 0, fontSize: 34, lineHeight: 1.15, fontWeight: 700 }}>You're set up.</h2>
+              <p style={{ margin: 0, maxWidth: 600, color: '#3b3d45', fontSize: 17, lineHeight: 1.55 }}>
+                Your first Terraform workspace is connected to Azure. Here's where to go next.
+              </p>
+            </div>
+          </div>
+          <div style={PRODUCT_PANEL}>
+            <div style={{ display: 'grid', gap: hds.space12 }}>
+              {[
+                { label: 'Open your workspace in HCP Terraform', detail: 'View your workspace, write your first configuration, and run a plan.' },
+                { label: 'Run your first plan', detail: 'A plan shows what Terraform would create or change without applying anything.' },
+                { label: 'Explore the Azure Terraform resource view', detail: 'See your connected workspace in the Azure portal.' },
+                { label: 'Read the getting started guide', detail: 'Step-by-step docs for managing Azure infrastructure with Terraform.' },
+              ].map((item) => (
+                <div key={item.label} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: 14, border: `1px solid ${hds.borderPrimary}`, borderRadius: hds.radiusLarge, background: hds.surfacePrimary }}>
+                  <span style={{ color: hds.brand, fontSize: 18, lineHeight: 1, minWidth: 20 }} aria-hidden="true">→</span>
+                  <span>
+                    <strong style={{ display: 'block', marginBottom: 4, lineHeight: 1.3, color: hds.brand }}>{item.label}</strong>
+                    <span style={{ display: 'block', color: hds.textSecondary, lineHeight: 1.45 }}>{item.detail}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button type="button" style={{ ...BUTTON_PRIMARY, background: 'transparent', color: hds.brand, border: `1px solid ${hds.brand}` }} onClick={onTerraformSearch}>View Terraform stacks</button>
+            </div>
+          </div>
         </section>
       </main>
     </div>
@@ -1005,43 +1056,77 @@ function formatWorkspaceName(name: string) {
     .join(' ');
 }
 
-function HcpConnectionStep({ selectedOrganization, ssoStatus, onOrganizationChange, onSsoStatusChange, onContinue }: { selectedOrganization: string; ssoStatus: SsoStatus; onOrganizationChange: (organization: string) => void; onSsoStatusChange: (status: SsoStatus) => void; onContinue: () => void }) {
+function HcpConnectionStep({ selectedOrganization, onOrganizationChange, onContinue }: { selectedOrganization: string; onOrganizationChange: (organization: string) => void; onContinue: () => void }) {
+  const [sessionState, setSessionState] = useState<'none' | 'signing-in' | 'signed-in'>('none');
+  const [oauthStatus, setOauthStatus] = useState<'idle' | 'authorizing' | 'authorized'>('idle');
+
   const hasSelectedOrganization = Boolean(selectedOrganization);
   const selectedWorkspaceCount = HCP_ORGANIZATION_WORKSPACE_COUNTS[selectedOrganization];
   const selectedOrganizationLabel = getOrganizationLabel(selectedOrganization);
+  // atlas-platform simulates an SSO-enforced organization
+  const isSsoEnforcedOrg = selectedOrganization === 'atlas-platform';
+  const canContinue = sessionState === 'signed-in' && hasSelectedOrganization && oauthStatus === 'authorized';
 
   useEffect(() => {
-    if (ssoStatus !== 'connecting') return undefined;
-
-    const timeoutId = window.setTimeout(() => onSsoStatusChange('connected'), 4000);
+    if (sessionState !== 'signing-in') return undefined;
+    const timeoutId = window.setTimeout(() => setSessionState('signed-in'), 2500);
     return () => window.clearTimeout(timeoutId);
-  }, [onSsoStatusChange, ssoStatus]);
+  }, [sessionState]);
+
+  useEffect(() => {
+    if (oauthStatus !== 'authorizing') return undefined;
+    const timeoutId = window.setTimeout(() => setOauthStatus('authorized'), 3000);
+    return () => window.clearTimeout(timeoutId);
+  }, [oauthStatus]);
 
   return (
     <form style={FORM_STACK} aria-label="Connect to HCP Terraform">
+      <section style={SECTION_CARD} aria-labelledby="hcp-session-heading">
+        <h3 id="hcp-session-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>HCP Terraform Account</h3>
+        {sessionState === 'signed-in' ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: hds.space8, padding: '8px 12px', background: hds.surfaceFaint, borderRadius: hds.radiusMedium, border: `1px solid ${hds.borderPrimary}` }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: hds.brand, color: '#fff', fontWeight: 700, fontSize: 13, flexShrink: 0 }}>A</span>
+            <span style={{ color: hds.textPrimary }}>Signed in as <strong>angela@company.com</strong></span>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', justifyItems: 'start', gap: hds.space12 }}>
+            <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.55 }}>Sign in to HCP Terraform to connect your organization.</p>
+            <Button
+              onClick={() => setSessionState('signing-in')}
+              disabledReason={sessionState === 'signing-in' ? 'Signing in...' : undefined}
+            >
+              {sessionState === 'signing-in' ? 'Signing in...' : 'Sign in to HCP Terraform'}
+            </Button>
+            {sessionState === 'signing-in' ? (
+              <p role="status" style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.5 }}>Redirecting to identity provider...</p>
+            ) : null}
+          </div>
+        )}
+      </section>
+
       <section style={SECTION_CARD} aria-labelledby="hcp-organization-heading">
         <h3 id="hcp-organization-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>HCP Terraform Organization</h3>
         <div style={{ display: 'grid', gap: hds.space12 }}>
-          <div>
-            <strong style={{ display: 'block', marginBottom: 4, lineHeight: 1.3 }}>Connect an existing HCP Terraform organization</strong>
-            <span style={{ display: 'block', color: hds.textSecondary, lineHeight: 1.45 }}>Use the organization that already manages Terraform workspaces.</span>
-          </div>
           <label htmlFor="hcp-organization">
-            <span style={LABEL}>Organizations</span>
+            <span style={LABEL}>Organization</span>
             <select
               id="hcp-organization"
-              style={INPUT}
+              style={{ ...INPUT, opacity: sessionState !== 'signed-in' ? 0.5 : 1 }}
               value={selectedOrganization}
               onChange={(event) => onOrganizationChange(event.target.value)}
+              disabled={sessionState !== 'signed-in'}
             >
               <option value="">Select an organization</option>
-              <option value="atlas-platform">Atlas Platform</option>
+              <option value="atlas-platform">Atlas Platform (SSO enforced)</option>
               <option value="northstar-cloud">Northstar Cloud</option>
               <option value="pioneer-infra">Pioneer Infra</option>
               <option value="summit-ops">Summit Ops</option>
             </select>
           </label>
-          {hasSelectedOrganization ? (
+          {sessionState !== 'signed-in' ? (
+            <p style={{ margin: 0, color: hds.textFaint, fontSize: 14, lineHeight: 1.5 }}>Sign in above to unlock organization selection.</p>
+          ) : null}
+          {hasSelectedOrganization && sessionState === 'signed-in' ? (
             <p role="status" style={{ margin: 0, color: hds.textSecondary, fontSize: 15, lineHeight: 1.5 }}>
               {selectedOrganizationLabel} has {selectedWorkspaceCount} Terraform Workspaces.
             </p>
@@ -1049,28 +1134,38 @@ function HcpConnectionStep({ selectedOrganization, ssoStatus, onOrganizationChan
         </div>
       </section>
 
-      <section style={SECTION_CARD} aria-labelledby="hcp-oauth-sso-heading">
-        <h3 id="hcp-oauth-sso-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>Initiating OAuth/SSO</h3>
-        <div style={{ display: 'grid', justifyItems: 'start', gap: hds.space12 }}>
-          <Button onClick={() => onSsoStatusChange('connecting')}>{ssoStatus === 'connected' ? 'Connected' : 'Initiate OAuth / SSO'}</Button>
-          {ssoStatus === 'connecting' ? (
-            <p role="status" style={{ margin: 0, color: hds.textSecondary, fontSize: 15, lineHeight: 1.5 }}>
-              Connecting through SSO. Waiting for identity provider response and validating access permissions...
+      {sessionState === 'signed-in' && hasSelectedOrganization ? (
+        <section style={SECTION_CARD} aria-labelledby="hcp-authorize-heading">
+          <h3 id="hcp-authorize-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>Authorize Azure</h3>
+          <div style={{ display: 'grid', justifyItems: 'start', gap: hds.space12 }}>
+            <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.55 }}>
+              {isSsoEnforcedOrg
+                ? `${selectedOrganizationLabel} requires company SSO. You'll be redirected to your identity provider to complete authorization.`
+                : 'Allow Azure to query and connect to your HCP Terraform organization. You can revoke this at any time.'}
             </p>
-          ) : null}
-          {ssoStatus === 'connected' ? (
-            <p role="status" style={{ margin: 0, color: hds.textSecondary, fontSize: 15, lineHeight: 1.5 }}>
-              Connected. You have admin and Onboarding permissions to proceed.
-            </p>
-          ) : null}
-        </div>
-      </section>
+            <Button
+              onClick={() => setOauthStatus('authorizing')}
+              disabledReason={oauthStatus === 'authorized' ? 'Already authorized.' : oauthStatus === 'authorizing' ? 'Authorization in progress.' : undefined}
+            >
+              {oauthStatus === 'authorized' ? 'Authorized' : isSsoEnforcedOrg ? 'Continue with company SSO' : 'Authorize Azure'}
+            </Button>
+            {oauthStatus === 'authorizing' ? (
+              <p role="status" style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.5 }}>
+                {isSsoEnforcedOrg ? 'Redirecting to identity provider...' : 'Waiting for authorization...'}
+              </p>
+            ) : null}
+            {oauthStatus === 'authorized' ? (
+              <p role="status" style={{ margin: 0, color: hds.success, lineHeight: 1.5 }}>Azure is authorized to connect to this organization.</p>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
 
       <div style={ACTIONS} aria-describedby="azure-terraform-action-help">
         <span className="azure-terraform-sr-only" id="azure-terraform-action-help">Primary action is placed on the right and secondary actions are grouped together.</span>
         <Button disabledReason="This is the first section.">Previous section</Button>
         <ButtonSet>
-          <Button variant="primary" disabledReason={hasSelectedOrganization ? undefined : 'Select an organization to continue.'} onClick={onContinue}>
+          <Button variant="primary" disabledReason={canContinue ? undefined : 'Sign in, select an organization, and authorize Azure to continue.'} onClick={onContinue}>
             Next
           </Button>
         </ButtonSet>
@@ -1407,59 +1502,160 @@ function ScenarioSelectScreen({ onSelect, onBack }: { onSelect: (scenario: Scena
 // ---------------------------------------------------------------------------
 
 function HcpConnectionStepB({ onPrevious, onContinue }: { onPrevious: () => void; onContinue: () => void }) {
+  const [hasAccount, setHasAccount] = useState<'no' | 'yes' | null>(null);
+  // Branch A: create new org
   const [orgName, setOrgName] = useState('');
   const [tier, setTier] = useState('Free');
   const [teamEmails, setTeamEmails] = useState('');
-  const [ssoStatus, setSsoStatus] = useState<SsoStatus>('idle');
+  const [oauthStatus, setOauthStatus] = useState<'idle' | 'authorizing' | 'authorized'>('idle');
+  // Branch B: existing account
+  const [workEmail, setWorkEmail] = useState('');
+  const [ssoDetected, setSsoDetected] = useState(false);
+  const [ssoStatus, setSsoStatus] = useState<'idle' | 'signing-in' | 'signed-in'>('idle');
+  const [existingOrgName, setExistingOrgName] = useState('');
+  const [existingOauthStatus, setExistingOauthStatus] = useState<'idle' | 'authorizing' | 'authorized'>('idle');
 
   useEffect(() => {
-    if (ssoStatus !== 'connecting') return undefined;
-    const timeoutId = window.setTimeout(() => setSsoStatus('connected'), 3500);
+    if (oauthStatus !== 'authorizing') return undefined;
+    const timeoutId = window.setTimeout(() => setOauthStatus('authorized'), 3500);
+    return () => window.clearTimeout(timeoutId);
+  }, [oauthStatus]);
+
+  useEffect(() => {
+    if (ssoStatus !== 'signing-in') return undefined;
+    const timeoutId = window.setTimeout(() => setSsoStatus('signed-in'), 2500);
     return () => window.clearTimeout(timeoutId);
   }, [ssoStatus]);
 
-  const canContinue = orgName.trim().length > 0 && ssoStatus === 'connected';
+  useEffect(() => {
+    if (existingOauthStatus !== 'authorizing') return undefined;
+    const timeoutId = window.setTimeout(() => setExistingOauthStatus('authorized'), 3000);
+    return () => window.clearTimeout(timeoutId);
+  }, [existingOauthStatus]);
+
+  function handleWorkEmailChange(value: string) {
+    setWorkEmail(value);
+    const domain = value.includes('@') ? value.split('@')[1] : '';
+    const isPersonal = ['gmail.com', 'outlook.com', 'hotmail.com', 'yahoo.com'].includes(domain ?? '');
+    setSsoDetected(Boolean(domain) && domain.includes('.') && !isPersonal);
+  }
+
+  const canContinueNo = orgName.trim().length > 0 && oauthStatus === 'authorized';
+  const canContinueYes = ssoStatus === 'signed-in' || existingOauthStatus === 'authorized';
+  const canContinue = (hasAccount === 'no' && canContinueNo) || (hasAccount === 'yes' && canContinueYes);
 
   return (
-    <form style={FORM_STACK} aria-label="Create HCP Terraform organization">
-      <section style={SECTION_CARD} aria-labelledby="b-org-heading">
-        <h3 id="b-org-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>New HCP Terraform Organization</h3>
-        <div style={{ display: 'grid', gap: hds.space14 }}>
-          <label htmlFor="b-org-name">
-            <span style={LABEL}>Organization name</span>
-            <input id="b-org-name" style={INPUT} value={orgName} onChange={(event) => setOrgName(event.target.value)} placeholder="e.g. my-company-infra" />
+    <form style={FORM_STACK} aria-label="Connect to HCP Terraform">
+      <section style={SECTION_CARD} aria-labelledby="b-account-question-heading">
+        <h3 id="b-account-question-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>Do you have an HCP Terraform account?</h3>
+        <div style={{ display: 'grid', gap: 10 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: hds.space8, cursor: 'pointer' }}>
+            <input type="radio" name="has-account" checked={hasAccount === 'no'} onChange={() => setHasAccount('no')} />
+            <span>No - create one now</span>
           </label>
-          <label htmlFor="b-tier">
-            <span style={LABEL}>Plan tier</span>
-            <select id="b-tier" style={INPUT} value={tier} onChange={(event) => setTier(event.target.value)}>
-              <option>Free</option>
-              <option>Plus</option>
-              <option>Enterprise</option>
-            </select>
-          </label>
-          <label htmlFor="b-team-emails">
-            <span style={LABEL}>Invite teammates (optional)</span>
-            <input id="b-team-emails" style={INPUT} value={teamEmails} onChange={(event) => setTeamEmails(event.target.value)} placeholder="email@company.com, email2@company.com" />
+          <label style={{ display: 'flex', alignItems: 'center', gap: hds.space8, cursor: 'pointer' }}>
+            <input type="radio" name="has-account" checked={hasAccount === 'yes'} onChange={() => setHasAccount('yes')} />
+            <span>Yes - I already have one</span>
           </label>
         </div>
       </section>
 
-      <section style={SECTION_CARD} aria-labelledby="b-oauth-heading">
-        <h3 id="b-oauth-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>Authorize Azure</h3>
-        <div style={{ display: 'grid', justifyItems: 'start', gap: hds.space12 }}>
-          <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.55 }}>Allow Azure to connect to your new HCP Terraform organization. You can revoke this at any time.</p>
-          <Button onClick={() => setSsoStatus('connecting')} disabledReason={ssoStatus === 'connected' ? 'Already authorized.' : undefined}>
-            {ssoStatus === 'connected' ? 'Authorized' : 'Authorize Azure'}
-          </Button>
-          {ssoStatus === 'connecting' ? <p role="status" style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.5 }}>Waiting for authorization...</p> : null}
-          {ssoStatus === 'connected' ? <p role="status" style={{ margin: 0, color: hds.success, lineHeight: 1.5 }}>Azure is authorized to connect to this organization.</p> : null}
-        </div>
-      </section>
+      {hasAccount === 'no' ? (
+        <>
+          <section style={SECTION_CARD} aria-labelledby="b-org-heading">
+            <h3 id="b-org-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>New HCP Terraform Organization</h3>
+            <div style={{ display: 'grid', gap: hds.space14 }}>
+              <label htmlFor="b-org-name">
+                <span style={LABEL}>Organization name</span>
+                <input id="b-org-name" style={INPUT} value={orgName} onChange={(event) => setOrgName(event.target.value)} placeholder="e.g. my-company-infra" />
+              </label>
+              <label htmlFor="b-tier">
+                <span style={LABEL}>Plan tier</span>
+                <select id="b-tier" style={INPUT} value={tier} onChange={(event) => setTier(event.target.value)}>
+                  <option>Free</option>
+                  <option>Plus</option>
+                  <option>Enterprise</option>
+                </select>
+              </label>
+              <label htmlFor="b-team-emails">
+                <span style={LABEL}>Invite teammates (optional)</span>
+                <input id="b-team-emails" style={INPUT} value={teamEmails} onChange={(event) => setTeamEmails(event.target.value)} placeholder="email@company.com, email2@company.com" />
+              </label>
+            </div>
+          </section>
+          <section style={SECTION_CARD} aria-labelledby="b-oauth-heading">
+            <h3 id="b-oauth-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>Authorize Azure</h3>
+            <div style={{ display: 'grid', justifyItems: 'start', gap: hds.space12 }}>
+              <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.55 }}>Allow Azure to connect to your new HCP Terraform organization. You can revoke this at any time.</p>
+              <Button
+                onClick={() => setOauthStatus('authorizing')}
+                disabledReason={oauthStatus === 'authorized' ? 'Already authorized.' : oauthStatus === 'authorizing' ? 'Authorization in progress.' : undefined}
+              >
+                {oauthStatus === 'authorized' ? 'Authorized' : 'Authorize Azure'}
+              </Button>
+              {oauthStatus === 'authorizing' ? <p role="status" style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.5 }}>Waiting for authorization...</p> : null}
+              {oauthStatus === 'authorized' ? <p role="status" style={{ margin: 0, color: hds.success, lineHeight: 1.5 }}>Azure is authorized to connect to this organization.</p> : null}
+            </div>
+          </section>
+        </>
+      ) : null}
+
+      {hasAccount === 'yes' ? (
+        <section style={SECTION_CARD} aria-labelledby="b-existing-heading">
+          <h3 id="b-existing-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>Sign in to HCP Terraform</h3>
+          <div style={{ display: 'grid', gap: hds.space14 }}>
+            <label htmlFor="b-work-email">
+              <span style={LABEL}>Work email</span>
+              <input
+                id="b-work-email"
+                type="email"
+                style={INPUT}
+                value={workEmail}
+                onChange={(event) => handleWorkEmailChange(event.target.value)}
+                placeholder="you@company.com"
+              />
+            </label>
+            {workEmail.includes('@') && ssoDetected ? (
+              <div style={{ display: 'grid', justifyItems: 'start', gap: hds.space12 }}>
+                <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.55 }}>
+                  Your organization uses company SSO. You'll be redirected to your identity provider to sign in.
+                </p>
+                <Button
+                  onClick={() => setSsoStatus('signing-in')}
+                  disabledReason={ssoStatus !== 'idle' ? (ssoStatus === 'signing-in' ? 'Signing in...' : 'Already signed in.') : undefined}
+                >
+                  {ssoStatus === 'signed-in' ? 'Signed in' : 'Sign in with company SSO'}
+                </Button>
+                {ssoStatus === 'signing-in' ? <p role="status" style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.5 }}>Redirecting to identity provider...</p> : null}
+                {ssoStatus === 'signed-in' ? <p role="status" style={{ margin: 0, color: hds.success, lineHeight: 1.5 }}>Signed in. Select an organization to continue.</p> : null}
+              </div>
+            ) : null}
+            {workEmail.includes('@') && !ssoDetected ? (
+              <div style={{ display: 'grid', gap: hds.space14 }}>
+                <label htmlFor="b-existing-org">
+                  <span style={LABEL}>Organization name</span>
+                  <input id="b-existing-org" style={INPUT} value={existingOrgName} onChange={(event) => setExistingOrgName(event.target.value)} placeholder="e.g. platform-prod" />
+                </label>
+                <div style={{ display: 'grid', justifyItems: 'start', gap: hds.space12 }}>
+                  <Button
+                    onClick={() => setExistingOauthStatus('authorizing')}
+                    disabledReason={existingOauthStatus === 'authorized' ? 'Already authorized.' : existingOauthStatus === 'authorizing' ? 'Authorization in progress.' : undefined}
+                  >
+                    {existingOauthStatus === 'authorized' ? 'Authorized' : 'Authorize Azure'}
+                  </Button>
+                  {existingOauthStatus === 'authorizing' ? <p role="status" style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.5 }}>Waiting for authorization...</p> : null}
+                  {existingOauthStatus === 'authorized' ? <p role="status" style={{ margin: 0, color: hds.success, lineHeight: 1.5 }}>Azure is authorized to connect to this organization.</p> : null}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
 
       <div style={ACTIONS}>
         <Button disabledReason="This is the first section.">Previous section</Button>
         <ButtonSet>
-          <Button variant="primary" disabledReason={canContinue ? undefined : 'Enter an organization name and authorize Azure to continue.'} onClick={onContinue}>Next</Button>
+          <Button variant="primary" disabledReason={canContinue ? undefined : 'Complete the steps above to continue.'} onClick={onContinue}>Next</Button>
         </ButtonSet>
       </div>
     </form>
@@ -1650,7 +1846,7 @@ function GetStartedStep({ onContinue }: { onContinue: () => void }) {
   );
 }
 
-function CreateFirstWorkspaceStep({ onPrevious, onContinue }: { onPrevious: () => void; onContinue: () => void }) {
+function CreateFirstWorkspaceStep({ onPrevious, onContinue, onSelectionChange }: { onPrevious: () => void; onContinue: () => void; onSelectionChange: (id: string, value: string) => void }) {
   const [workspaceName, setWorkspaceName] = useState('');
   const [subscription, setSubscription] = useState('');
   const [region, setRegion] = useState('');
@@ -1665,11 +1861,11 @@ function CreateFirstWorkspaceStep({ onPrevious, onContinue }: { onPrevious: () =
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: hds.space14 }} className="azure-terraform-field-grid">
           <label htmlFor="c-ws-name" style={{ gridColumn: '1 / -1' }}>
             <span style={LABEL}>Workspace name</span>
-            <input id="c-ws-name" style={INPUT} value={workspaceName} onChange={(event) => setWorkspaceName(event.target.value)} placeholder="e.g. azure-networking-dev" />
+            <input id="c-ws-name" style={INPUT} value={workspaceName} onChange={(event) => { setWorkspaceName(event.target.value); onSelectionChange('c-ws-name', event.target.value); }} placeholder="e.g. azure-networking-dev" />
           </label>
           <label htmlFor="c-ws-sub">
             <span style={LABEL}>Azure subscription</span>
-            <select id="c-ws-sub" style={INPUT} value={subscription} onChange={(event) => setSubscription(event.target.value)}>
+            <select id="c-ws-sub" style={INPUT} value={subscription} onChange={(event) => { setSubscription(event.target.value); onSelectionChange('c-ws-sub', event.target.value); }}>
               <option value="">Select subscription...</option>
               <option>My Azure Subscription</option>
               <option>Development Subscription</option>
@@ -1797,18 +1993,17 @@ function StepperStep({ step, index, currentStep, onStepChange, onKeyDown }: { st
   );
 }
 
-export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScreen }: { initialScenario?: Scenario; initialScreen?: 'splash' | 'product' | 'resource' | 'scenario' | 'stepper' } = {}) {
+export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScreen }: { initialScenario?: Scenario; initialScreen?: 'splash' | 'product' | 'resource' | 'scenario' | 'stepper' | 'c-success' } = {}) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [screen, setScreen] = useState<'splash' | 'product' | 'resource' | 'scenario' | 'stepper'>(initialScreen ?? 'splash');
+  const [screen, setScreen] = useState<'splash' | 'product' | 'resource' | 'scenario' | 'stepper' | 'c-success'>(initialScreen ?? 'splash');
   const [scenario, setScenario] = useState<Scenario | null>(initialScenario ?? null);
   const [formSelections, setFormSelections] = useState<FormSelections>(() => getInitialFormSelections());
   const [selectedOrganization, setSelectedOrganization] = useState('');
-  const [ssoStatus, setSsoStatus] = useState<SsoStatus>('idle');
   const [mapVerificationStatus, setMapVerificationStatus] = useState<MapVerificationStatus>('idle');
   const [verifiedResourceCount, setVerifiedResourceCount] = useState(0);
   const [verifiedWorkspaceCount, setVerifiedWorkspaceCount] = useState(0);
   const [showMapVerificationToast, setShowMapVerificationToast] = useState(false);
-  const [productStackWorkspaces, setProductStackWorkspaces] = useState<WorkspaceRow[]>(() => getProductStackWorkspaces());
+  const [productStackWorkspaces, setProductStackWorkspaces] = useState<WorkspaceRow[]>([]);
 
   const activeSteps = scenario === 'B' ? azureTerraformStepsB : scenario === 'C' ? azureTerraformStepsC : azureTerraformSteps;
   const activeStep = activeSteps[activeIndex];
@@ -1849,7 +2044,27 @@ export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScre
       const createdStackWorkspaces = getWorkspacesForOrganization(selectedOrganization).filter((workspace) => formSelections[`workspace:${workspace.id}`]);
       if (createdStackWorkspaces.length > 0) setProductStackWorkspaces(createdStackWorkspaces);
     }
-    setScreen('product');
+    if (scenario === 'B') {
+      const createdStackWorkspaces = ARM_RESOURCE_GROUPS
+        .filter((rg) => formSelections[`b-rg:${rg.id}`])
+        .map((rg): WorkspaceRow => ({
+          id: rg.id,
+          name: rg.name.replace(/^rg-/, ''),
+          repoNumber: 'n/a',
+          subscription: rg.subscription,
+          latestApplyStatus: 'Imported today',
+          resourceCount: rg.resourceCount,
+        }));
+      if (createdStackWorkspaces.length > 0) setProductStackWorkspaces(createdStackWorkspaces);
+    }
+    if (scenario === 'C') {
+      const wsName = (formSelections['c-ws-name'] as string | undefined) ?? 'azure-networking-dev';
+      const wsSub = (formSelections['c-ws-sub'] as string | undefined) ?? 'My Azure Subscription';
+      setProductStackWorkspaces([{ id: 'c-new-1', name: wsName, repoNumber: '#001', subscription: wsSub, latestApplyStatus: 'Connected today', resourceCount: 0 }]);
+      setScreen('c-success');
+    } else {
+      setScreen('product');
+    }
     setActiveIndex(0);
   }
 
@@ -1880,6 +2095,10 @@ export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScre
 
   if (screen === 'resource') {
     return <CreateResourcePage onHome={() => setScreen('splash')} onTerraformSearch={() => setScreen('product')} onCreateResource={() => setScreen('resource')} onGetStarted={() => setScreen('product')} />;
+  }
+
+  if (screen === 'c-success') {
+    return <TerraformCSuccessScreen onHome={() => setScreen('splash')} onTerraformSearch={() => setScreen('product')} onCreateResource={() => setScreen('resource')} />;
   }
 
   if (screen === 'scenario') {
@@ -1976,7 +2195,7 @@ export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScre
                 activeIndex === 0 ? (
                   <GetStartedStep onContinue={() => setActiveIndex(1)} />
                 ) : activeStep.title === 'Create Your First Workspace' ? (
-                  <CreateFirstWorkspaceStep onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
+                  <CreateFirstWorkspaceStep onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} onSelectionChange={handleSelectionChange} />
                 ) : activeIndex === activeSteps.length - 1 ? (
                   <ConfirmStepC selections={formSelections} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onConfirm={handleConfirmSetup} />
                 ) : (
@@ -1994,7 +2213,7 @@ export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScre
                 )
               ) : (
                 activeIndex === 0 ? (
-                  <HcpConnectionStep selectedOrganization={selectedOrganization} ssoStatus={ssoStatus} onOrganizationChange={setSelectedOrganization} onSsoStatusChange={setSsoStatus} onContinue={() => setActiveIndex(1)} />
+                  <HcpConnectionStep selectedOrganization={selectedOrganization} onOrganizationChange={setSelectedOrganization} onContinue={() => setActiveIndex(1)} />
                 ) : activeStep.title === 'Workspaces' ? (
                   <WorkspacesStep selectedOrganization={selectedOrganization} selections={formSelections} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
                 ) : activeStep.title === 'Map Workspaces' ? (
