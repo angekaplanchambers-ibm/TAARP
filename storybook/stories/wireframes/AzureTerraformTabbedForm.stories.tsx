@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { ButtonHTMLAttributes, CSSProperties, KeyboardEvent, ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { azureTerraformSteps } from './_azure-terraform-fixtures';
+import { azureTerraformSteps, azureTerraformStepsB, azureTerraformStepsC } from './_azure-terraform-fixtures';
 import type { AzureFormControl, AzureFormSection, AzureFormStep } from './_azure-terraform-fixtures';
 
+type Scenario = 'A' | 'B' | 'C';
 type FormValue = string | boolean;
 type FormSelections = Record<string, FormValue>;
 type SsoStatus = 'idle' | 'connecting' | 'connected';
@@ -19,8 +20,9 @@ type WorkspaceRow = {
 
 function getInitialFormSelections() {
   const selections: FormSelections = {};
+  const allSteps = [...azureTerraformSteps, ...azureTerraformStepsB, ...azureTerraformStepsC];
 
-  azureTerraformSteps.forEach((step) => {
+  allSteps.forEach((step) => {
     step.sections.forEach((section) => {
       section.controls.forEach((control) => {
         if (control.kind === 'text' || control.kind === 'textarea') {
@@ -893,6 +895,22 @@ function Control({ control, selections, onSelectionChange }: { control: AzureFor
     );
   }
 
+  if (control.kind === 'link') {
+    return (
+      <a
+        href={control.href}
+        style={{ ...CHOICE_CARD, textDecoration: 'none', color: hds.textPrimary, borderColor: hds.borderPrimary }}
+        onClick={(event) => event.preventDefault()}
+      >
+        <span style={{ color: hds.brand, fontSize: 18, lineHeight: 1 }} aria-hidden="true">→</span>
+        <span>
+          <strong style={{ display: 'block', marginBottom: 4, lineHeight: 1.3, color: hds.brand }}>{control.label}</strong>
+          <span style={{ display: 'block', color: hds.textSecondary, lineHeight: 1.45 }}>{control.description}</span>
+        </span>
+      </a>
+    );
+  }
+
   return (
     <label style={CHOICE_CARD}>
       <input type="checkbox" checked={Boolean(selections[control.id])} onChange={(event) => onSelectionChange(control.id, event.target.checked)} />
@@ -903,6 +921,14 @@ function Control({ control, selections, onSelectionChange }: { control: AzureFor
     </label>
   );
 }
+
+const ARM_RESOURCE_GROUPS = [
+  { id: 'rg-networking-prod', name: 'rg-networking-prod', subscription: 'Prod Networking', resourceCount: 38, location: 'eastus' },
+  { id: 'rg-identity-shared', name: 'rg-identity-shared', subscription: 'Shared Services', resourceCount: 24, location: 'eastus' },
+  { id: 'rg-app-prod', name: 'rg-app-prod', subscription: 'Production Apps', resourceCount: 44, location: 'westus2' },
+  { id: 'rg-data-platform', name: 'rg-data-platform', subscription: 'Data Platform', resourceCount: 29, location: 'eastus2' },
+  { id: 'rg-security-baseline', name: 'rg-security-baseline', subscription: 'Security', resourceCount: 31, location: 'eastus' },
+];
 
 function FormSection({ section, selections, onSelectionChange }: { section: AzureFormSection; selections: FormSelections; onSelectionChange: (id: string, value: FormValue) => void }) {
   return (
@@ -1321,9 +1347,416 @@ function ConfirmStep({ selections, selectedOrganization, onPrevious, onConfirm }
   );
 }
 
+// ---------------------------------------------------------------------------
+// Scenario selector screen
+// ---------------------------------------------------------------------------
+
+function ScenarioSelectScreen({ onSelect, onBack }: { onSelect: (scenario: Scenario) => void; onBack: () => void }) {
+  const [selected, setSelected] = useState<Scenario>('A');
+
+  const scenarios: { id: Scenario; label: string; helper: string }[] = [
+    { id: 'A', label: 'I already use Terraform and want to see my infrastructure in Azure', helper: 'Connect existing Terraform workspaces to Azure without changing your current workflows.' },
+    { id: 'B', label: 'I manage Azure resources and want to start using Terraform for governance', helper: 'Bring existing Azure resources under Terraform management and improve governance across your team.' },
+    { id: 'C', label: "I'm new to both and want to connect Azure and Terraform for the first time", helper: 'Set up from scratch with step-by-step guidance.' },
+  ];
+
+  return (
+    <div style={PRODUCT_FRAME}>
+      <AzureTopBar onTerraformSelect={onBack} onCreateResource={onBack} />
+      <header style={PRODUCT_HEADER} aria-label="Terraform product header">
+        <TerraformIcon />
+        <h1 style={{ margin: 0, fontSize: 20, lineHeight: 1.25, fontWeight: 600, letterSpacing: 0 }}>Terraform</h1>
+      </header>
+      <main style={PRODUCT_MAIN}>
+        <section style={PRODUCT_CONTENT} aria-label="Scenario selection">
+          <div style={{ display: 'grid', gap: 8 }}>
+            <h2 style={{ margin: 0, fontSize: 28, lineHeight: 1.2, fontWeight: 700 }}>Which situation fits you?</h2>
+            <p style={{ margin: 0, color: '#3b3d45', fontSize: 15, lineHeight: 1.55 }}>Your answer determines which setup steps you see. You can go back and change this at any time.</p>
+          </div>
+          <form style={{ display: 'grid', gap: 20 }}>
+            <div role="radiogroup" aria-label="Setup scenario" style={{ display: 'grid', gap: 12 }}>
+              {scenarios.map((scenario) => {
+                const isSelected = selected === scenario.id;
+                return (
+                  <label
+                    key={scenario.id}
+                    style={{ ...CHOICE_CARD, minHeight: 88, alignItems: 'center', borderColor: isSelected ? hds.brand : hds.borderPrimary, background: isSelected ? hds.brandFaint : hds.surfacePrimary, cursor: 'pointer' }}
+                  >
+                    <input type="radio" name="scenario" value={scenario.id} checked={isSelected} onChange={() => setSelected(scenario.id)} />
+                    <span>
+                      <strong style={{ display: 'block', marginBottom: 6, lineHeight: 1.3, fontSize: 15 }}>{scenario.label}</strong>
+                      <span style={{ display: 'block', color: hds.textSecondary, lineHeight: 1.45 }}>{scenario.helper}</span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <Button onClick={onBack}>Back</Button>
+              <Button variant="primary" onClick={() => onSelect(selected)}>Continue</Button>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Scenario B step components
+// ---------------------------------------------------------------------------
+
+function HcpConnectionStepB({ onPrevious, onContinue }: { onPrevious: () => void; onContinue: () => void }) {
+  const [orgName, setOrgName] = useState('');
+  const [tier, setTier] = useState('Free');
+  const [teamEmails, setTeamEmails] = useState('');
+  const [ssoStatus, setSsoStatus] = useState<SsoStatus>('idle');
+
+  useEffect(() => {
+    if (ssoStatus !== 'connecting') return undefined;
+    const timeoutId = window.setTimeout(() => setSsoStatus('connected'), 3500);
+    return () => window.clearTimeout(timeoutId);
+  }, [ssoStatus]);
+
+  const canContinue = orgName.trim().length > 0 && ssoStatus === 'connected';
+
+  return (
+    <form style={FORM_STACK} aria-label="Create HCP Terraform organization">
+      <section style={SECTION_CARD} aria-labelledby="b-org-heading">
+        <h3 id="b-org-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>New HCP Terraform Organization</h3>
+        <div style={{ display: 'grid', gap: hds.space14 }}>
+          <label htmlFor="b-org-name">
+            <span style={LABEL}>Organization name</span>
+            <input id="b-org-name" style={INPUT} value={orgName} onChange={(event) => setOrgName(event.target.value)} placeholder="e.g. my-company-infra" />
+          </label>
+          <label htmlFor="b-tier">
+            <span style={LABEL}>Plan tier</span>
+            <select id="b-tier" style={INPUT} value={tier} onChange={(event) => setTier(event.target.value)}>
+              <option>Free</option>
+              <option>Plus</option>
+              <option>Enterprise</option>
+            </select>
+          </label>
+          <label htmlFor="b-team-emails">
+            <span style={LABEL}>Invite teammates (optional)</span>
+            <input id="b-team-emails" style={INPUT} value={teamEmails} onChange={(event) => setTeamEmails(event.target.value)} placeholder="email@company.com, email2@company.com" />
+          </label>
+        </div>
+      </section>
+
+      <section style={SECTION_CARD} aria-labelledby="b-oauth-heading">
+        <h3 id="b-oauth-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>Authorize Azure</h3>
+        <div style={{ display: 'grid', justifyItems: 'start', gap: hds.space12 }}>
+          <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.55 }}>Allow Azure to connect to your new HCP Terraform organization. You can revoke this at any time.</p>
+          <Button onClick={() => setSsoStatus('connecting')} disabledReason={ssoStatus === 'connected' ? 'Already authorized.' : undefined}>
+            {ssoStatus === 'connected' ? 'Authorized' : 'Authorize Azure'}
+          </Button>
+          {ssoStatus === 'connecting' ? <p role="status" style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.5 }}>Waiting for authorization...</p> : null}
+          {ssoStatus === 'connected' ? <p role="status" style={{ margin: 0, color: hds.success, lineHeight: 1.5 }}>Azure is authorized to connect to this organization.</p> : null}
+        </div>
+      </section>
+
+      <div style={ACTIONS}>
+        <Button disabledReason="This is the first section.">Previous section</Button>
+        <ButtonSet>
+          <Button variant="primary" disabledReason={canContinue ? undefined : 'Enter an organization name and authorize Azure to continue.'} onClick={onContinue}>Next</Button>
+        </ButtonSet>
+      </div>
+    </form>
+  );
+}
+
+function SelectAzureResourcesStep({ selections, onSelectionChange, onPrevious, onContinue }: { selections: FormSelections; onSelectionChange: (id: string, value: FormValue) => void; onPrevious: () => void; onContinue: () => void }) {
+  const hasSelection = ARM_RESOURCE_GROUPS.some((rg) => selections[`b-rg:${rg.id}`]);
+  const allSelected = ARM_RESOURCE_GROUPS.every((rg) => selections[`b-rg:${rg.id}`]);
+
+  return (
+    <form style={FORM_STACK} aria-label="Select Azure resource groups">
+      <section style={SECTION_CARD} aria-labelledby="b-rg-heading">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: hds.space12, flexWrap: 'wrap' }}>
+          <h3 id="b-rg-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>Azure Resource Groups</h3>
+          <span style={{ color: hds.textSecondary, fontSize: 13 }}>{ARM_RESOURCE_GROUPS.length} resource groups found</span>
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', minWidth: 600, borderCollapse: 'collapse', fontSize: 14 }}>
+            <thead>
+              <tr>
+                <th scope="col" style={{ width: 44, padding: '10px 12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary, fontSize: 12, fontWeight: 700, textAlign: 'left' }}>
+                  <input aria-label="Select all resource groups" type="checkbox" checked={allSelected} onChange={(event) => ARM_RESOURCE_GROUPS.forEach((rg) => onSelectionChange(`b-rg:${rg.id}`, event.target.checked))} />
+                </th>
+                {['Resource group', 'Subscription', 'Resources', 'Location'].map((heading) => (
+                  <th key={heading} scope="col" style={{ padding: '10px 12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary, fontSize: 12, fontWeight: 700, textAlign: 'left' }}>{heading}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {ARM_RESOURCE_GROUPS.map((rg) => (
+                <tr key={rg.id}>
+                  <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}` }}>
+                    <input aria-label={`Select ${rg.name}`} type="checkbox" checked={Boolean(selections[`b-rg:${rg.id}`])} onChange={(event) => onSelectionChange(`b-rg:${rg.id}`, event.target.checked)} />
+                  </td>
+                  <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, fontWeight: 600 }}>{rg.name}</td>
+                  <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary }}>{rg.subscription}</td>
+                  <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary }}>{rg.resourceCount} resources</td>
+                  <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary }}>{rg.location}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div style={ACTIONS}>
+        <Button onClick={onPrevious}>Previous section</Button>
+        <ButtonSet>
+          <Button variant="primary" disabledReason={hasSelection ? undefined : 'Select at least one resource group to continue.'} onClick={onContinue}>Next</Button>
+        </ButtonSet>
+      </div>
+    </form>
+  );
+}
+
+function ConfirmStepB({ selections, onPrevious, onConfirm }: { selections: FormSelections; onPrevious: () => void; onConfirm: () => void }) {
+  const selectedRgs = ARM_RESOURCE_GROUPS.filter((rg) => selections[`b-rg:${rg.id}`]);
+  const totalResources = selectedRgs.reduce((sum, rg) => sum + rg.resourceCount, 0);
+
+  return (
+    <form style={FORM_STACK} aria-label="Confirm Terraform setup">
+      <section style={SECTION_CARD} aria-labelledby="b-confirm-heading">
+        <div style={{ display: 'grid', gap: hds.space12 }}>
+          <h3 id="b-confirm-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>
+            {selectedRgs.length > 0 ? `${selectedRgs.length} resource group${selectedRgs.length > 1 ? 's' : ''} will be under Terraform management` : 'No resource groups selected'}
+          </h3>
+          {selectedRgs.length > 0 ? (
+            <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.55 }}>{totalResources} total resources. No state migration required - Terraform will import the current state of these resources.</p>
+          ) : null}
+        </div>
+        {selectedRgs.length > 0 ? (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+              <thead>
+                <tr>
+                  {['Resource group', 'Workspace name', 'Resources', 'Subscription'].map((heading) => (
+                    <th key={heading} scope="col" style={{ padding: '10px 12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary, fontSize: 12, fontWeight: 700, textAlign: 'left' }}>{heading}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {selectedRgs.map((rg) => (
+                  <tr key={rg.id}>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, fontWeight: 600 }}>{rg.name}</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.brand }}>{String(selections[`b-rg-${rg.id.replace('rg-', '').replace(/-/g, '-')}-workspace`] || rg.name.replace('rg-', ''))}</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary }}>{rg.resourceCount}</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary }}>{rg.subscription}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : null}
+      </section>
+
+      <section style={SECTION_CARD} aria-labelledby="b-confirm-outcomes-heading">
+        <h3 id="b-confirm-outcomes-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>What happens next</h3>
+        <div style={{ display: 'grid', gap: hds.space12 }}>
+          {[
+            { label: 'Terraform workspaces created', detail: 'One workspace per selected resource group, registered in your HCP Terraform organization.' },
+            { label: 'Azure governance applied', detail: 'Policy evaluation, approvals, and cost signals are active for selected resources.' },
+            { label: 'Resources visible in Azure portal', detail: 'Connected stacks appear in your Azure Terraform resource view.' },
+          ].map((item) => (
+            <div key={item.label} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              <span style={{ color: hds.success, fontWeight: 700, lineHeight: 1.4 }}>✓</span>
+              <span>
+                <strong style={{ display: 'block', lineHeight: 1.3 }}>{item.label}</strong>
+                <span style={{ color: hds.textSecondary, lineHeight: 1.45 }}>{item.detail}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div style={ACTIONS}>
+        <Button onClick={onPrevious}>Previous section</Button>
+        <ButtonSet>
+          <Button variant="primary" onClick={onConfirm}>Finish setup</Button>
+        </ButtonSet>
+      </div>
+    </form>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Scenario C step components
+// ---------------------------------------------------------------------------
+
+function GetStartedStep({ onContinue }: { onContinue: () => void }) {
+  const [orgName, setOrgName] = useState('');
+  const [ssoStatus, setSsoStatus] = useState<SsoStatus>('idle');
+
+  useEffect(() => {
+    if (ssoStatus !== 'connecting') return undefined;
+    const timeoutId = window.setTimeout(() => setSsoStatus('connected'), 3000);
+    return () => window.clearTimeout(timeoutId);
+  }, [ssoStatus]);
+
+  const canContinue = orgName.trim().length > 0 && ssoStatus === 'connected';
+
+  return (
+    <form style={FORM_STACK} aria-label="Get started with Terraform and Azure">
+      <section style={SECTION_CARD} aria-labelledby="c-whatyoullsetup-heading">
+        <h3 id="c-whatyoullsetup-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>What you'll set up</h3>
+        <div style={{ display: 'grid', gap: hds.space12 }}>
+          {[
+            { label: 'Create an HCP Terraform organization', detail: 'A free account that stores your configurations and state.' },
+            { label: 'Connect your Azure subscription', detail: 'Terraform gets permission to read and manage Azure resources on your behalf.' },
+            { label: 'Define your first workspace', detail: 'A workspace is where a single configuration and its state live.' },
+            { label: 'Manage other clouds from the same place', detail: 'Once set up, you can add AWS, GCP, or on-prem resources to the same organization.' },
+          ].map((item) => (
+            <div key={item.label} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              <span style={{ color: hds.brand, fontWeight: 700, lineHeight: 1.4, minWidth: 18 }}>→</span>
+              <span>
+                <strong style={{ display: 'block', lineHeight: 1.3 }}>{item.label}</strong>
+                <span style={{ color: hds.textSecondary, lineHeight: 1.45 }}>{item.detail}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={SECTION_CARD} aria-labelledby="c-org-heading">
+        <h3 id="c-org-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>Create your HCP Terraform organization</h3>
+        <div style={{ display: 'grid', gap: hds.space14 }}>
+          <label htmlFor="c-org-name">
+            <span style={LABEL}>Organization name</span>
+            <input id="c-org-name" style={INPUT} value={orgName} onChange={(event) => setOrgName(event.target.value)} placeholder="e.g. my-company-infra" />
+          </label>
+          <div style={{ display: 'grid', justifyItems: 'start', gap: hds.space12 }}>
+            <Button onClick={() => setSsoStatus('connecting')} disabledReason={ssoStatus === 'connected' ? 'Already authorized.' : undefined}>
+              {ssoStatus === 'connected' ? 'Authorized' : 'Authorize with Azure'}
+            </Button>
+            {ssoStatus === 'connecting' ? <p role="status" style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.5 }}>Authorizing...</p> : null}
+            {ssoStatus === 'connected' ? <p role="status" style={{ margin: 0, color: hds.success, lineHeight: 1.5 }}>Organization created and authorized.</p> : null}
+          </div>
+        </div>
+      </section>
+
+      <div style={ACTIONS}>
+        <Button disabledReason="This is the first section.">Previous section</Button>
+        <ButtonSet>
+          <Button variant="primary" disabledReason={canContinue ? undefined : 'Enter an organization name and authorize to continue.'} onClick={onContinue}>Next</Button>
+        </ButtonSet>
+      </div>
+    </form>
+  );
+}
+
+function CreateFirstWorkspaceStep({ onPrevious, onContinue }: { onPrevious: () => void; onContinue: () => void }) {
+  const [workspaceName, setWorkspaceName] = useState('');
+  const [subscription, setSubscription] = useState('');
+  const [region, setRegion] = useState('');
+  const [template, setTemplate] = useState('empty');
+
+  const canContinue = workspaceName.trim().length > 0 && Boolean(subscription) && Boolean(region);
+
+  return (
+    <form style={FORM_STACK} aria-label="Create your first workspace">
+      <section style={SECTION_CARD} aria-labelledby="c-workspace-heading">
+        <h3 id="c-workspace-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>Workspace details</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: hds.space14 }} className="azure-terraform-field-grid">
+          <label htmlFor="c-ws-name" style={{ gridColumn: '1 / -1' }}>
+            <span style={LABEL}>Workspace name</span>
+            <input id="c-ws-name" style={INPUT} value={workspaceName} onChange={(event) => setWorkspaceName(event.target.value)} placeholder="e.g. azure-networking-dev" />
+          </label>
+          <label htmlFor="c-ws-sub">
+            <span style={LABEL}>Azure subscription</span>
+            <select id="c-ws-sub" style={INPUT} value={subscription} onChange={(event) => setSubscription(event.target.value)}>
+              <option value="">Select subscription...</option>
+              <option>My Azure Subscription</option>
+              <option>Development Subscription</option>
+              <option>Production Subscription</option>
+            </select>
+          </label>
+          <label htmlFor="c-ws-region">
+            <span style={LABEL}>Primary region</span>
+            <select id="c-ws-region" style={INPUT} value={region} onChange={(event) => setRegion(event.target.value)}>
+              <option value="">Select region...</option>
+              <option>East US</option>
+              <option>West US 2</option>
+              <option>West Europe</option>
+              <option>Southeast Asia</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section style={SECTION_CARD} aria-labelledby="c-template-heading">
+        <h3 id="c-template-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>Starter template</h3>
+        <div style={{ display: 'grid', gap: hds.space12 }} role="radiogroup" aria-label="Starter template">
+          {[
+            { id: 'empty', label: 'Empty workspace', helper: 'Start from scratch. You write the configuration.' },
+            { id: 'vm', label: 'Example: Virtual Machine', helper: 'A starter config that creates a single Azure VM.' },
+            { id: 'storage', label: 'Example: Storage Account', helper: 'A starter config that creates a storage account and container.' },
+          ].map((option) => (
+            <label key={option.id} style={{ ...CHOICE_CARD, borderColor: template === option.id ? hds.brand : hds.borderPrimary, background: template === option.id ? hds.brandFaint : hds.surfacePrimary, cursor: 'pointer' }}>
+              <input type="radio" name="c-template" value={option.id} checked={template === option.id} onChange={() => setTemplate(option.id)} />
+              <span>
+                <strong style={{ display: 'block', marginBottom: 4, lineHeight: 1.3 }}>{option.label}</strong>
+                <span style={{ display: 'block', color: hds.textSecondary, lineHeight: 1.45 }}>{option.helper}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <div style={ACTIONS}>
+        <Button onClick={onPrevious}>Previous section</Button>
+        <ButtonSet>
+          <Button variant="primary" disabledReason={canContinue ? undefined : 'Enter a workspace name, subscription, and region to continue.'} onClick={onContinue}>Next</Button>
+        </ButtonSet>
+      </div>
+    </form>
+  );
+}
+
+function ConfirmStepC({ selections, onPrevious, onConfirm }: { selections: FormSelections; onPrevious: () => void; onConfirm: () => void }) {
+  return (
+    <form style={FORM_STACK} aria-label="Setup complete">
+      <section style={SECTION_CARD} aria-labelledby="c-done-heading">
+        <div style={{ display: 'grid', gap: hds.space12 }}>
+          <h3 id="c-done-heading" style={{ margin: 0, fontSize: 20, lineHeight: 1.3 }}>You're set up.</h3>
+          <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.55 }}>Your first Terraform workspace is connected to Azure. Here's where to go next.</p>
+        </div>
+        <div style={{ display: 'grid', gap: hds.space12 }}>
+          {[
+            { label: 'Open your workspace in HCP Terraform', detail: 'View your workspace, write your first configuration, and run a plan.' },
+            { label: 'Run your first plan', detail: 'A plan shows what Terraform would create or change without applying anything.' },
+            { label: 'Explore the Azure Terraform resource view', detail: 'See your connected workspace in the Azure portal.' },
+            { label: 'Read the getting started guide', detail: 'Step-by-step docs for managing Azure infrastructure with Terraform.' },
+          ].map((item) => (
+            <div key={item.label} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: 14, border: `1px solid ${hds.borderPrimary}`, borderRadius: hds.radiusLarge, background: hds.surfacePrimary }}>
+              <span style={{ color: hds.brand, fontSize: 18, lineHeight: 1, minWidth: 20 }} aria-hidden="true">→</span>
+              <span>
+                <strong style={{ display: 'block', marginBottom: 4, lineHeight: 1.3, color: hds.brand }}>{item.label}</strong>
+                <span style={{ display: 'block', color: hds.textSecondary, lineHeight: 1.45 }}>{item.detail}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div style={ACTIONS}>
+        <Button onClick={onPrevious}>Previous section</Button>
+        <ButtonSet>
+          <Button variant="primary" onClick={onConfirm}>Open HCP Terraform</Button>
+        </ButtonSet>
+      </div>
+    </form>
+  );
+}
+
 function StepperNav({ steps, currentStep, onStepChange, onKeyDown }: { steps: AzureFormStep[]; currentStep: number; onStepChange: (index: number) => void; onKeyDown: (event: KeyboardEvent<HTMLButtonElement>, index: number) => void }) {
   return (
-    <nav className="azure-terraform-stepper-nav" style={STEPPER_NAV} aria-label="Azure Terraform RP setup progress">
+    <nav className="azure-terraform-stepper-nav" style={{ ...STEPPER_NAV, gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }} aria-label="Azure Terraform RP setup progress">
       {steps.map((step, index) => (
         <StepperStep key={step.code} step={step} index={index} currentStep={currentStep} onStepChange={onStepChange} onKeyDown={onKeyDown} />
       ))}
@@ -1364,9 +1797,10 @@ function StepperStep({ step, index, currentStep, onStepChange, onKeyDown }: { st
   );
 }
 
-export function AzureTerraformTabbedFormWireframe() {
+export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScreen }: { initialScenario?: Scenario; initialScreen?: 'splash' | 'product' | 'resource' | 'scenario' | 'stepper' } = {}) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [screen, setScreen] = useState<'splash' | 'product' | 'resource' | 'stepper'>('splash');
+  const [screen, setScreen] = useState<'splash' | 'product' | 'resource' | 'scenario' | 'stepper'>(initialScreen ?? 'splash');
+  const [scenario, setScenario] = useState<Scenario | null>(initialScenario ?? null);
   const [formSelections, setFormSelections] = useState<FormSelections>(() => getInitialFormSelections());
   const [selectedOrganization, setSelectedOrganization] = useState('');
   const [ssoStatus, setSsoStatus] = useState<SsoStatus>('idle');
@@ -1375,8 +1809,10 @@ export function AzureTerraformTabbedFormWireframe() {
   const [verifiedWorkspaceCount, setVerifiedWorkspaceCount] = useState(0);
   const [showMapVerificationToast, setShowMapVerificationToast] = useState(false);
   const [productStackWorkspaces, setProductStackWorkspaces] = useState<WorkspaceRow[]>(() => getProductStackWorkspaces());
-  const activeStep = azureTerraformSteps[activeIndex];
-  const progress = ((activeIndex + 1) / azureTerraformSteps.length) * 100;
+
+  const activeSteps = scenario === 'B' ? azureTerraformStepsB : scenario === 'C' ? azureTerraformStepsC : azureTerraformSteps;
+  const activeStep = activeSteps[activeIndex];
+  const progress = ((activeIndex + 1) / activeSteps.length) * 100;
 
   useEffect(() => {
     if (mapVerificationStatus !== 'verifying') return undefined;
@@ -1409,14 +1845,16 @@ export function AzureTerraformTabbedFormWireframe() {
   }
 
   function handleConfirmSetup() {
-    const createdStackWorkspaces = getWorkspacesForOrganization(selectedOrganization).filter((workspace) => formSelections[`workspace:${workspace.id}`]);
-    if (createdStackWorkspaces.length > 0) setProductStackWorkspaces(createdStackWorkspaces);
+    if (scenario === 'A' || scenario === null) {
+      const createdStackWorkspaces = getWorkspacesForOrganization(selectedOrganization).filter((workspace) => formSelections[`workspace:${workspace.id}`]);
+      if (createdStackWorkspaces.length > 0) setProductStackWorkspaces(createdStackWorkspaces);
+    }
     setScreen('product');
     setActiveIndex(0);
   }
 
   function handleStepKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
-    const lastAvailable = azureTerraformSteps.length - 1;
+    const lastAvailable = activeSteps.length - 1;
     let nextIndex = index;
 
     if (event.key === 'ArrowRight') nextIndex = index >= lastAvailable ? 0 : index + 1;
@@ -1437,11 +1875,24 @@ export function AzureTerraformTabbedFormWireframe() {
   }
 
   if (screen === 'product') {
-    return <TerraformProductScreen stackWorkspaces={productStackWorkspaces} onGetStarted={() => setScreen('stepper')} onHome={() => setScreen('splash')} onTerraformSearch={() => setScreen('product')} onCreateResource={() => setScreen('resource')} />;
+    return <TerraformProductScreen stackWorkspaces={productStackWorkspaces} onGetStarted={() => setScreen('scenario')} onHome={() => setScreen('splash')} onTerraformSearch={() => setScreen('product')} onCreateResource={() => setScreen('resource')} />;
   }
 
   if (screen === 'resource') {
     return <CreateResourcePage onHome={() => setScreen('splash')} onTerraformSearch={() => setScreen('product')} onCreateResource={() => setScreen('resource')} onGetStarted={() => setScreen('product')} />;
+  }
+
+  if (screen === 'scenario') {
+    return (
+      <ScenarioSelectScreen
+        onSelect={(selected) => {
+          setScenario(selected);
+          setActiveIndex(0);
+          setScreen('stepper');
+        }}
+        onBack={() => setScreen('product')}
+      />
+    );
   }
 
   return (
@@ -1452,12 +1903,12 @@ export function AzureTerraformTabbedFormWireframe() {
       <main className="azure-terraform-main" id="azure-terraform-main" style={MAIN}>
         <section style={PAGE_CARD} aria-label="Stepper onboarding form">
           <TerraformHeader />
-          <StepperNav steps={azureTerraformSteps} currentStep={activeIndex} onStepChange={setActiveIndex} onKeyDown={handleStepKeyDown} />
+          <StepperNav steps={activeSteps} currentStep={activeIndex} onStepChange={setActiveIndex} onKeyDown={handleStepKeyDown} />
 
           <section className="azure-terraform-panel" id="azure-terraform-step-panel" aria-labelledby={`azure-terraform-step-${activeIndex}`} style={PANEL}>
             <div aria-label="Form progress" style={{ marginBottom: 20 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
-                <strong style={{ color: hds.textSecondary, fontSize: 13 }}>Section {activeIndex + 1} of {azureTerraformSteps.length}</strong>
+                <strong style={{ color: hds.textSecondary, fontSize: 13 }}>Section {activeIndex + 1} of {activeSteps.length}</strong>
                 <span style={{ color: hds.textSecondary, fontSize: 13 }}>{Math.round(progress)}% complete</span>
               </div>
               <div style={{ height: 8, borderRadius: 999, background: hds.surfaceStrong, overflow: 'hidden' }} aria-hidden="true">
@@ -1487,51 +1938,98 @@ export function AzureTerraformTabbedFormWireframe() {
             </div>
 
             <div className="azure-terraform-body-grid" style={{ ...BODY_GRID, gridTemplateColumns: '1fr' }}>
-              {activeIndex === 0 ? (
-                <HcpConnectionStep selectedOrganization={selectedOrganization} ssoStatus={ssoStatus} onOrganizationChange={setSelectedOrganization} onSsoStatusChange={setSsoStatus} onContinue={() => setActiveIndex(1)} />
-              ) : activeStep.title === 'Workspaces' ? (
-                <WorkspacesStep selectedOrganization={selectedOrganization} selections={formSelections} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(azureTerraformSteps.length - 1, activeIndex + 1))} />
-              ) : activeStep.title === 'Map Workspaces' ? (
-                <MapWorkspacesStep selectedOrganization={selectedOrganization} selections={formSelections} verificationStatus={mapVerificationStatus} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onVerify={handleMapVerification} onContinue={() => setActiveIndex(Math.min(azureTerraformSteps.length - 1, activeIndex + 1))} />
-              ) : activeStep.title === 'Enable Azure Governance' ? (
-                <form style={FORM_STACK} aria-label={activeStep.title}>
-                  <section style={SECTION_CARD} aria-label="Enable Azure Governance placeholder">
-                    <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.45 }}>TBD - Optional/Recommended?</p>
-                  </section>
-
-                  <div style={ACTIONS} aria-describedby="azure-terraform-action-help">
-                    <span className="azure-terraform-sr-only" id="azure-terraform-action-help">Primary action is placed on the right and secondary actions are grouped together.</span>
-                    <Button onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}>Previous section</Button>
-                    <ButtonSet>
-                      <Button variant="primary" onClick={() => setActiveIndex(Math.min(azureTerraformSteps.length - 1, activeIndex + 1))}>Next</Button>
-                    </ButtonSet>
-                  </div>
-                </form>
-              ) : activeStep.title === 'Register Workspaces in Azure' ? (
-                <TerraformStacksStep selectedOrganization={selectedOrganization} selections={formSelections} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(azureTerraformSteps.length - 1, activeIndex + 1))} />
-              ) : activeIndex === azureTerraformSteps.length - 1 ? (
-                <ConfirmStep selections={formSelections} selectedOrganization={selectedOrganization} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onConfirm={handleConfirmSetup} />
+              {scenario === 'B' ? (
+                activeIndex === 0 ? (
+                  <HcpConnectionStepB onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(1)} />
+                ) : activeStep.title === 'Select Azure Resources' ? (
+                  <SelectAzureResourcesStep selections={formSelections} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
+                ) : activeStep.title === 'Enable Governance' ? (
+                  <form style={FORM_STACK} aria-label={activeStep.title}>
+                    {activeStep.sections.map((section) => (
+                      <FormSection key={section.title} section={section} selections={formSelections} onSelectionChange={handleSelectionChange} />
+                    ))}
+                    <div style={ACTIONS}>
+                      <Button onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}>Previous section</Button>
+                      <ButtonSet>
+                        <Button variant="primary" onClick={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))}>Next</Button>
+                      </ButtonSet>
+                    </div>
+                  </form>
+                ) : activeStep.title === 'Register Resources' ? (
+                  <TerraformStacksStep selectedOrganization={selectedOrganization} selections={formSelections} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
+                ) : activeIndex === activeSteps.length - 1 ? (
+                  <ConfirmStepB selections={formSelections} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onConfirm={handleConfirmSetup} />
+                ) : (
+                  <form style={FORM_STACK} aria-label={activeStep.title}>
+                    {activeStep.sections.map((section) => (
+                      <FormSection key={section.title} section={section} selections={formSelections} onSelectionChange={handleSelectionChange} />
+                    ))}
+                    <div style={ACTIONS}>
+                      <Button onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}>Previous section</Button>
+                      <ButtonSet>
+                        <Button variant="primary" onClick={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))}>Next</Button>
+                      </ButtonSet>
+                    </div>
+                  </form>
+                )
+              ) : scenario === 'C' ? (
+                activeIndex === 0 ? (
+                  <GetStartedStep onContinue={() => setActiveIndex(1)} />
+                ) : activeStep.title === 'Create Your First Workspace' ? (
+                  <CreateFirstWorkspaceStep onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
+                ) : activeIndex === activeSteps.length - 1 ? (
+                  <ConfirmStepC selections={formSelections} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onConfirm={handleConfirmSetup} />
+                ) : (
+                  <form style={FORM_STACK} aria-label={activeStep.title}>
+                    {activeStep.sections.map((section) => (
+                      <FormSection key={section.title} section={section} selections={formSelections} onSelectionChange={handleSelectionChange} />
+                    ))}
+                    <div style={ACTIONS}>
+                      <Button disabledReason={activeIndex === 0 ? 'This is the first section.' : undefined} onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}>Previous section</Button>
+                      <ButtonSet>
+                        <Button variant="primary" onClick={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))}>Next</Button>
+                      </ButtonSet>
+                    </div>
+                  </form>
+                )
               ) : (
-                <form style={FORM_STACK} aria-label={activeStep.title}>
-                  {activeStep.sections.map((section) => (
-                    <FormSection key={section.title} section={section} selections={formSelections} onSelectionChange={handleSelectionChange} />
-                  ))}
-
-                  <div style={ACTIONS} aria-describedby="azure-terraform-action-help">
-                    <span className="azure-terraform-sr-only" id="azure-terraform-action-help">Primary action is placed on the right and secondary actions are grouped together.</span>
-                    <Button
-                      disabledReason={activeIndex === 0 ? 'This is the first section.' : undefined}
-                      onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}
-                    >
-                      Previous section
-                    </Button>
-                    <ButtonSet>
-                      <Button variant="primary" onClick={() => setActiveIndex(Math.min(azureTerraformSteps.length - 1, activeIndex + 1))}>
-                        Next
-                      </Button>
-                    </ButtonSet>
-                  </div>
-                </form>
+                activeIndex === 0 ? (
+                  <HcpConnectionStep selectedOrganization={selectedOrganization} ssoStatus={ssoStatus} onOrganizationChange={setSelectedOrganization} onSsoStatusChange={setSsoStatus} onContinue={() => setActiveIndex(1)} />
+                ) : activeStep.title === 'Workspaces' ? (
+                  <WorkspacesStep selectedOrganization={selectedOrganization} selections={formSelections} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
+                ) : activeStep.title === 'Map Workspaces' ? (
+                  <MapWorkspacesStep selectedOrganization={selectedOrganization} selections={formSelections} verificationStatus={mapVerificationStatus} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onVerify={handleMapVerification} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
+                ) : activeStep.title === 'Enable Azure Governance' ? (
+                  <form style={FORM_STACK} aria-label={activeStep.title}>
+                    <section style={SECTION_CARD} aria-label="Enable Azure Governance placeholder">
+                      <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.45 }}>TBD - Optional/Recommended?</p>
+                    </section>
+                    <div style={ACTIONS} aria-describedby="azure-terraform-action-help">
+                      <span className="azure-terraform-sr-only" id="azure-terraform-action-help">Primary action is placed on the right and secondary actions are grouped together.</span>
+                      <Button onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}>Previous section</Button>
+                      <ButtonSet>
+                        <Button variant="primary" onClick={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))}>Next</Button>
+                      </ButtonSet>
+                    </div>
+                  </form>
+                ) : activeStep.title === 'Register Workspaces in Azure' ? (
+                  <TerraformStacksStep selectedOrganization={selectedOrganization} selections={formSelections} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
+                ) : activeIndex === activeSteps.length - 1 ? (
+                  <ConfirmStep selections={formSelections} selectedOrganization={selectedOrganization} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onConfirm={handleConfirmSetup} />
+                ) : (
+                  <form style={FORM_STACK} aria-label={activeStep.title}>
+                    {activeStep.sections.map((section) => (
+                      <FormSection key={section.title} section={section} selections={formSelections} onSelectionChange={handleSelectionChange} />
+                    ))}
+                    <div style={ACTIONS} aria-describedby="azure-terraform-action-help">
+                      <span className="azure-terraform-sr-only" id="azure-terraform-action-help">Primary action is placed on the right and secondary actions are grouped together.</span>
+                      <Button disabledReason={activeIndex === 0 ? 'This is the first section.' : undefined} onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}>Previous section</Button>
+                      <ButtonSet>
+                        <Button variant="primary" onClick={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))}>Next</Button>
+                      </ButtonSet>
+                    </div>
+                  </form>
+                )
               )}
             </div>
           </section>
@@ -1557,4 +2055,19 @@ type Story = StoryObj;
 
 export const OnboardingForm: Story = {
   render: () => <AzureTerraformTabbedFormWireframe />,
+};
+
+export const ScenarioA: Story = {
+  name: 'Scenario A - Existing Terraform User',
+  render: () => <AzureTerraformTabbedFormWireframe initialScenario="A" initialScreen="stepper" />,
+};
+
+export const ScenarioB: Story = {
+  name: 'Scenario B - Azure User, New to Terraform',
+  render: () => <AzureTerraformTabbedFormWireframe initialScenario="B" initialScreen="stepper" />,
+};
+
+export const ScenarioC: Story = {
+  name: 'Scenario C - New to Both',
+  render: () => <AzureTerraformTabbedFormWireframe initialScenario="C" initialScreen="stepper" />,
 };

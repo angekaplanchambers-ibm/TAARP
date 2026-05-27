@@ -31,6 +31,13 @@ export type AzureFormControl =
       label: string;
       helper: string;
       checked?: boolean;
+    }
+  | {
+      kind: 'link';
+      id: string;
+      label: string;
+      href: string;
+      description: string;
     };
 
 export interface AzureFormSection {
@@ -315,5 +322,167 @@ export const azureTerraformSteps: AzureFormStep[] = [
   {
     ...azureTerraformStepSource[8],
     title: 'Confirm',
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Scenario B: Azure-experienced, Terraform novice
+// "I manage Azure resources and want to start using Terraform for governance"
+// ---------------------------------------------------------------------------
+
+export const azureTerraformStepsB: AzureFormStep[] = [
+  {
+    code: 'B1',
+    title: 'Connect to HCP Terraform',
+    summary: 'Create a new HCP Terraform organization. Your existing Azure resources stay where they are - Terraform adds management and governance on top.',
+    primaryAction: 'Create organization',
+    sections: [],
+  },
+  {
+    code: 'B2',
+    title: 'Select Azure Resources',
+    summary: 'Choose the Azure resource groups you want to bring under Terraform management. You control which resources are included.',
+    primaryAction: 'Continue with selected resources',
+    sections: [],
+  },
+  {
+    code: 'B3',
+    title: 'Map to Workspaces',
+    summary: 'Each selected resource group will become a Terraform workspace. Assign names, environments, and owners before registration.',
+    primaryAction: 'Validate mappings',
+    sections: [
+      {
+        title: 'Workspace configuration',
+        layout: 'two',
+        controls: [
+          { kind: 'text', id: 'b-rg-1-workspace', label: 'rg-networking-prod - Workspace name', value: 'networking-prod' },
+          { kind: 'select', id: 'b-rg-1-env', label: 'rg-networking-prod - Environment', options: ['Production', 'Test', 'Development'] },
+          { kind: 'text', id: 'b-rg-1-owner', label: 'rg-networking-prod - Owner', value: 'Network Platform Team' },
+          { kind: 'select', id: 'b-rg-1-exec', label: 'rg-networking-prod - Execution mode', options: ['Remote (HCP Terraform)', 'Local'] },
+          { kind: 'text', id: 'b-rg-2-workspace', label: 'rg-identity-shared - Workspace name', value: 'identity-shared' },
+          { kind: 'select', id: 'b-rg-2-env', label: 'rg-identity-shared - Environment', options: ['Shared infrastructure', 'Production', 'Test'] },
+          { kind: 'text', id: 'b-rg-2-owner', label: 'rg-identity-shared - Owner', value: 'Identity Services Team' },
+          { kind: 'select', id: 'b-rg-2-exec', label: 'rg-identity-shared - Execution mode', options: ['Remote (HCP Terraform)', 'Local'] },
+        ],
+      },
+    ],
+  },
+  {
+    code: 'B4',
+    title: 'Enable Governance',
+    summary: 'Configure Azure-side controls to manage and audit Terraform changes across your organization. This is where Azure adds value on top of Terraform.',
+    primaryAction: 'Save governance settings',
+    sections: [
+      {
+        title: 'Governance controls',
+        controls: [
+          { kind: 'checkbox', id: 'b-policy-eval', label: 'Azure Policy evaluation before runs', helper: 'Evaluate high-risk changes before production applies proceed.', checked: true },
+          { kind: 'checkbox', id: 'b-approval', label: 'Approval requirements for production changes', helper: 'Require Azure-side approval for applies to production subscriptions.', checked: true },
+          { kind: 'checkbox', id: 'b-cost-signals', label: 'Cost signals', helper: 'Show cost warnings before unexpected resource expansion.', checked: true },
+          { kind: 'checkbox', id: 'b-region-limits', label: 'Region and SKU limits', helper: 'Block disallowed regions or unsupported service tiers.' },
+          { kind: 'checkbox', id: 'b-drift-detection', label: 'Drift detection', helper: 'Alert when Azure resources diverge from Terraform state.', checked: true },
+        ],
+      },
+      {
+        title: 'Team access',
+        layout: 'one',
+        controls: [
+          { kind: 'textarea', id: 'b-team-note', label: 'Scope note', value: 'Governance applies to all workspaces in this organization. Individual workspace owners can configure additional controls in HCP Terraform.' },
+        ],
+      },
+    ],
+  },
+  {
+    code: 'B5',
+    title: 'Register Resources',
+    summary: 'Create Azure RP resources that represent your Terraform workspaces, linking each record to HCP Terraform and your Azure subscriptions.',
+    primaryAction: 'Register resources',
+    sections: [],
+  },
+  {
+    code: 'B6',
+    title: 'Confirm',
+    summary: 'Your Azure resources are now under Terraform management. Review what was set up.',
+    primaryAction: 'Finish setup',
+    sections: [],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Scenario C: New to both Terraform and Azure
+// "I'm new to both and want to connect Azure and Terraform for the first time"
+// ---------------------------------------------------------------------------
+
+export const azureTerraformStepsC: AzureFormStep[] = [
+  {
+    code: 'C1',
+    title: 'Get Started',
+    summary: 'Create your HCP Terraform organization and connect it to Azure. This takes about 5 minutes.',
+    primaryAction: 'Create organization',
+    sections: [],
+  },
+  {
+    code: 'C2',
+    title: 'Create Your First Workspace',
+    summary: 'A workspace is where your Terraform configuration and state live. Start with one resource group or subscription.',
+    primaryAction: 'Create workspace',
+    sections: [],
+  },
+  {
+    code: 'C3',
+    title: 'Configure Azure',
+    summary: 'Set up the credentials and permissions Terraform needs to manage Azure resources.',
+    primaryAction: 'Save configuration',
+    sections: [
+      {
+        title: 'Azure credentials',
+        controls: [
+          { kind: 'select', id: 'c-auth-method', label: 'Authentication method', options: ['OIDC (recommended)', 'Service principal', 'Managed identity'] },
+          { kind: 'text', id: 'c-subscription', label: 'Target subscription', value: 'My Azure Subscription' },
+          { kind: 'select', id: 'c-permission-scope', label: 'Permission scope', options: ['Subscription level', 'Resource group level', 'Management group level'] },
+        ],
+      },
+      {
+        title: 'What Terraform will use',
+        layout: 'one',
+        controls: [
+          { kind: 'textarea', id: 'c-provider-note', label: 'Provider block (auto-generated)', value: 'provider "azurerm" {\n  features {}\n  subscription_id = "<your-subscription-id>"\n}' },
+        ],
+      },
+    ],
+  },
+  {
+    code: 'C4',
+    title: 'Review & Connect',
+    summary: 'Review your setup before connecting. Terraform will read your Azure subscription without making any changes.',
+    primaryAction: 'Connect',
+    sections: [
+      {
+        title: 'Setup summary',
+        controls: [
+          { kind: 'checkbox', id: 'c-org-ready', label: 'HCP Terraform organization created', helper: 'Your org is ready to manage infrastructure.', checked: true },
+          { kind: 'checkbox', id: 'c-workspace-ready', label: 'First workspace configured', helper: 'Workspace name, subscription, and region are set.', checked: true },
+          { kind: 'checkbox', id: 'c-credentials-set', label: 'Azure credentials configured', helper: 'OIDC connection is authorized.', checked: true },
+          { kind: 'checkbox', id: 'c-no-changes', label: 'No changes made yet', helper: 'Connect is read-only. You run your first plan from HCP Terraform.', checked: true },
+        ],
+      },
+    ],
+  },
+  {
+    code: 'C5',
+    title: "You're Set Up",
+    summary: "Your first Terraform workspace is connected to Azure. Here's where to go next.",
+    primaryAction: 'Open HCP Terraform',
+    sections: [
+      {
+        title: "Next steps",
+        controls: [
+          { kind: 'link', id: 'c-open-hcp', label: 'Open your workspace in HCP Terraform', href: '#', description: 'View your workspace, write your first configuration, and run a plan.' },
+          { kind: 'link', id: 'c-run-plan', label: 'Run your first plan', href: '#', description: 'A plan shows what Terraform would create or change without applying anything.' },
+          { kind: 'link', id: 'c-explore-azure', label: 'Explore the Azure Terraform resource view', href: '#', description: 'See your connected workspace in the Azure portal.' },
+          { kind: 'link', id: 'c-docs', label: 'Read the getting started guide', href: '#', description: 'Step-by-step docs for managing Azure infrastructure with Terraform.' },
+        ],
+      },
+    ],
   },
 ];
