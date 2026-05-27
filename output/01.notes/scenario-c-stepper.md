@@ -34,14 +34,13 @@ No tier picker, no teammate invite - those are surfaced after setup is complete.
 - Region: dropdown (populated from Azure session context)
 
 ### Starter template (radio, shown below the main fields)
-- Blank workspace (start empty, add resources manually)
-- Web app (App Service + SQL) - includes common web app resource types
-- Kubernetes (AKS) - includes AKS cluster, node pools, networking
-- Storage (Blob, Queue, Table) - includes Azure storage account resources
+- Empty workspace - start from scratch, you write the configuration
+- Example: Virtual Machine - a starter config that creates a single Azure VM
+- Example: Storage Account - a starter config that creates a storage account and container
 
 The starter template pre-populates the workspace configuration after creation.
 
-**Primary action:** Create workspace
+**Primary action:** Next (requires workspace name, subscription, and region)
 
 ---
 
@@ -89,15 +88,19 @@ Note: "Nothing is created in Azure until you click Connect."
 
 **Goal:** Celebrate completion and give the operator a clear next-steps launchpad. No ambiguity about what was created or what to do next.
 
-### Summary (concise)
-- One organization created in HCP Terraform
-- One workspace connected to Azure
-- Governance controls active
+### Status
+- "Connected" badge (green checkmark)
+- "You're set up." heading
+- "Your first Terraform workspace is connected to Azure. Here's where to go next."
 
-### Next steps (arrow-link rows)
-- Open your workspace in HCP Terraform
-- Browse the Terraform Registry for Azure modules
-- Invite your teammates to HCP Terraform
+### Next steps (arrow-link cards, 4 items)
+- Open your workspace in HCP Terraform - view your workspace, write your first configuration, and run a plan
+- Run your first plan - a plan shows what Terraform would create or change without applying anything
+- Explore the Azure Terraform resource view - see your connected workspace in the Azure portal
+- Read the getting started guide - step-by-step docs for managing Azure infrastructure with Terraform
+
+### Footer action
+"View Terraform stacks" ghost button - routes the operator to the product screen where their connected workspace appears in the Terraform Stacks table.
 - Explore Azure resource management
 
 **Primary action:** Done (closes modal or redirects to Azure portal)

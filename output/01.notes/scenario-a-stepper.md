@@ -51,15 +51,12 @@
 
 **Goal:** Query HCP Terraform for AzureRM workspaces and let the operator select which ones to connect.
 
-### Discovery filters
-- Provider: AzureRM provider / Any provider
-- Execution mode: Remote preferred / Remote and local
-- Run health: Healthy and review / Healthy only / All workspaces
+### Workspace table (checkbox list)
+Columns: checkbox, Connected status, Workspace name, Repo number, Subscription, Latest apply status.
 
-### Workspace candidates (checkbox list)
-Each workspace shows: name, repo path, subscription hint, execution mode, run health status. Operator selects which workspaces to bring into Azure.
+All workspaces in the selected organization are listed. Operator uses checkboxes to select which ones to bring into Azure. A "select all" checkbox is available.
 
-**Actions:** Connect Workspaces (marks selected as connected), then Next
+**Actions:** Connect Workspaces (marks selected workspaces as "Connected"), then Next (enabled after at least one workspace is connected)
 
 ---
 
