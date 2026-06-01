@@ -10,7 +10,6 @@ export const config: ShowcaseConfig = {
     pdr: 'Approved Flows A/B',
     date: '2026-05-14',
   },
-  theme: 'grayscale',
   sections: [
     {
       id: 'tabbed-form',

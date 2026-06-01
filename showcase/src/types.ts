@@ -21,8 +21,6 @@ export interface ShowcaseConfig {
   meta: { pdr: string; date: string };
   /** Output filename. Format: {seq}.{FeatureName}-{DraftVersion} (e.g., '006.AzureTerraformRP-TabbedForm-Draft02') */
   outputName: string;
-  /** 'grayscale' applies white-bg wireframe token overrides. 'dark' uses default dark tokens. */
-  theme?: 'grayscale' | 'dark';
   /** Raw HTML rendered as context before wireframe sections (e.g., PDR journey content). */
   preamble?: string;
   /** Nav items for the preamble section. Each id must match an anchor in the preamble HTML. */

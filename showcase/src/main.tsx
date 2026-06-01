@@ -1,13 +1,13 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import { ShowcasePage } from './ShowcasePage';
 import { config } from '../showcases/azure-terraform-rp/config';
 
-// Grayscale wireframe design tokens (provides var(--z-*) custom properties)
-import '@z/ds/index.css';
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ShowcasePage config={config} />
+    <FluentProvider theme={webLightTheme}>
+      <ShowcasePage config={config} />
+    </FluentProvider>
   </StrictMode>,
 );

@@ -1,172 +1,217 @@
-import { useState, type CSSProperties } from 'react';
+import { useState } from 'react';
+import {
+  Card,
+  Text,
+  Title2,
+  makeStyles,
+  shorthands,
+  tokens,
+} from '@fluentui/react-components';
 import type { ShowcaseSection as SectionType } from './types';
 import { StateToggle } from './StateToggle';
 
-/* ── Styles (uses var(--z-*) wireframe tokens from index.css) ── */
-
-const sectionContainer: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 0,
-};
-
-const headerArea: CSSProperties = {
-  marginBottom: 20,
-};
-
-const stageNumberStyle: CSSProperties = {
-  fontFamily: 'var(--z-font-mono)',
-  fontSize: 'var(--z-text-sm)',
-  color: 'var(--z-text-helper)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.1em',
-  marginBottom: 4,
-};
-
-const titleStyle: CSSProperties = {
-  fontFamily: 'var(--z-font-sans)',
-  fontSize: 'var(--z-text-2xl)',
-  color: 'var(--z-text-primary)',
-  margin: 0,
-  lineHeight: 1.3,
-  fontWeight: 600,
-};
-
-const subtitleStyle: CSSProperties = {
-  fontFamily: 'var(--z-font-sans)',
-  fontSize: 'var(--z-text-base)',
-  color: 'var(--z-text-secondary)',
-  margin: '4px 0 0',
-  fontWeight: 400,
-  lineHeight: 'var(--z-leading-relaxed)',
-};
-
-const wireframeContainer: CSSProperties = {
-  position: 'relative',
-  height: 700,
-  overflow: 'hidden',
-  background: 'var(--z-layer-01)',
-  borderRadius: 'var(--z-radius-xl)',
-  boxShadow: 'var(--z-shadow-lg)',
-  border: '1px solid var(--z-border-subtle)',
-};
-
-const chromeBar: CSSProperties = {
-  height: 36,
-  background: 'var(--z-layer-01)',
-  borderBottom: '1px solid var(--z-border-subtle)',
-  display: 'flex',
-  alignItems: 'center',
-  padding: '0 12px',
-  gap: 8,
-  userSelect: 'none',
-  flexShrink: 0,
-};
-
-function dotStyle(i: number): CSSProperties {
-  return {
-    width: 10,
-    height: 10,
-    borderRadius: '50%',
-    background: 'var(--z-border-subtle)',
-    marginLeft: i === 0 ? 0 : 4,
-  };
-}
-
-const tabStyle: CSSProperties = {
-  padding: '4px 12px',
-  borderRadius: '6px 6px 0 0',
-  fontSize: 11,
-  fontFamily: 'var(--z-font-sans)',
-  background: 'var(--z-layer-02)',
-  color: 'var(--z-text-secondary)',
-};
-
-const tabPlusStyle: CSSProperties = {
-  padding: '4px 8px',
-  fontSize: 11,
-  fontFamily: 'var(--z-font-sans)',
-  color: 'var(--z-text-placeholder)',
-};
-
-const urlBarStyle: CSSProperties = {
-  flex: 1,
-  maxWidth: 480,
-  height: 20,
-  borderRadius: 10,
-  background: 'var(--z-layer-02)',
-  margin: '0 auto',
-};
-
-const contentArea: CSSProperties = {
-  position: 'relative',
-  height: 'calc(100% - 37px)',
-  overflow: 'hidden',
-  background: 'var(--z-bg)',
-};
-
-const toggleArea: CSSProperties = {
-  marginTop: 16,
-};
-
-const annotationArea: CSSProperties = {
-  borderTop: '1px solid var(--z-border-subtle)',
-  paddingTop: 24,
-  marginTop: 24,
-  fontFamily: 'var(--z-font-sans)',
-  fontSize: 'var(--z-text-base)',
-  lineHeight: 1.7,
-  color: 'var(--z-text-secondary)',
-};
-
-/* ── Component ──────────────────────────────────────────────── */
+const useStyles = makeStyles({
+  section: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  header: {
+    marginBottom: tokens.spacingVerticalXXL,
+  },
+  stageNumber: {
+    display: 'block',
+    marginBottom: tokens.spacingVerticalXS,
+    color: tokens.colorNeutralForeground3,
+    fontFamily: tokens.fontFamilyBase,
+    fontSize: tokens.fontSizeBase200,
+    fontWeight: tokens.fontWeightSemibold,
+    letterSpacing: '0',
+    textTransform: 'uppercase',
+  },
+  title: {
+    display: 'block',
+    margin: 0,
+    color: tokens.colorNeutralForeground1,
+  },
+  subtitle: {
+    display: 'block',
+    marginTop: tokens.spacingVerticalXS,
+    color: tokens.colorNeutralForeground2,
+    lineHeight: tokens.lineHeightBase400,
+  },
+  wireframeCard: {
+    position: 'relative',
+    height: '700px',
+    overflow: 'hidden',
+    backgroundColor: tokens.colorNeutralBackground2,
+    boxShadow: tokens.shadow16,
+    ...shorthands.border(tokens.strokeWidthThin, 'solid', tokens.colorNeutralStroke2),
+    ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+    ...shorthands.padding(0),
+  },
+  chromeBar: {
+    display: 'flex',
+    alignItems: 'center',
+    flexShrink: 0,
+    columnGap: tokens.spacingHorizontalS,
+    height: '36px',
+    userSelect: 'none',
+    backgroundColor: tokens.colorNeutralBackground2,
+    ...shorthands.borderBottom(tokens.strokeWidthThin, 'solid', tokens.colorNeutralStroke2),
+    ...shorthands.padding(0, tokens.spacingHorizontalM),
+  },
+  dot: {
+    width: '10px',
+    height: '10px',
+    backgroundColor: tokens.colorNeutralStroke1,
+    ...shorthands.borderRadius(tokens.borderRadiusCircular),
+  },
+  spacer: {
+    width: '12px',
+  },
+  tabGroup: {
+    display: 'flex',
+    alignItems: 'center',
+    columnGap: tokens.spacingHorizontalXXS,
+  },
+  browserTab: {
+    backgroundColor: tokens.colorNeutralBackground3,
+    color: tokens.colorNeutralForeground2,
+    fontSize: tokens.fontSizeBase100,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium, tokens.borderRadiusMedium, 0, 0),
+    ...shorthands.padding(tokens.spacingVerticalXXS, tokens.spacingHorizontalM),
+  },
+  tabPlus: {
+    color: tokens.colorNeutralForeground4,
+    fontSize: tokens.fontSizeBase100,
+    ...shorthands.padding(tokens.spacingVerticalXXS, tokens.spacingHorizontalS),
+  },
+  urlBar: {
+    flex: 1,
+    maxWidth: '480px',
+    height: '20px',
+    marginRight: 'auto',
+    marginLeft: 'auto',
+    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderRadius(tokens.borderRadiusCircular),
+  },
+  rightChromeSpace: {
+    width: '48px',
+  },
+  content: {
+    position: 'relative',
+    height: 'calc(100% - 37px)',
+    overflow: 'hidden',
+    backgroundColor: tokens.colorNeutralBackground1,
+  },
+  toggleArea: {
+    marginTop: tokens.spacingVerticalL,
+  },
+  annotation: {
+    marginTop: tokens.spacingVerticalXXL,
+    paddingTop: tokens.spacingVerticalXXL,
+    color: tokens.colorNeutralForeground2,
+    fontFamily: tokens.fontFamilyBase,
+    fontSize: tokens.fontSizeBase300,
+    lineHeight: tokens.lineHeightBase500,
+    ...shorthands.borderTop(tokens.strokeWidthThin, 'solid', tokens.colorNeutralStroke2),
+  },
+  annotationGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    columnGap: '32px',
+    rowGap: tokens.spacingVerticalXXL,
+    '& h3': {
+      marginTop: 0,
+      marginBottom: tokens.spacingVerticalS,
+      color: tokens.colorNeutralForeground3,
+      fontFamily: tokens.fontFamilyBase,
+      fontSize: tokens.fontSizeBase200,
+      fontWeight: tokens.fontWeightSemibold,
+      letterSpacing: '0',
+      textTransform: 'uppercase',
+    },
+    '& p': {
+      marginTop: 0,
+      marginBottom: tokens.spacingVerticalS,
+      color: tokens.colorNeutralForeground2,
+      fontSize: tokens.fontSizeBase300,
+      fontWeight: tokens.fontWeightRegular,
+      lineHeight: tokens.lineHeightBase500,
+    },
+    '& ul': {
+      margin: 0,
+      padding: 0,
+      listStyleType: 'none',
+    },
+    '& li': {
+      position: 'relative',
+      marginBottom: tokens.spacingVerticalXS,
+      paddingLeft: tokens.spacingHorizontalM,
+      color: tokens.colorNeutralForeground2,
+      fontSize: tokens.fontSizeBase300,
+      fontWeight: tokens.fontWeightRegular,
+      lineHeight: tokens.lineHeightBase400,
+    },
+    '& li::before': {
+      content: '""',
+      position: 'absolute',
+      left: 0,
+      top: '0.6em',
+      width: '4px',
+      height: '4px',
+      backgroundColor: tokens.colorBrandBackground,
+      ...shorthands.borderRadius(tokens.borderRadiusCircular),
+    },
+    '& strong': {
+      color: tokens.colorNeutralForeground1,
+      fontWeight: tokens.fontWeightSemibold,
+    },
+  },
+});
 
 export interface ShowcaseSectionProps {
   section: SectionType;
 }
 
 export function ShowcaseSection({ section }: ShowcaseSectionProps) {
+  const styles = useStyles();
   const stateNames = Object.keys(section.states);
   const [active, setActive] = useState(stateNames[0] ?? '');
 
   const ActiveComponent = section.states[active];
 
   return (
-    <div style={sectionContainer}>
-      {/* Section header */}
-      <div style={headerArea}>
+    <section className={styles.section}>
+      <div className={styles.header}>
         {section.stageNumber && (
-          <div style={stageNumberStyle}>{section.stageNumber}</div>
+          <Text as="span" className={styles.stageNumber}>{section.stageNumber}</Text>
         )}
-        <h2 style={titleStyle}>{section.title}</h2>
-        {section.subtitle && <p style={subtitleStyle}>{section.subtitle}</p>}
+        <Title2 as="h2" className={styles.title}>{section.title}</Title2>
+        {section.subtitle && <Text as="p" className={styles.subtitle}>{section.subtitle}</Text>}
       </div>
 
-      {/* Wireframe area */}
-      <div style={wireframeContainer}>
-        {/* Browser chrome bar */}
-        <div style={chromeBar}>
+      <Card className={styles.wireframeCard} appearance="filled-alternative">
+        <div className={styles.chromeBar}>
           {[0, 1, 2].map((i) => (
-            <div key={i} style={dotStyle(i)} />
+            <div key={i} className={styles.dot} />
           ))}
-          <div style={{ width: 12 }} />
-          <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <span style={tabStyle}>Platform</span>
-            <span style={tabPlusStyle}>+</span>
+          <div className={styles.spacer} />
+          <div className={styles.tabGroup}>
+            <span className={styles.browserTab}>Platform</span>
+            <span className={styles.tabPlus}>+</span>
           </div>
-          <div style={urlBarStyle} />
-          <div style={{ width: 48 }} />
+          <div className={styles.urlBar} />
+          <div className={styles.rightChromeSpace} />
         </div>
 
-        {/* Rendered wireframe state */}
-        <div style={contentArea}>
+        <div className={styles.content}>
           {ActiveComponent && <ActiveComponent />}
         </div>
-      </div>
+      </Card>
 
-      {/* State toggle pills */}
       {stateNames.length > 1 && (
-        <div style={toggleArea}>
+        <div className={styles.toggleArea}>
           <StateToggle
             states={stateNames}
             active={active}
@@ -175,60 +220,11 @@ export function ShowcaseSection({ section }: ShowcaseSectionProps) {
         </div>
       )}
 
-      {/* Annotation */}
       {section.annotation && (
-        <div style={annotationArea}>
-          <style dangerouslySetInnerHTML={{ __html: `
-            .ann-grid {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 24px 32px;
-            }
-            .ann-block h3 {
-              font-family: var(--z-font-mono);
-              font-size: var(--z-text-sm);
-              text-transform: uppercase;
-              letter-spacing: 0.12em;
-              color: var(--z-text-helper);
-              margin: 0 0 8px;
-            }
-            .ann-block p {
-              margin: 0 0 8px;
-              font-size: var(--z-text-base);
-              line-height: 1.65;
-              color: var(--z-text-secondary);
-              font-weight: 400;
-            }
-            .ann-block ul {
-              margin: 0; padding: 0; list-style: none;
-            }
-            .ann-block ul li {
-              padding-left: 12px;
-              position: relative;
-              margin-bottom: 4px;
-              font-size: var(--z-text-base);
-              line-height: 1.55;
-              color: var(--z-text-secondary);
-              font-weight: 400;
-            }
-            .ann-block ul li::before {
-              content: '';
-              position: absolute;
-              left: 0;
-              top: 0.55em;
-              width: 4px;
-              height: 4px;
-              border-radius: 50%;
-              background: var(--z-text-helper);
-            }
-            .ann-block ul li strong {
-              font-weight: 600;
-              color: var(--z-text-primary);
-            }
-          `}} />
-          <div className="ann-grid" dangerouslySetInnerHTML={{ __html: section.annotation }} />
+        <div className={styles.annotation}>
+          <div className={styles.annotationGrid} dangerouslySetInnerHTML={{ __html: section.annotation }} />
         </div>
       )}
-    </div>
+    </section>
   );
 }

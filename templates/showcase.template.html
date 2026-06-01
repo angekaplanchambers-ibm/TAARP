@@ -4,106 +4,117 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{TITLE} -- {SUBTITLE}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #FAFBFC;
-    --bg-surface: #FFFFFF;
-    --bg-surface-raised: #F0F2F5;
-    --bg-surface-hover: #F5F6F8;
-    --border: #D0D5DD;
-    --border-subtle: #E2E6EB;
-    --text-primary: #1A1A2E;
-    --text-secondary: #4A5568;
-    --text-muted: #7A8599;
-    --accent-blue: #2B6CB0;
-    --accent-blue-dim: #BEE3F8;
-    --accent-green: #25855A;
-    --accent-green-dim: #C6F6D5;
-    --accent-amber: #B7791F;
-    --accent-amber-dim: #FEFCBF;
-    --accent-red: #C53030;
-    --accent-purple: #6B46C1;
-    --serif: 'Instrument Serif', Georgia, serif;
-    --mono: 'DM Mono', 'SF Mono', monospace;
-    --sans: 'DM Sans', -apple-system, sans-serif;
-    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    color-scheme: light;
+    --fluent-font-family-base: 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --fluent-color-neutral-background-1: #ffffff;
+    --fluent-color-neutral-background-2: #fafafa;
+    --fluent-color-neutral-background-3: #f5f5f5;
+    --fluent-color-neutral-background-1-hover: #f5f5f5;
+    --fluent-color-neutral-background-1-pressed: #e0e0e0;
+    --fluent-color-neutral-foreground-1: #242424;
+    --fluent-color-neutral-foreground-2: #424242;
+    --fluent-color-neutral-foreground-3: #616161;
+    --fluent-color-neutral-stroke-1: #d1d1d1;
+    --fluent-color-neutral-stroke-2: #e0e0e0;
+    --fluent-color-brand-background: #0f6cbd;
+    --fluent-color-brand-background-hover: #115ea3;
+    --fluent-color-brand-background-pressed: #0f548c;
+    --fluent-color-brand-background-2: #ebf3fc;
+    --fluent-color-brand-foreground-1: #0f6cbd;
+    --fluent-color-status-success-background-1: #f1faf1;
+    --fluent-color-status-success-foreground-1: #0e700e;
+    --fluent-color-status-warning-background-1: #fff9f5;
+    --fluent-color-status-warning-foreground-1: #bc4b09;
+    --fluent-shadow-4: 0 2px 4px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
+    --fluent-shadow-16: 0 8px 16px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
+    --fluent-radius-small: 2px;
+    --fluent-radius-medium: 4px;
+    --fluent-radius-large: 6px;
+    --fluent-duration: 180ms;
+    --fluent-curve: cubic-bezier(0.1, 0.9, 0.2, 1);
   }
 
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html { font-size: 18px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
-  body { background: var(--bg); color: var(--text-primary); font-family: var(--sans); line-height: 1.6; overflow-x: hidden; }
+  html { font-size: 16px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+  body {
+    background: var(--fluent-color-neutral-background-2);
+    color: var(--fluent-color-neutral-foreground-1);
+    font-family: var(--fluent-font-family-base);
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  button { font: inherit; }
 
   /* === HEADER === */
   .header { padding: 4rem 2rem 3rem; max-width: 1200px; margin: 0 auto; position: relative; }
-  .header::after { content: ''; position: absolute; bottom: 0; left: 2rem; right: 2rem; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); }
-  .header-meta { font-family: var(--mono); font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .header::after { content: ''; position: absolute; bottom: 0; left: 2rem; right: 2rem; height: 1px; background: var(--fluent-color-neutral-stroke-2); }
+  .header-meta { font-size: 0.75rem; color: var(--fluent-color-neutral-foreground-3); font-weight: 600; text-transform: uppercase; margin-bottom: 1.5rem; }
   .header-meta span { margin-right: 2rem; }
-  .header h1 { font-family: var(--serif); font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 400; line-height: 1.15; margin-bottom: 1rem; max-width: 800px; }
-  .header-subtitle { font-size: 1.15rem; color: var(--text-secondary); max-width: 640px; line-height: 1.7; font-weight: 300; }
+  .header h1 { font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 600; line-height: 1.2; margin-bottom: 1rem; max-width: 800px; }
+  .header-subtitle { font-size: 1.125rem; color: var(--fluent-color-neutral-foreground-2); max-width: 640px; line-height: 1.6; font-weight: 400; }
 
   /* === STORY SECTIONS === */
   .story { max-width: 1200px; margin: 0 auto; padding: 3.5rem 2rem; display: grid; grid-template-columns: 280px 1fr; gap: 3rem; }
-  .story-label { font-family: var(--mono); font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; padding-top: 0.35rem; }
+  .story-label { font-size: 0.75rem; color: var(--fluent-color-neutral-foreground-3); font-weight: 600; text-transform: uppercase; padding-top: 0.35rem; }
   .story-body { max-width: 640px; }
-  .story-body p { font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary); margin-bottom: 1rem; font-weight: 300; }
-  .story-body p:first-child { font-size: 1.2rem; color: var(--text-primary); font-weight: 400; }
+  .story-body p { font-size: 1rem; line-height: 1.6; color: var(--fluent-color-neutral-foreground-2); margin-bottom: 1rem; font-weight: 400; }
+  .story-body p:first-child { font-size: 1.125rem; color: var(--fluent-color-neutral-foreground-1); }
 
   /* === PRINCIPLES === */
   .principles { max-width: 1200px; margin: 0 auto; padding: 0 2rem 3.5rem; }
-  .principles-heading { font-family: var(--serif); font-size: 1.75rem; font-weight: 400; margin-bottom: 0.5rem; }
-  .principles-desc { font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; font-weight: 300; max-width: 640px; }
+  .principles-heading { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .principles-desc { font-size: 1rem; color: var(--fluent-color-neutral-foreground-2); margin-bottom: 2rem; font-weight: 400; max-width: 640px; }
   .principles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
-  .principle-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 1.6rem; position: relative; }
-  .principle-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 6px 6px 0 0; }
-  .principle-card:nth-child(1)::before { background: var(--accent-blue); }
-  .principle-card:nth-child(2)::before { background: var(--accent-amber); }
-  .principle-card:nth-child(3)::before { background: var(--accent-green); }
-  .principle-num { font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.1em; margin-bottom: 0.6rem; }
-  .principle-title { font-family: var(--sans); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.6rem; line-height: 1.3; }
-  .principle-body { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.65; font-weight: 300; }
+  .principle-card { background: var(--fluent-color-neutral-background-1); border: 1px solid var(--fluent-color-neutral-stroke-2); border-radius: var(--fluent-radius-large); box-shadow: var(--fluent-shadow-4); padding: 1.5rem; position: relative; }
+  .principle-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: var(--fluent-radius-large) var(--fluent-radius-large) 0 0; background: var(--fluent-color-brand-background); }
+  .principle-num { font-size: 0.75rem; color: var(--fluent-color-neutral-foreground-3); font-weight: 600; margin-bottom: 0.6rem; }
+  .principle-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.6rem; line-height: 1.3; }
+  .principle-body { font-size: 0.875rem; color: var(--fluent-color-neutral-foreground-2); line-height: 1.6; font-weight: 400; }
 
   /* === KEY NUMBERS === */
-  .key-numbers { max-width: 1200px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border-subtle); border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden; }
-  .key-number { background: var(--bg-surface); padding: 1.5rem; text-align: center; }
-  .key-number .num { font-family: var(--serif); font-size: 2.2rem; line-height: 1.1; }
-  .key-number .label { font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.5rem; }
+  .key-numbers { max-width: 1200px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--fluent-color-neutral-stroke-2); border: 1px solid var(--fluent-color-neutral-stroke-2); border-radius: var(--fluent-radius-large); box-shadow: var(--fluent-shadow-4); overflow: hidden; }
+  .key-number { background: var(--fluent-color-neutral-background-1); padding: 1.5rem; text-align: center; }
+  .key-number .num { font-size: 2rem; font-weight: 600; line-height: 1.1; }
+  .key-number .label { font-size: 0.75rem; color: var(--fluent-color-neutral-foreground-3); font-weight: 600; text-transform: uppercase; margin-top: 0.5rem; }
 
   /* === TIMELINE === */
   .timeline-container { max-width: 1200px; margin: 2rem auto 0; padding: 0 2rem 3rem; overflow-x: auto; }
   .timeline { display: flex; align-items: flex-start; min-width: max-content; padding: 2rem 0; position: relative; }
-  .timeline::before { content: ''; position: absolute; top: 26px; left: 24px; right: 24px; height: 2px; background: var(--border); z-index: 0; }
-  .tl-node { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 105px; flex: 1; cursor: pointer; z-index: 1; }
-  .tl-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); background: var(--bg); transition: all 0.3s var(--ease-out-expo); }
-  .tl-node:hover .tl-dot { transform: scale(1.4); box-shadow: 0 0 12px rgba(76, 154, 255, 0.3); }
-  .tl-node.active .tl-dot { border-color: var(--accent-blue); background: var(--accent-blue-dim); }
-  .tl-num { font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 0.75rem; letter-spacing: 0.06em; }
-  .tl-name { font-family: var(--sans); font-size: 0.82rem; font-weight: 500; color: var(--text-secondary); margin-top: 0.25rem; text-align: center; max-width: 100px; line-height: 1.3; }
+  .timeline::before { content: ''; position: absolute; top: 26px; left: 24px; right: 24px; height: 2px; background: var(--fluent-color-neutral-stroke-1); z-index: 0; }
+  .tl-node { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 105px; flex: 1; cursor: pointer; z-index: 1; color: inherit; background: transparent; border: 0; }
+  .tl-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--fluent-color-neutral-stroke-1); background: var(--fluent-color-neutral-background-2); transition: transform var(--fluent-duration) var(--fluent-curve), box-shadow var(--fluent-duration) var(--fluent-curve), border-color var(--fluent-duration) var(--fluent-curve), background-color var(--fluent-duration) var(--fluent-curve); }
+  .tl-node:hover .tl-dot { transform: scale(1.25); box-shadow: var(--fluent-shadow-4); }
+  .tl-node:focus-visible { outline: 2px solid var(--fluent-color-brand-background); outline-offset: 4px; border-radius: var(--fluent-radius-medium); }
+  .tl-node.active .tl-dot { border-color: var(--fluent-color-brand-background); background: var(--fluent-color-brand-background-2); }
+  .tl-num { font-size: 0.75rem; color: var(--fluent-color-neutral-foreground-3); margin-top: 0.75rem; font-weight: 600; }
+  .tl-name { font-size: 0.875rem; font-weight: 500; color: var(--fluent-color-neutral-foreground-2); margin-top: 0.25rem; text-align: center; max-width: 100px; line-height: 1.3; }
 
   /* === STAGE CARDS === */
   .stages { max-width: 1200px; margin: 0 auto; padding: 0 2rem 4rem; }
-  .stages-heading { font-family: var(--mono); font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); }
-  .stage-card { border: 1px solid var(--border-subtle); border-radius: 6px; margin-bottom: 1rem; background: var(--bg-surface); overflow: hidden; transition: border-color 0.2s ease; }
-  .stage-card:hover { border-color: var(--border); }
-  .stage-card-header { display: grid; grid-template-columns: 56px 1fr auto; align-items: center; padding: 1.1rem 1.5rem; cursor: pointer; user-select: none; gap: 1rem; }
-  .stage-card-header:hover { background: var(--bg-surface-hover); }
-  .stage-badge { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em; text-align: center; font-weight: 500; color: var(--accent-blue); }
+  .stages-heading { font-size: 0.75rem; color: var(--fluent-color-neutral-foreground-3); font-weight: 600; text-transform: uppercase; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--fluent-color-neutral-stroke-2); }
+  .stage-card { border: 1px solid var(--fluent-color-neutral-stroke-2); border-radius: var(--fluent-radius-large); margin-bottom: 1rem; background: var(--fluent-color-neutral-background-1); box-shadow: var(--fluent-shadow-4); overflow: hidden; transition: border-color var(--fluent-duration) var(--fluent-curve), box-shadow var(--fluent-duration) var(--fluent-curve); }
+  .stage-card:hover { border-color: var(--fluent-color-neutral-stroke-1); box-shadow: var(--fluent-shadow-16); }
+  .stage-card-header { width: 100%; display: grid; grid-template-columns: 56px 1fr auto; align-items: center; padding: 1.1rem 1.5rem; cursor: pointer; user-select: none; gap: 1rem; color: inherit; background: transparent; border: 0; text-align: left; transition: background-color var(--fluent-duration) var(--fluent-curve); }
+  .stage-card-header:hover { background: var(--fluent-color-neutral-background-1-hover); }
+  .stage-card-header:active { background: var(--fluent-color-neutral-background-1-pressed); }
+  .stage-card-header:focus-visible { outline: 2px solid var(--fluent-color-brand-background); outline-offset: -2px; }
+  .stage-badge { font-size: 0.75rem; text-align: center; font-weight: 600; color: var(--fluent-color-brand-foreground-1); }
   .stage-title { font-size: 1.05rem; font-weight: 500; }
-  .stage-one-liner { font-size: 0.95rem; color: var(--text-secondary); font-weight: 300; }
-  .stage-toggle { font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.08em; }
-  .stage-toggle-arrow { display: inline-block; transition: transform 0.3s var(--ease-out-expo); font-size: 0.8rem; }
+  .stage-one-liner { font-size: 0.875rem; color: var(--fluent-color-neutral-foreground-2); font-weight: 400; }
+  .stage-toggle { font-size: 0.75rem; color: var(--fluent-color-neutral-foreground-3); font-weight: 600; }
+  .stage-toggle-arrow { display: inline-block; transition: transform var(--fluent-duration) var(--fluent-curve); font-size: 0.8rem; }
   .stage-card.open .stage-toggle-arrow { transform: rotate(90deg); }
-  .stage-detail { max-height: 0; overflow: hidden; transition: max-height 0.5s var(--ease-out-expo); }
+  .stage-detail { max-height: 0; overflow: hidden; transition: max-height var(--fluent-duration) var(--fluent-curve); }
   .stage-card.open .stage-detail { max-height: 2000px; }
   .stage-detail-inner { padding: 0 1.5rem 1.5rem; padding-left: calc(56px + 1.5rem + 1rem); display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-  .detail-block h4 { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.6rem; }
-  .detail-block p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.65; font-weight: 300; }
+  .detail-block h4 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--fluent-color-neutral-foreground-3); margin-bottom: 0.6rem; }
+  .detail-block p { font-size: 0.875rem; color: var(--fluent-color-neutral-foreground-2); line-height: 1.6; font-weight: 400; }
 
   /* === FOOTER === */
-  .footer { max-width: 1200px; margin: 0 auto; padding: 2rem 2rem 4rem; border-top: 1px solid var(--border-subtle); }
-  .footer p { font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.06em; }
+  .footer { max-width: 1200px; margin: 0 auto; padding: 2rem 2rem 4rem; border-top: 1px solid var(--fluent-color-neutral-stroke-2); }
+  .footer p { font-size: 0.75rem; color: var(--fluent-color-neutral-foreground-3); font-weight: 600; }
 
   /* === RESPONSIVE === */
   @media (max-width: 768px) {
@@ -115,7 +126,7 @@
   }
 
   /* === ANIMATION === */
-  .fade-target { opacity: 0; transform: translateY(16px); transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo); }
+  .fade-target { opacity: 0; transform: translateY(16px); transition: opacity 200ms var(--fluent-curve), transform 200ms var(--fluent-curve); }
   .fade-target.visible { opacity: 1; transform: translateY(0); }
 
   /* === PRINT === */
@@ -220,26 +231,26 @@
 <div class="timeline-container fade-target">
   <div class="timeline">
     <!-- Repeat .tl-node for each stage. Add class "active" to highlight. -->
-    <div class="tl-node active" onclick="scrollToStage('s1')">
+    <button class="tl-node active" type="button" onclick="scrollToStage('s1')">
       <div class="tl-dot"></div>
       <div class="tl-num">01</div>
       <div class="tl-name">{STAGE_1}</div>
-    </div>
-    <div class="tl-node" onclick="scrollToStage('s2')">
+    </button>
+    <button class="tl-node" type="button" onclick="scrollToStage('s2')">
       <div class="tl-dot"></div>
       <div class="tl-num">02</div>
       <div class="tl-name">{STAGE_2}</div>
-    </div>
-    <div class="tl-node" onclick="scrollToStage('s3')">
+    </button>
+    <button class="tl-node" type="button" onclick="scrollToStage('s3')">
       <div class="tl-dot"></div>
       <div class="tl-num">03</div>
       <div class="tl-name">{STAGE_3}</div>
-    </div>
-    <div class="tl-node" onclick="scrollToStage('s4')">
+    </button>
+    <button class="tl-node" type="button" onclick="scrollToStage('s4')">
       <div class="tl-dot"></div>
       <div class="tl-num">04</div>
       <div class="tl-name">{STAGE_4}</div>
-    </div>
+    </button>
   </div>
 </div>
 
@@ -248,14 +259,14 @@
   <div class="stages-heading">Stages -- click to expand</div>
 
   <div class="stage-card fade-target" id="s1">
-    <div class="stage-card-header" onclick="toggleCard(this)">
+    <button class="stage-card-header" type="button" onclick="toggleCard(this)" aria-expanded="false">
       <div class="stage-badge">01</div>
       <div class="stage-title-area">
         <div class="stage-title">{STAGE_1}</div>
         <div class="stage-one-liner"><!-- One-line summary --></div>
       </div>
       <div class="stage-toggle"><span class="stage-toggle-arrow">&#9654;</span></div>
-    </div>
+    </button>
     <div class="stage-detail">
       <div class="stage-detail-inner">
         <div class="detail-block">
@@ -271,14 +282,14 @@
   </div>
 
   <div class="stage-card fade-target" id="s2">
-    <div class="stage-card-header" onclick="toggleCard(this)">
+    <button class="stage-card-header" type="button" onclick="toggleCard(this)" aria-expanded="false">
       <div class="stage-badge">02</div>
       <div class="stage-title-area">
         <div class="stage-title">{STAGE_2}</div>
         <div class="stage-one-liner"><!-- One-line summary --></div>
       </div>
       <div class="stage-toggle"><span class="stage-toggle-arrow">&#9654;</span></div>
-    </div>
+    </button>
     <div class="stage-detail">
       <div class="stage-detail-inner">
         <div class="detail-block">
@@ -294,14 +305,14 @@
   </div>
 
   <div class="stage-card fade-target" id="s3">
-    <div class="stage-card-header" onclick="toggleCard(this)">
+    <button class="stage-card-header" type="button" onclick="toggleCard(this)" aria-expanded="false">
       <div class="stage-badge">03</div>
       <div class="stage-title-area">
         <div class="stage-title">{STAGE_3}</div>
         <div class="stage-one-liner"><!-- One-line summary --></div>
       </div>
       <div class="stage-toggle"><span class="stage-toggle-arrow">&#9654;</span></div>
-    </div>
+    </button>
     <div class="stage-detail">
       <div class="stage-detail-inner">
         <div class="detail-block">
@@ -317,14 +328,14 @@
   </div>
 
   <div class="stage-card fade-target" id="s4">
-    <div class="stage-card-header" onclick="toggleCard(this)">
+    <button class="stage-card-header" type="button" onclick="toggleCard(this)" aria-expanded="false">
       <div class="stage-badge">04</div>
       <div class="stage-title-area">
         <div class="stage-title">{STAGE_4}</div>
         <div class="stage-one-liner"><!-- One-line summary --></div>
       </div>
       <div class="stage-toggle"><span class="stage-toggle-arrow">&#9654;</span></div>
-    </div>
+    </button>
     <div class="stage-detail">
       <div class="stage-detail-inner">
         <div class="detail-block">
@@ -347,7 +358,9 @@
 
 <script>
 function toggleCard(headerEl) {
-  headerEl.parentElement.classList.toggle('open');
+  const card = headerEl.parentElement;
+  const isOpen = card.classList.toggle('open');
+  headerEl.setAttribute('aria-expanded', String(isOpen));
 }
 
 function scrollToStage(id) {
