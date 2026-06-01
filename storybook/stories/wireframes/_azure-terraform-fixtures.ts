@@ -205,30 +205,6 @@ const azureTerraformStepSource: AzureFormStep[] = [
     ],
   },
   {
-    code: 'A7',
-    title: 'Enable Azure Governance',
-    summary: 'Let the operator opt into Azure-side controls that wrap existing Terraform workflows without replacing Sentinel or HCP Terraform policy.',
-    primaryAction: 'Save governance selection',
-    sections: [
-      {
-        title: 'Governance controls',
-        controls: [
-          { kind: 'checkbox', id: 'policy-evaluation', label: 'Azure Policy evaluation before runs', helper: 'Evaluate high-risk changes before production applies proceed.', checked: true },
-          { kind: 'checkbox', id: 'approval-requirements', label: 'Approval requirements', helper: 'Require Azure-side approval for production applies.', checked: true },
-          { kind: 'checkbox', id: 'region-limits', label: 'Region and SKU limits', helper: 'Block disallowed regions or unsupported service tiers.' },
-          { kind: 'checkbox', id: 'cost-signals', label: 'Cost signals', helper: 'Show cost warnings before unexpected expansion completes.', checked: true },
-        ],
-      },
-      {
-        title: 'Control boundaries',
-        layout: 'one',
-        controls: [
-          { kind: 'textarea', id: 'governance-boundary', label: 'Boundary note', value: 'Azure governance wraps connected Terraform workspaces. Existing Sentinel and HCP Terraform policies remain intact.' },
-        ],
-      },
-    ],
-  },
-  {
     code: 'A8',
     title: 'Register Terraform Workspaces as Azure Resources',
     summary: 'Create Azure RP resources that represent Terraform stacks and environments, linking each record to HCP Terraform and Azure subscription context.',
@@ -314,13 +290,12 @@ export const azureTerraformSteps: AzureFormStep[] = [
     ...azureTerraformStepSource[4],
     title: 'Map Workspaces',
   },
-  azureTerraformStepSource[6],
   {
-    ...azureTerraformStepSource[7],
+    ...azureTerraformStepSource[6],
     title: 'Register Workspaces in Azure',
   },
   {
-    ...azureTerraformStepSource[8],
+    ...azureTerraformStepSource[7],
     title: 'Confirm',
   },
 ];
@@ -363,31 +338,6 @@ export const azureTerraformStepsB: AzureFormStep[] = [
           { kind: 'select', id: 'b-rg-2-env', label: 'rg-identity-shared - Environment', options: ['Shared infrastructure', 'Production', 'Test'] },
           { kind: 'text', id: 'b-rg-2-owner', label: 'rg-identity-shared - Owner', value: 'Identity Services Team' },
           { kind: 'select', id: 'b-rg-2-exec', label: 'rg-identity-shared - Execution mode', options: ['Remote (HCP Terraform)', 'Local'] },
-        ],
-      },
-    ],
-  },
-  {
-    code: 'B4',
-    title: 'Enable Governance',
-    summary: 'Configure Azure-side controls to manage and audit Terraform changes across your organization. This is where Azure adds value on top of Terraform.',
-    primaryAction: 'Save governance settings',
-    sections: [
-      {
-        title: 'Governance controls',
-        controls: [
-          { kind: 'checkbox', id: 'b-policy-eval', label: 'Azure Policy evaluation before runs', helper: 'Evaluate high-risk changes before production applies proceed.', checked: true },
-          { kind: 'checkbox', id: 'b-approval', label: 'Approval requirements for production changes', helper: 'Require Azure-side approval for applies to production subscriptions.', checked: true },
-          { kind: 'checkbox', id: 'b-cost-signals', label: 'Cost signals', helper: 'Show cost warnings before unexpected resource expansion.', checked: true },
-          { kind: 'checkbox', id: 'b-region-limits', label: 'Region and SKU limits', helper: 'Block disallowed regions or unsupported service tiers.' },
-          { kind: 'checkbox', id: 'b-drift-detection', label: 'Drift detection', helper: 'Alert when Azure resources diverge from Terraform state.', checked: true },
-        ],
-      },
-      {
-        title: 'Team access',
-        layout: 'one',
-        controls: [
-          { kind: 'textarea', id: 'b-team-note', label: 'Scope note', value: 'Governance applies to all workspaces in this organization. Individual workspace owners can configure additional controls in HCP Terraform.' },
         ],
       },
     ],

@@ -79,24 +79,7 @@ Operator clicks Verify before advancing. A toast confirms resource count and wor
 
 ---
 
-## Step 5: Enable Azure Governance
-
-**Goal:** Let the operator opt into Azure-side controls that wrap existing Terraform workflows without replacing Sentinel or HCP Terraform policy.
-
-### Governance controls (checkboxes)
-- Azure Policy evaluation before runs - evaluate high-risk changes before production applies proceed
-- Approval requirements - require Azure-side approval for production applies
-- Region and SKU limits - block disallowed regions or unsupported service tiers
-- Cost signals - show cost warnings before unexpected expansion completes
-
-### Boundary note
-Azure governance wraps connected Terraform workspaces. Existing Sentinel and HCP Terraform policies remain intact.
-
-**Primary action:** Save governance selection
-
----
-
-## Step 6: Register Workspaces in Azure
+## Step 5: Register Workspaces in Azure
 
 **Goal:** Create Azure RP resources that represent Terraform stacks and environments, linking each record to HCP Terraform and Azure subscription context.
 
@@ -113,7 +96,7 @@ Each workspace is shown as a Microsoft.Terraform/stacks entry with its HCP works
 
 ---
 
-## Step 7: Confirm
+## Step 6: Confirm
 
 **Goal:** Confirm that existing Terraform infrastructure is connected to Azure and show what the operator can now see without implying any hidden apply.
 

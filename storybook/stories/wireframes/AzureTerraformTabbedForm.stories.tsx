@@ -1848,7 +1848,6 @@ function ConfirmStepB({ selections, onPrevious, onConfirm }: { selections: FormS
         <div style={{ display: 'grid', gap: hds.space12 }}>
           {[
             { label: 'Terraform workspaces created', detail: 'One workspace per selected resource group, registered in your HCP Terraform organization.' },
-            { label: 'Azure governance applied', detail: 'Policy evaluation, approvals, and cost signals are active for selected resources.' },
             { label: 'Resources visible in Azure portal', detail: 'Connected stacks appear in your Azure Terraform resource view.' },
           ].map((item) => (
             <div key={item.label} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
@@ -2205,18 +2204,6 @@ export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScre
                   <HcpConnectionStepB onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(1)} />
                 ) : activeStep.title === 'Select Azure Resources' ? (
                   <SelectAzureResourcesStep selections={formSelections} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
-                ) : activeStep.title === 'Enable Governance' ? (
-                  <form style={FORM_STACK} aria-label={activeStep.title}>
-                    {activeStep.sections.map((section) => (
-                      <FormSection key={section.title} section={section} selections={formSelections} onSelectionChange={handleSelectionChange} />
-                    ))}
-                    <div style={ACTIONS}>
-                      <Button onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}>Previous</Button>
-                      <ButtonSet>
-                        <Button variant="primary" onClick={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))}>Next</Button>
-                      </ButtonSet>
-                    </div>
-                  </form>
                 ) : activeStep.title === 'Register Resources' ? (
                   <TerraformStacksStep selectedOrganization={selectedOrganization} selections={formSelections} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
                 ) : activeIndex === activeSteps.length - 1 ? (
@@ -2261,19 +2248,6 @@ export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScre
                   <WorkspacesStep selectedOrganization={selectedOrganization} selections={formSelections} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
                 ) : activeStep.title === 'Map Workspaces' ? (
                   <MapWorkspacesStep selectedOrganization={selectedOrganization} selections={formSelections} verificationStatus={mapVerificationStatus} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onVerify={handleMapVerification} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
-                ) : activeStep.title === 'Enable Azure Governance' ? (
-                  <form style={FORM_STACK} aria-label={activeStep.title}>
-                    <section style={SECTION_CARD} aria-label="Enable Azure Governance placeholder">
-                      <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.45 }}>TBD - Optional/Recommended?</p>
-                    </section>
-                    <div style={ACTIONS} aria-describedby="azure-terraform-action-help">
-                      <span className="azure-terraform-sr-only" id="azure-terraform-action-help">Primary action is placed on the right and secondary actions are grouped together.</span>
-                      <Button onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}>Previous</Button>
-                      <ButtonSet>
-                        <Button variant="primary" onClick={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))}>Next</Button>
-                      </ButtonSet>
-                    </div>
-                  </form>
                 ) : activeStep.title === 'Register Workspaces in Azure' ? (
                   <TerraformStacksStep selectedOrganization={selectedOrganization} selections={formSelections} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
                 ) : activeIndex === activeSteps.length - 1 ? (

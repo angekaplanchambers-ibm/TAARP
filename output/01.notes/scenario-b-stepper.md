@@ -64,25 +64,7 @@ For each resource group:
 
 ---
 
-## Step 4: Enable Governance
-
-**Goal:** Configure Azure-side controls to manage and audit Terraform changes across the organization. This is the primary value proposition for Scenario B - Azure adds oversight on top of Terraform.
-
-### Governance controls (checkboxes, most checked by default)
-- Azure Policy evaluation before runs (default on) - evaluate high-risk changes before production applies proceed
-- Approval requirements for production changes (default on) - require Azure-side approval for applies to production subscriptions
-- Cost signals (default on) - show cost warnings before unexpected resource expansion
-- Region and SKU limits (default off) - block disallowed regions or unsupported service tiers
-- Drift detection (default on) - alert when Azure resources diverge from Terraform state
-
-### Scope note
-Governance applies to all workspaces in this organization. Individual workspace owners can configure additional controls in HCP Terraform.
-
-**Primary action:** Save governance settings
-
----
-
-## Step 5: Register Resources
+## Step 4: Register Resources
 
 **Goal:** Create Azure RP resources that represent the newly created Terraform workspaces, linking each record to HCP Terraform and the operator's Azure subscriptions.
 
@@ -93,7 +75,7 @@ Each workspace is shown with its corresponding Microsoft.Terraform/stacks entry,
 
 ---
 
-## Step 6: Confirm
+## Step 5: Confirm
 
 **Goal:** Show the operator that their Azure resources are now under Terraform management. The tone is accomplishment - something was set up, not just connected.
 
@@ -102,7 +84,6 @@ Columns: Resource group, Workspace name, Resources (count), Subscription
 
 ### What happens next (checklist)
 - Terraform workspaces created - one workspace per selected resource group, registered in your HCP Terraform organization
-- Azure governance applied - policy evaluation, approvals, and cost signals are active for selected resources
 - Resources visible in Azure portal - connected stacks appear in your Azure Terraform resource view
 
 Note: No state migration required - Terraform will import the current state of these resources.
