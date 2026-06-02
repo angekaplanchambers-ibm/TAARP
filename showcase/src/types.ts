@@ -19,7 +19,7 @@ export interface ShowcaseConfig {
   title: string;
   subtitle: string;
   meta: { pdr: string; date: string };
-  /** Output filename. Format: {seq}.{FeatureName}-{DraftVersion} (e.g., '006.AzureTerraformRP-TabbedForm-Draft02') */
+  /** Output filename. Format: {seq}.{FeatureName}-{Published|Archived} (e.g., '006.AzureTerraformRP-TabbedForm-Published') */
   outputName: string;
   /** Raw HTML rendered as context before wireframe sections (e.g., PDR journey content). */
   preamble?: string;

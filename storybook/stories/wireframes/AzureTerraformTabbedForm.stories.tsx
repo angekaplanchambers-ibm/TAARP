@@ -285,6 +285,42 @@ const SECTION_CARD: CSSProperties = {
   borderBottom: '1px solid #edebe9',
 };
 
+const STACKS_TABLE_WRAP: CSSProperties = {
+  overflowX: 'visible',
+  maxWidth: '100%',
+};
+
+const STACKS_TABLE: CSSProperties = {
+  width: '100%',
+  minWidth: 0,
+  maxWidth: '100%',
+  tableLayout: 'fixed',
+  borderCollapse: 'collapse',
+  fontSize: 14,
+};
+
+const STACKS_TH: CSSProperties = {
+  width: '20%',
+  padding: '10px 12px',
+  borderBottom: `1px solid ${hds.borderPrimary}`,
+  color: hds.textSecondary,
+  fontSize: 12,
+  fontWeight: 700,
+  lineHeight: 1.3,
+  textAlign: 'left',
+  whiteSpace: 'normal',
+  overflowWrap: 'anywhere',
+};
+
+const STACKS_TD: CSSProperties = {
+  width: '20%',
+  padding: '12px',
+  borderBottom: `1px solid ${hds.borderPrimary}`,
+  color: hds.textSecondary,
+  whiteSpace: 'normal',
+  overflowWrap: 'anywhere',
+};
+
 const SECTION_HEADER: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
@@ -1527,28 +1563,28 @@ function TerraformStacksTable({ selectedWorkspaces, headingId, headingLevel = 'h
           </Field>
         </div>
       </div>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', minWidth: 760, borderCollapse: 'collapse', fontSize: 14 }}>
+      <div style={STACKS_TABLE_WRAP}>
+        <table style={STACKS_TABLE}>
           <thead>
             <tr>
               {['Stack', 'Workspace', 'Azure subscription(s)', 'Repo metadata', 'Created'].map((heading) => (
-                <th key={heading} scope="col" style={{ padding: '10px 12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary, fontSize: 12, fontWeight: 700, lineHeight: 1.3, textAlign: 'left' }}>{heading}</th>
+                <th key={heading} scope="col" style={STACKS_TH}>{heading}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {visibleRows.map((row) => (
               <tr key={row.id}>
-                <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, fontWeight: 600 }}>{row.stackName}</td>
-                <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary }}>
+                <td style={{ ...STACKS_TD, color: hds.textPrimary, fontWeight: 600 }}>{row.stackName}</td>
+                <td style={STACKS_TD}>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                     <span>{row.workspaceName}</span>
                     <span aria-label="Opens in a new window" title="Opens in a new window" style={{ color: hds.textFaint, fontSize: 13, fontWeight: 700, lineHeight: 1 }}>↗</span>
                   </span>
                 </td>
-                <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary }}>{row.subscription}</td>
-                <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary }}>{row.repoMetadata}</td>
-                <td style={{ padding: '12px', borderBottom: `1px solid ${hds.borderPrimary}`, color: hds.textSecondary }}>{row.createdTimestamp}</td>
+                <td style={STACKS_TD}>{row.subscription}</td>
+                <td style={STACKS_TD}>{row.repoMetadata}</td>
+                <td style={STACKS_TD}>{row.createdTimestamp}</td>
               </tr>
             ))}
           </tbody>

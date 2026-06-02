@@ -5,7 +5,7 @@ import tabbedFormHtml from './annotations/tabbed-form.html?raw';
 export const config: ShowcaseConfig = {
   title: 'Azure Terraform RP',
   subtitle: 'Approved Scenario A and Scenario B onboarding flow for connecting Azure to HCP Terraform without replacing Terraform execution.',
-  outputName: '006.AzureTerraformRP-TabbedForm-Draft02',
+  outputName: '006.AzureTerraformRP-TabbedForm-Published',
   meta: {
     pdr: 'Approved Flows A/B',
     date: '2026-05-14',
