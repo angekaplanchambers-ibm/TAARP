@@ -1,1 +1,1 @@
-Terraform as a Resource Provider in Azure
+Terraform as a Resource Provider (TaaRP) in Azure
