@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { ButtonHTMLAttributes, CSSProperties, KeyboardEvent, ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { FluentProvider, webLightTheme, Button as FluentButton, Input, Field, Select, Textarea, TabList, Tab, Checkbox, Radio, RadioGroup, SearchBox } from '@fluentui/react-components';
+import { IconTerraformColor24, IconX16 } from '@hashicorp/flight-icons/svg-react';
 import { azureTerraformSteps, azureTerraformStepsB, azureTerraformStepsC } from './_azure-terraform-fixtures';
 import type { AzureFormControl, AzureFormSection, AzureFormStep } from './_azure-terraform-fixtures';
 
@@ -411,6 +412,144 @@ const BUTTON_SECONDARY: CSSProperties = {
   outlineColor: 'rgb(41, 40, 39)',
 };
 
+const LOGIN_BACKDROP: CSSProperties = {
+  position: 'fixed',
+  inset: 0,
+  zIndex: 2000,
+  display: 'grid',
+  placeItems: 'center',
+  padding: 24,
+  background: 'rgba(241, 242, 243, 0.72)',
+  backdropFilter: 'blur(2px)',
+};
+
+const LOGIN_DIALOG: CSSProperties = {
+  position: 'relative',
+  width: 600,
+  height: 800,
+  maxWidth: 'calc(100vw - 48px)',
+  maxHeight: 'calc(100vh - 48px)',
+  display: 'grid',
+  gridTemplateRows: '44px auto minmax(0, 1fr) auto',
+  border: `1px solid ${hds.borderPrimary}`,
+  borderRadius: 10,
+  background: hds.surfacePrimary,
+  boxShadow: '0 24px 64px rgba(31, 36, 48, 0.2), 0 3px 12px rgba(31, 36, 48, 0.12)',
+  color: hds.textPrimary,
+  overflow: 'hidden',
+};
+
+const LOGIN_BROWSER_CHROME: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '68px minmax(0, 1fr) 44px',
+  alignItems: 'center',
+  gap: hds.space12,
+  padding: '0 10px',
+  borderBottom: `1px solid ${hds.borderPrimary}`,
+  background: '#f7f7f8',
+};
+
+const LOGIN_BROWSER_DOTS: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 7,
+};
+
+const LOGIN_BROWSER_DOT: CSSProperties = {
+  width: 10,
+  height: 10,
+  borderRadius: '50%',
+  background: '#c7cad1',
+};
+
+const LOGIN_ADDRESS_BAR: CSSProperties = {
+  minWidth: 0,
+  height: 26,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  border: `1px solid ${hds.borderPrimary}`,
+  borderRadius: 13,
+  background: '#ffffff',
+  color: hds.textFaint,
+  fontSize: 12,
+};
+
+const LOGIN_HEADER: CSSProperties = {
+  display: 'grid',
+  gap: 24,
+  justifyItems: 'center',
+  padding: '56px 76px 0',
+};
+
+const LOGIN_BODY: CSSProperties = {
+  minHeight: 0,
+  display: 'grid',
+  alignContent: 'start',
+  gap: 32,
+  padding: '42px 78px 24px',
+  overflow: 'auto',
+};
+
+const LOGIN_FOOTER: CSSProperties = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  gap: 10,
+  minHeight: 92,
+  padding: '0 56px',
+  background: '#f1f2f3',
+  color: '#3b3d45',
+  fontSize: 13,
+};
+
+const LOGIN_ICON_BUTTON: CSSProperties = {
+  width: 32,
+  height: 32,
+  display: 'inline-grid',
+  placeItems: 'center',
+  border: 'none',
+  borderRadius: hds.radiusMedium,
+  background: 'transparent',
+  color: hds.textSecondary,
+  cursor: 'pointer',
+};
+
+const LOGIN_LINK: CSSProperties = {
+  border: 'none',
+  background: 'transparent',
+  color: '#0c65ff',
+  padding: 0,
+  font: 'inherit',
+  fontWeight: 400,
+  cursor: 'pointer',
+  textDecoration: 'none',
+};
+
+const LOGIN_PRIMARY_ACTION: CSSProperties = {
+  width: '100%',
+  minHeight: 35,
+  border: '1px solid #0c65ff',
+  borderRadius: 7,
+  background: '#0c65ff',
+  color: '#ffffff',
+  fontSize: 14,
+  fontWeight: 400,
+  boxShadow: '0 5px 10px rgba(12, 101, 255, 0.22)',
+};
+
+const LOGIN_SECONDARY_ACTION: CSSProperties = {
+  width: '100%',
+  minHeight: 35,
+  border: '1px solid #b8bbc6',
+  borderRadius: 7,
+  background: '#ffffff',
+  color: '#3b3d45',
+  fontSize: 14,
+  fontWeight: 400,
+  boxShadow: '0 2px 4px rgba(31, 36, 48, 0.08)',
+};
+
 const SKIP_LINK: CSSProperties = {
   ...BUTTON_SECONDARY,
   display: 'inline-flex',
@@ -684,6 +823,112 @@ function ButtonSet({ children }: { children: ReactNode }) {
 
 function TerraformIcon() {
   return <span style={{ width: 28, height: 28, borderRadius: 4, display: 'grid', placeItems: 'center', background: '#f4ecff', color: '#7b42bc', fontSize: 13, fontWeight: 700 }} aria-hidden="true">T</span>;
+}
+
+function HcpTerraformLoginModal({ onClose, onSignIn }: { onClose: () => void; onSignIn: (accountLabel: string) => void }) {
+  const [signInMode, setSignInMode] = useState<'account' | 'sso'>('account');
+  const [account, setAccount] = useState('');
+  const [organization, setOrganization] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const isSsoMode = signInMode === 'sso';
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (isSsoMode && !organization.trim()) {
+      setErrorMessage('Enter your organization to continue.');
+      return;
+    }
+
+    if (!isSsoMode && !account.trim()) {
+      setErrorMessage('Enter your email address to continue.');
+      return;
+    }
+
+    setErrorMessage('');
+    onSignIn(isSsoMode ? organization.trim() : account.trim());
+  }
+
+  return (
+    <div style={LOGIN_BACKDROP} role="presentation">
+      <section aria-modal="true" role="dialog" aria-labelledby="hcp-login-title" style={LOGIN_DIALOG}>
+        <div style={LOGIN_BROWSER_CHROME} aria-label="HCP Terraform sign in browser window">
+          <div style={LOGIN_BROWSER_DOTS} aria-hidden="true">
+            <span style={LOGIN_BROWSER_DOT} />
+            <span style={LOGIN_BROWSER_DOT} />
+            <span style={LOGIN_BROWSER_DOT} />
+          </div>
+          <div style={LOGIN_ADDRESS_BAR} aria-hidden="true">https://app.terraform.io/session</div>
+          <button type="button" aria-label="Close sign in window" title="Close" onClick={onClose} style={{ ...LOGIN_ICON_BUTTON, justifySelf: 'end' }}>
+            <IconX16 />
+          </button>
+        </div>
+
+        <header style={LOGIN_HEADER}>
+          <span style={{ width: 70, height: 70, display: 'grid', placeItems: 'center', border: '2px solid #7b42bc', borderRadius: 14, background: '#ffffff' }} aria-hidden="true">
+            <IconTerraformColor24 />
+          </span>
+          <div style={{ display: 'grid', justifyItems: 'center', gap: 6 }}>
+            <h2 id="hcp-login-title" style={{ margin: 0, fontSize: 18, lineHeight: 1.2, fontWeight: 700, letterSpacing: 0 }}>Sign in to HCP Terraform</h2>
+            <p style={{ margin: 0, color: hds.textSecondary, fontSize: 13, lineHeight: 1.45 }}>{isSsoMode ? 'Enter your organization to continue.' : 'Enter your email address to continue.'}</p>
+          </div>
+        </header>
+
+        <form onSubmit={handleSubmit} style={{ display: 'contents' }} noValidate>
+          <div style={LOGIN_BODY}>
+            <div style={{ display: 'grid', gap: 12 }}>
+              <label htmlFor={isSsoMode ? 'hcp-login-organization' : 'hcp-login-account'} style={{ color: hds.textPrimary, fontSize: 14, fontWeight: 700, lineHeight: 1.4 }}>{isSsoMode ? 'Organization' : 'Email or Username'}</label>
+              <input
+                id={isSsoMode ? 'hcp-login-organization' : 'hcp-login-account'}
+                type={isSsoMode ? 'text' : 'email'}
+                autoComplete={isSsoMode ? 'organization' : 'username'}
+                value={isSsoMode ? organization : account}
+                onChange={(event) => {
+                  if (isSsoMode) {
+                    setOrganization(event.target.value);
+                  } else {
+                    setAccount(event.target.value);
+                  }
+                  if (errorMessage) setErrorMessage('');
+                }}
+                aria-invalid={Boolean(errorMessage)}
+                aria-describedby={errorMessage ? 'hcp-login-error' : undefined}
+                style={{ width: '100%', minHeight: 35, boxSizing: 'border-box', border: `1px solid ${errorMessage ? 'var(--token-color-border-critical, #c73445)' : '#b8bbc6'}`, borderRadius: 7, background: '#ffffff', color: hds.textPrimary, padding: '0 12px', fontSize: 14, fontFamily: hds.fontFamily, outlineColor: '#0c65ff' }}
+              />
+              {errorMessage ? <p id="hcp-login-error" role="alert" style={{ margin: 0, color: 'var(--token-color-foreground-critical, #c73445)', fontSize: 14, lineHeight: 1.4 }}>{errorMessage}</p> : null}
+            </div>
+
+            <FluentButton appearance="primary" type="submit" style={LOGIN_PRIMARY_ACTION}>
+              Continue
+            </FluentButton>
+
+            <div aria-hidden="true" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 18, color: '#656a76', fontSize: 14 }}>
+              <span style={{ height: 1, background: hds.borderPrimary }} />
+              <span>OR</span>
+              <span style={{ height: 1, background: hds.borderPrimary }} />
+            </div>
+
+            <FluentButton
+              appearance="secondary"
+              type="button"
+              onClick={() => {
+                setSignInMode(isSsoMode ? 'account' : 'sso');
+                setErrorMessage('');
+              }}
+              style={LOGIN_SECONDARY_ACTION}
+            >
+              {isSsoMode ? 'Sign in with HCP Terraform account' : 'Sign in with SSO'}
+            </FluentButton>
+          </div>
+
+          <footer style={LOGIN_FOOTER}>
+            <span>Don't have an account?</span>
+            <button type="button" style={LOGIN_LINK} onClick={(event) => event.preventDefault()}>Create an account →</button>
+          </footer>
+        </form>
+      </section>
+    </div>
+  );
 }
 
 function SplashCard({ icon, title, description, onClick }: { icon: string; title: string; description: string; onClick?: () => void }) {
@@ -1252,7 +1497,9 @@ function formatWorkspaceName(name: string) {
 }
 
 function HcpConnectionStep({ selectedOrganization, onOrganizationChange, onContinue }: { selectedOrganization: string; onOrganizationChange: (organization: string) => void; onContinue: () => void }) {
-  const [sessionState, setSessionState] = useState<'none' | 'signing-in' | 'signed-in'>('none');
+  const [sessionState, setSessionState] = useState<'none' | 'signed-in'>('none');
+  const [signedInAccount, setSignedInAccount] = useState('');
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [oauthStatus, setOauthStatus] = useState<'idle' | 'authorizing' | 'authorized'>('idle');
 
   const hasSelectedOrganization = Boolean(selectedOrganization);
@@ -1263,41 +1510,43 @@ function HcpConnectionStep({ selectedOrganization, onOrganizationChange, onConti
   const canContinue = sessionState === 'signed-in' && hasSelectedOrganization && oauthStatus === 'authorized';
 
   useEffect(() => {
-    if (sessionState !== 'signing-in') return undefined;
-    const timeoutId = window.setTimeout(() => setSessionState('signed-in'), 2500);
-    return () => window.clearTimeout(timeoutId);
-  }, [sessionState]);
-
-  useEffect(() => {
     if (oauthStatus !== 'authorizing') return undefined;
     const timeoutId = window.setTimeout(() => setOauthStatus('authorized'), 3000);
     return () => window.clearTimeout(timeoutId);
   }, [oauthStatus]);
 
   return (
-    <form style={FORM_STACK} aria-label="Connect to HCP Terraform">
-      <section style={SECTION_CARD} aria-labelledby="hcp-session-heading">
-        <h3 id="hcp-session-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>HCP Terraform Account</h3>
-        {sessionState === 'signed-in' ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: hds.space8, padding: '8px 12px', background: hds.surfaceFaint, borderRadius: hds.radiusMedium, border: `1px solid ${hds.borderPrimary}` }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: hds.brand, color: '#fff', fontWeight: 700, fontSize: 13, flexShrink: 0 }}>A</span>
-            <span style={{ color: hds.textPrimary }}>Signed in as <strong>angela@company.com</strong></span>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', justifyItems: 'start', gap: hds.space12 }}>
-            <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.55 }}>Sign in to HCP Terraform to connect your organization.</p>
-            <Button
-              onClick={() => setSessionState('signing-in')}
-              disabledReason={sessionState === 'signing-in' ? 'Signing in...' : undefined}
-            >
-              {sessionState === 'signing-in' ? 'Signing in...' : 'Sign in to HCP Terraform'}
-            </Button>
-            {sessionState === 'signing-in' ? (
-              <p role="status" style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.5 }}>Redirecting to identity provider...</p>
-            ) : null}
-          </div>
-        )}
-      </section>
+    <>
+      {isLoginOpen ? (
+        <HcpTerraformLoginModal
+          onClose={() => setIsLoginOpen(false)}
+          onSignIn={(accountLabel) => {
+            setSignedInAccount(accountLabel);
+            setSessionState('signed-in');
+            setIsLoginOpen(false);
+          }}
+        />
+      ) : null}
+
+      <form style={FORM_STACK} aria-label="Connect to HCP Terraform">
+        <section style={SECTION_CARD} aria-labelledby="hcp-session-heading">
+          <h3 id="hcp-session-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>HCP Terraform Account</h3>
+          {sessionState === 'signed-in' ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: hds.space8, padding: '8px 12px', background: hds.surfaceFaint, borderRadius: hds.radiusMedium, border: `1px solid ${hds.borderPrimary}` }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: hds.brand, color: '#fff', fontWeight: 700, fontSize: 13, flexShrink: 0 }}>A</span>
+              <span style={{ color: hds.textPrimary }}>Signed in as <strong>{signedInAccount || 'angela@company.com'}</strong></span>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', justifyItems: 'start', gap: hds.space12 }}>
+              <p style={{ margin: 0, color: hds.textSecondary, lineHeight: 1.55 }}>Sign in to HCP Terraform to connect your organization.</p>
+              <Button
+                onClick={() => setIsLoginOpen(true)}
+              >
+                Sign in to HCP Terraform
+              </Button>
+            </div>
+          )}
+        </section>
 
       <section style={SECTION_CARD} aria-labelledby="hcp-organization-heading">
         <h3 id="hcp-organization-heading" style={{ margin: 0, fontSize: 16, lineHeight: 1.3 }}>HCP Terraform Organization</h3>
@@ -1364,7 +1613,8 @@ function HcpConnectionStep({ selectedOrganization, onOrganizationChange, onConti
           </Button>
         </ButtonSet>
       </div>
-    </form>
+      </form>
+    </>
   );
 }
 
