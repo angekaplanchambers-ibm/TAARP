@@ -35,10 +35,16 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: storybook/package-lock.json
+          cache-dependency-path: |
+            storybook/package-lock.json
+            showcase/package-lock.json
 
       - name: Install dependencies
         working-directory: storybook
+        run: npm ci
+
+      - name: Install showcase dependencies
+        working-directory: showcase
         run: npm ci
 
       - name: Archive version previews
@@ -48,6 +54,13 @@ jobs:
       - name: Build Storybook
         working-directory: storybook
         run: npm run build-storybook
+
+      - name: Build showcase
+        working-directory: showcase
+        run: npm run build
+
+      - name: Copy showcase HTML to Pages output
+        run: cp showcase/dist/*.html storybook/storybook-static/
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
