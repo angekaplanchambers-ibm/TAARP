@@ -292,11 +292,7 @@ export const azureTerraformSteps: AzureFormStep[] = [
   },
   {
     ...azureTerraformStepSource[6],
-    title: 'Register Workspaces in Azure',
-  },
-  {
-    ...azureTerraformStepSource[7],
-    title: 'Confirm',
+    title: 'Review & Register',
   },
 ];
 

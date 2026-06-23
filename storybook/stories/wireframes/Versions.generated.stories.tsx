@@ -23,6 +23,57 @@ const versionEntries: VersionEntry[] = [
     {
       "id": "version-001",
       "storyExport": "Version001",
+      "storyName": "Jun 18, 2026 20:16:00 UTC",
+      "previewUrl": "./version-previews/ae6a9aa/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
+      "storybookUrl": "./version-previews/ae6a9aa/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
+      "productionAt": "2026-06-18T15:16:00-05:00",
+      "committedAt": "2026-06-18T15:16:00-05:00",
+      "shortSha": "ae6a9aa",
+      "sha": "ae6a9aa2e789dab0bd6f62f3705bf8e8cdeb4517",
+      "subject": "chore: add showcase HTML to Pages deployment",
+      "author": "ange",
+      "branch": "main",
+      "source": "Git commit history",
+      "commitUrl": "",
+      "runUrl": ""
+    },
+    {
+      "id": "version-002",
+      "storyExport": "Version002",
+      "storyName": "Jun 10, 2026 20:50:26 UTC",
+      "previewUrl": "./version-previews/788dfd4/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
+      "storybookUrl": "./version-previews/788dfd4/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
+      "productionAt": "2026-06-10T15:50:26-05:00",
+      "committedAt": "2026-06-10T15:50:26-05:00",
+      "shortSha": "788dfd4",
+      "sha": "788dfd49771d3e9263c4da3df9e2dc053f51847c",
+      "subject": "feat(storybook): add HCP Terraform login modal",
+      "author": "ange",
+      "branch": "main",
+      "source": "Git commit history",
+      "commitUrl": "",
+      "runUrl": ""
+    },
+    {
+      "id": "version-003",
+      "storyExport": "Version003",
+      "storyName": "Jun 05, 2026 18:43:25 UTC",
+      "previewUrl": "./version-previews/fb0da2b/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
+      "storybookUrl": "./version-previews/fb0da2b/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
+      "productionAt": "2026-06-05T13:43:25-05:00",
+      "committedAt": "2026-06-05T13:43:25-05:00",
+      "shortSha": "fb0da2b",
+      "sha": "fb0da2b834cae00c23f96e7af7f5d850737065bd",
+      "subject": "Update README.md",
+      "author": "AKC",
+      "branch": "main",
+      "source": "Git commit history",
+      "commitUrl": "",
+      "runUrl": ""
+    },
+    {
+      "id": "version-004",
+      "storyExport": "Version004",
       "storyName": "Jun 02, 2026 15:59:11 UTC",
       "previewUrl": "./version-previews/7a53285/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
       "storybookUrl": "./version-previews/7a53285/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
@@ -38,8 +89,8 @@ const versionEntries: VersionEntry[] = [
       "runUrl": ""
     },
     {
-      "id": "version-002",
-      "storyExport": "Version002",
+      "id": "version-005",
+      "storyExport": "Version005",
       "storyName": "Jun 01, 2026 20:38:00 UTC",
       "previewUrl": "./version-previews/07ea6be/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
       "storybookUrl": "./version-previews/07ea6be/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
@@ -55,8 +106,8 @@ const versionEntries: VersionEntry[] = [
       "runUrl": ""
     },
     {
-      "id": "version-003",
-      "storyExport": "Version003",
+      "id": "version-006",
+      "storyExport": "Version006",
       "storyName": "Jun 01, 2026 15:25:25 UTC",
       "previewUrl": "./version-previews/e640314/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
       "storybookUrl": "./version-previews/e640314/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
@@ -72,8 +123,8 @@ const versionEntries: VersionEntry[] = [
       "runUrl": ""
     },
     {
-      "id": "version-004",
-      "storyExport": "Version004",
+      "id": "version-007",
+      "storyExport": "Version007",
       "storyName": "May 28, 2026 20:20:20 UTC",
       "previewUrl": "./version-previews/6bf8dbb/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
       "storybookUrl": "./version-previews/6bf8dbb/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
@@ -89,8 +140,8 @@ const versionEntries: VersionEntry[] = [
       "runUrl": ""
     },
     {
-      "id": "version-005",
-      "storyExport": "Version005",
+      "id": "version-008",
+      "storyExport": "Version008",
       "storyName": "May 27, 2026 16:51:44 UTC",
       "previewUrl": "./version-previews/88f9ea9/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
       "storybookUrl": "./version-previews/88f9ea9/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
@@ -106,8 +157,8 @@ const versionEntries: VersionEntry[] = [
       "runUrl": ""
     },
     {
-      "id": "version-006",
-      "storyExport": "Version006",
+      "id": "version-009",
+      "storyExport": "Version009",
       "storyName": "May 27, 2026 16:05:12 UTC",
       "previewUrl": "./version-previews/a73c9cb/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
       "storybookUrl": "./version-previews/a73c9cb/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
@@ -123,8 +174,8 @@ const versionEntries: VersionEntry[] = [
       "runUrl": ""
     },
     {
-      "id": "version-007",
-      "storyExport": "Version007",
+      "id": "version-010",
+      "storyExport": "Version010",
       "storyName": "May 27, 2026 15:07:50 UTC",
       "previewUrl": "./version-previews/5a6b466/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
       "storybookUrl": "./version-previews/5a6b466/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
@@ -140,8 +191,8 @@ const versionEntries: VersionEntry[] = [
       "runUrl": ""
     },
     {
-      "id": "version-008",
-      "storyExport": "Version008",
+      "id": "version-011",
+      "storyExport": "Version011",
       "storyName": "May 20, 2026 14:43:56 UTC",
       "previewUrl": "./version-previews/ae115ad/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
       "storybookUrl": "./version-previews/ae115ad/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
@@ -157,8 +208,8 @@ const versionEntries: VersionEntry[] = [
       "runUrl": ""
     },
     {
-      "id": "version-009",
-      "storyExport": "Version009",
+      "id": "version-012",
+      "storyExport": "Version012",
       "storyName": "May 19, 2026 18:55:22 UTC",
       "previewUrl": "./version-previews/0e1afa0/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
       "storybookUrl": "./version-previews/0e1afa0/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
@@ -167,57 +218,6 @@ const versionEntries: VersionEntry[] = [
       "shortSha": "0e1afa0",
       "sha": "0e1afa0c231c0465448442211eaebaf9725873f7",
       "subject": "fix(storybook): refresh production version archive",
-      "author": "ange",
-      "branch": "main",
-      "source": "Git commit history",
-      "commitUrl": "",
-      "runUrl": ""
-    },
-    {
-      "id": "version-010",
-      "storyExport": "Version010",
-      "storyName": "May 19, 2026 18:46:36 UTC",
-      "previewUrl": "./version-previews/fe738e9/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
-      "storybookUrl": "./version-previews/fe738e9/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
-      "productionAt": "2026-05-19T13:46:36-05:00",
-      "committedAt": "2026-05-19T13:46:36-05:00",
-      "shortSha": "fe738e9",
-      "sha": "fe738e9c86fdfc012d4eb51a427081e30b93d473",
-      "subject": "chore(output): add Azure portal splash reference",
-      "author": "ange",
-      "branch": "main",
-      "source": "Git commit history",
-      "commitUrl": "",
-      "runUrl": ""
-    },
-    {
-      "id": "version-011",
-      "storyExport": "Version011",
-      "storyName": "May 19, 2026 18:46:31 UTC",
-      "previewUrl": "./version-previews/f263304/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
-      "storybookUrl": "./version-previews/f263304/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
-      "productionAt": "2026-05-19T13:46:31-05:00",
-      "committedAt": "2026-05-19T13:46:31-05:00",
-      "shortSha": "f263304",
-      "sha": "f2633043ff391c5b3f2e8a645ffe2ce5e9632823",
-      "subject": "feat(storybook): add production version history",
-      "author": "ange",
-      "branch": "main",
-      "source": "Git commit history",
-      "commitUrl": "",
-      "runUrl": ""
-    },
-    {
-      "id": "version-012",
-      "storyExport": "Version012",
-      "storyName": "May 15, 2026 16:03:18 UTC",
-      "previewUrl": "./version-previews/82ff744/iframe.html?id=wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form&viewMode=story",
-      "storybookUrl": "./version-previews/82ff744/?path=/story/wireframes-azure-terraform-rp-stepper-nav-form--onboarding-form",
-      "productionAt": "2026-05-15T11:03:18-05:00",
-      "committedAt": "2026-05-15T11:03:18-05:00",
-      "shortSha": "82ff744",
-      "sha": "82ff744d5b54f1c724ea451b250359ffdcaa281d",
-      "subject": "chore(output): add Azure Storybook tab captures",
       "author": "ange",
       "branch": "main",
       "source": "Git commit history",
@@ -460,61 +460,61 @@ export default meta;
 type Story = StoryObj<typeof VersionRecord>;
 
 export const Version001: Story = {
-  name: "Jun 02, 2026 15:59:11 UTC",
+  name: "Jun 18, 2026 20:16:00 UTC",
   render: () => <VersionRecord entry={versionEntries[0]} />,
 };
 
 export const Version002: Story = {
-  name: "Jun 01, 2026 20:38:00 UTC",
+  name: "Jun 10, 2026 20:50:26 UTC",
   render: () => <VersionRecord entry={versionEntries[1]} />,
 };
 
 export const Version003: Story = {
-  name: "Jun 01, 2026 15:25:25 UTC",
+  name: "Jun 05, 2026 18:43:25 UTC",
   render: () => <VersionRecord entry={versionEntries[2]} />,
 };
 
 export const Version004: Story = {
-  name: "May 28, 2026 20:20:20 UTC",
+  name: "Jun 02, 2026 15:59:11 UTC",
   render: () => <VersionRecord entry={versionEntries[3]} />,
 };
 
 export const Version005: Story = {
-  name: "May 27, 2026 16:51:44 UTC",
+  name: "Jun 01, 2026 20:38:00 UTC",
   render: () => <VersionRecord entry={versionEntries[4]} />,
 };
 
 export const Version006: Story = {
-  name: "May 27, 2026 16:05:12 UTC",
+  name: "Jun 01, 2026 15:25:25 UTC",
   render: () => <VersionRecord entry={versionEntries[5]} />,
 };
 
 export const Version007: Story = {
-  name: "May 27, 2026 15:07:50 UTC",
+  name: "May 28, 2026 20:20:20 UTC",
   render: () => <VersionRecord entry={versionEntries[6]} />,
 };
 
 export const Version008: Story = {
-  name: "May 20, 2026 14:43:56 UTC",
+  name: "May 27, 2026 16:51:44 UTC",
   render: () => <VersionRecord entry={versionEntries[7]} />,
 };
 
 export const Version009: Story = {
-  name: "May 19, 2026 18:55:22 UTC",
+  name: "May 27, 2026 16:05:12 UTC",
   render: () => <VersionRecord entry={versionEntries[8]} />,
 };
 
 export const Version010: Story = {
-  name: "May 19, 2026 18:46:36 UTC",
+  name: "May 27, 2026 15:07:50 UTC",
   render: () => <VersionRecord entry={versionEntries[9]} />,
 };
 
 export const Version011: Story = {
-  name: "May 19, 2026 18:46:31 UTC",
+  name: "May 20, 2026 14:43:56 UTC",
   render: () => <VersionRecord entry={versionEntries[10]} />,
 };
 
 export const Version012: Story = {
-  name: "May 15, 2026 16:03:18 UTC",
+  name: "May 19, 2026 18:55:22 UTC",
   render: () => <VersionRecord entry={versionEntries[11]} />,
 };

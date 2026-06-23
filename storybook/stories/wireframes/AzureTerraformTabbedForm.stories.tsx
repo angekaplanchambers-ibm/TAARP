@@ -1002,8 +1002,8 @@ function AzureTopBar({ onHome, onTerraformSelect, onCreateResource }: { onHome?:
 
 function AzurePortalSplash({ onSearchResult, onCreateResource }: { onSearchResult: () => void; onCreateResource: () => void }) {
   const cards = [
-    { icon: 'TPL', title: 'Start with a template', description: 'Deploy in minutes using pre-made templates.' },
     { icon: '+', title: 'Create a resource', description: 'Choose a service to create a resource in your subscription.' },
+    { icon: 'TPL', title: 'Start with a template', description: 'Deploy in minutes using pre-made templates.' },
     { icon: 'AI', title: 'Build an AI agent', description: 'Create and manage AI apps and agents using the latest models.' },
     { icon: 'GH', title: 'Import code from GitHub', description: 'Connect your GitHub account and deploy existing repositories.' },
   ];
@@ -1030,12 +1030,12 @@ function AzurePortalSplash({ onSearchResult, onCreateResource }: { onSearchResul
 }
 
 const AZ_CREATE_RESOURCE_SERVICES: { icon: string; title: string; description: string; highlight?: boolean }[] = [
+  { icon: 'T', title: 'Terraform', description: 'Connect existing Terraform-managed infrastructure to Azure without changing your current workflows.', highlight: true },
   { icon: '🖥', title: 'Virtual machines', description: 'Build, deploy, and run your applications on resilient and scalable infrastructure.' },
   { icon: '💾', title: 'Storage accounts', description: 'Store and access files, backups, and unstructured data reliably and securely.' },
   { icon: '🗄', title: 'SQL databases', description: 'Set up a scalable, secure relational database in minutes with built-in intelligence.' },
   { icon: '🌐', title: 'Web App', description: 'Easily host and manage websites and web applications without managing infrastructure.' },
   { icon: '📦', title: 'Container Apps', description: 'Run your app in containers with automatic scaling and built-in microservices support.' },
-  { icon: 'T', title: 'Terraform', description: 'Connect existing Terraform-managed infrastructure to Azure without changing your current workflows.', highlight: true },
 ];
 
 function ServiceCard({ icon, title, description, highlight, onClick }: { icon: string; title: string; description: string; highlight?: boolean; onClick?: () => void }) {
@@ -2472,14 +2472,9 @@ export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScre
                 Discover and connect existing Terraform workspaces, map to Azure scope, and verify the state & resource ownership.
               </p>
             ) : null}
-            {activeStep.title === 'Register Workspaces in Azure' ? (
+            {activeStep.title === 'Review & Register' ? (
               <p style={{ margin: 0, maxWidth: 640, color: hds.textSecondary, lineHeight: 1.55 }}>
-                Review your Terraform Stack details to continue.
-              </p>
-            ) : null}
-            {activeStep.title === 'Confirm' ? (
-              <p style={{ margin: 0, maxWidth: 640, color: hds.textSecondary, lineHeight: 1.55 }}>
-                Existing Terraform infrastructure is now connected to Azure. Please select APPLY to confirm this setup.
+                Review your Terraform workspaces and confirm to register them as Azure resources.
               </p>
             ) : null}
           </div>
@@ -2533,9 +2528,7 @@ export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScre
                 ) : activeStep.title === 'Workspaces' ? (
                   <WorkspacesStep selectedOrganization={selectedOrganization} selections={formSelections} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
                 ) : activeStep.title === 'Map Workspaces' ? (
-                  <MapWorkspacesStep selectedOrganization={selectedOrganization} selections={formSelections} verificationStatus={mapVerificationStatus} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onVerify={handleMapVerification} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
-                ) : activeStep.title === 'Register Workspaces in Azure' ? (
-                  <TerraformStacksStep selectedOrganization={selectedOrganization} selections={formSelections} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onContinue={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))} />
+                  <MapWorkspacesStep selectedOrganization={selectedOrganization} selections={formSelections} verificationStatus={mapVerificationStatus} onSelectionChange={handleSelectionChange} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onVerify={handleMapVerification} onContinue={() => { setShowMapVerificationToast(false); setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1)); }} />
                 ) : activeIndex === activeSteps.length - 1 ? (
                   <ConfirmStep selections={formSelections} selectedOrganization={selectedOrganization} onPrevious={() => setActiveIndex(Math.max(0, activeIndex - 1))} onConfirm={handleConfirmSetup} />
                 ) : (
@@ -2547,7 +2540,7 @@ export function AzureTerraformTabbedFormWireframe({ initialScenario, initialScre
                       <span className="azure-terraform-sr-only" id="azure-terraform-action-help">Primary action is placed on the right and secondary actions are grouped together.</span>
                       <Button disabledReason={activeIndex === 0 ? 'This is the first section.' : undefined} onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}>Previous</Button>
                       <ButtonSet>
-                        <Button variant="primary" onClick={() => setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1))}>Next</Button>
+                        <Button variant="primary" onClick={() => { setShowMapVerificationToast(false); setActiveIndex(Math.min(activeSteps.length - 1, activeIndex + 1)); }}>Next</Button>
                       </ButtonSet>
                     </div>
                   </form>
